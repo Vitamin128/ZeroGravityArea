@@ -18,14 +18,26 @@ namespace boost_searcher{
             {
                 std::vector<std::string> words;
                 ns_util::JsonUtil::Cut(query, &words);
-
+                ns_index::InvertedList inverted_list_all;
+                std::vector<std::string> wordSame;
                 for(const auto& word : words){
+                    if(wordSame.find(word)!=wordSame.end())
+                    {
+                        continue;
+                    }
                     boost::to_lower(word);
                     ns_index::InvertedList* inverted_list=index->GetInvertedList(word);
                     if(inverted_list == nullptr){
                         continue;
                     }
+                    
+                    wordSame.push_back(word);
+                    inverted_list_all.insert(inverted_list_all.end(), inverted_list->begin(), inverted_list->end());
                 }
+                std::sort(inverted_list_all.begin(), inverted_list_all.end(),
+                          [](const ns_index::InvertedElem &e1, const ns_index::InvertedElem &e2) {
+                              return e1.weight > e2.weight;
+                });
             }
     };
 
