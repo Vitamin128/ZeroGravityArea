@@ -36,11 +36,11 @@ namespace ns_index{
             Index(){}
             Index(const Index&) = delete;
             Index& operator=(const Index&) = delete;
-
             static Index* instance;
             static std::mutex mtx;
             ~Index(){}
         public:
+            
             static Index* GetInstance()
             {
                 mtx.lock();
@@ -91,7 +91,7 @@ namespace ns_index{
             DocInfo *BuildForwardIndex(const string &line)
             {
                 vector<string> results;
-                string sep='\3';
+                string sep="\3";
                 ns_util::StringUtil::Split(line, sep, &results);
                 if(results.size() != 3){
                     cerr << "line format error" << endl;
@@ -116,13 +116,13 @@ namespace ns_index{
                 std::unordered_map<string, word_cnt> word_map;
 
                 std::vector<string> title_words;
-                ns_util::StringUtil::CutWord(doc.title, &title_words);
+                ns_util::JiebaUtil::Cut(doc.title, &title_words);
                 for(const auto &word : title_words){
                     word_map[word].title_cnt++;
                 }
 
                 std::vector<string> content_words;
-                ns_util::StringUtil::CutWord(doc.content, &content_words);
+                ns_util::JiebaUtil::Cut(doc.content, &content_words);
                 for(const auto &word : content_words){
                     word_map[word].content_cnt++;
                 }
@@ -133,8 +133,10 @@ namespace ns_index{
                     elem.weight = word_pair.second.title_cnt * 10 + word_pair.second.content_cnt;
                     inverted_index[elem.word].push_back(move(elem));
                 }
+                return true;
             }
             
     };
-    static Index::instance = nullptr;
+    Index* Index::instance = nullptr;
+    std::mutex Index::mtx;
 }

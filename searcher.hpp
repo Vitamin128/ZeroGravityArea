@@ -1,5 +1,6 @@
-#include"include.hpp"
+#include"index.hpp"
 #include"util.hpp"
+#include <algorithm>
 #include <jsoncpp/json/json.h>
 namespace boost_searcher{
 
@@ -17,11 +18,11 @@ namespace boost_searcher{
             void Search(const std::string& query, std::string* json_result)
             {
                 std::vector<std::string> words;
-                ns_util::JsonUtil::Cut(query, &words);
+                ns_util::JiebaUtil::Cut(query, &words);
                 ns_index::InvertedList inverted_list_all;
                 std::vector<std::string> wordSame;
-                for(const auto& word : words){
-                    if(wordSame.find(word)!=wordSame.end())
+                for(auto& word : words){
+                    if(std::find(wordSame.begin(), wordSame.end(), word)!=wordSame.end())
                     {
                         continue;
                     }
@@ -39,8 +40,8 @@ namespace boost_searcher{
                               return e1.weight > e2.weight;
                 });
                 Json::Value root;
-                for(const auto& elem : inverted_list_all){
-                    ns_index::DocInfo* doc_info = index->GetDocInfo(elem.doc_id);
+                for(const auto& item : inverted_list_all){
+                    ns_index::DocInfo* doc_info = index->GetForwardIndex(item.doc_id);
                     if(doc_info == nullptr){
                         continue;
                     }
