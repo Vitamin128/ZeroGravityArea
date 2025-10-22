@@ -1,4 +1,5 @@
 #include"include.hpp"
+#include"util.hpp"
 
 namespace boost_searcher{
 
@@ -15,7 +16,9 @@ namespace boost_searcher{
             }
             void Search(const std::string& query, std::string* json_result)
             {
-
+                std::vector<std::string> words;
+                ns_util::JsonUtil::Cut(query, &words);
+                
             }
     };
 
