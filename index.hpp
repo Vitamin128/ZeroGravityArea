@@ -27,6 +27,7 @@ namespace ns_index{
         int weight;
     };
 
+    //倒排索引列表
     typedef vector<InvertedElem> InvertedList;
 
     class Index{
@@ -41,6 +42,8 @@ namespace ns_index{
             ~Index(){}
         public:
             
+
+            //获取单例对象
             static Index* GetInstance()
             {
                 mtx.lock();
@@ -50,6 +53,8 @@ namespace ns_index{
                 mtx.unlock();
                 return instance;
             }
+
+
             //正排查询
             DocInfo *GetForwardIndex(uint64_t doc_id)
             {
@@ -59,6 +64,8 @@ namespace ns_index{
                 }
                 return &forward_index[doc_id];
             }
+
+
             //倒排查询
             InvertedList* GetInvertedList(const string &word)
             {
@@ -72,28 +79,34 @@ namespace ns_index{
                 cout<<"word not found in inverted index: " << word << endl;
                 return nullptr;
             }
+
+            //构建索引,使用BuildForwardIndex和BuildInvertedIndex两个私有函数
             bool BuildIndex(const string &input)
             {
-                cout<<"进入BuildIndex"<<endl;
                 fstream in(input, ios::in | ios::binary);
                 if(!in.is_open()){
                     cout << "open file error" << endl;
                     return false;
                 }
                 string file;
-                cout<<"准备进入while循环"<<endl;
+                int count = 0;
                 while(getline(in, file)){
-                    cout<<"进入while循环"<<endl;
                     DocInfo* doc = BuildForwardIndex(file);
                     if(doc == nullptr){
                         cerr << "BuildForwardIndex error" << endl;
                         continue;
+                    }
+                    count++;
+                    if(count % 50 == 0){
+                        cout<<"build index doc count: "<<count<<endl;
                     }
                     BuildInvertedIndex(*doc);
                 }
                 return true;
             }
         private:
+
+            //根据一行/一个文件用\3分隔开的数据构建正排索引
             DocInfo *BuildForwardIndex(const string &line)
             {
                 vector<string> results;
@@ -112,6 +125,9 @@ namespace ns_index{
                 return &forward_index.back();
 
             }
+
+
+            //根据正排索引构建倒排索引
             bool BuildInvertedIndex(const DocInfo &doc)
             {
                 struct word_cnt{
@@ -143,6 +159,8 @@ namespace ns_index{
             }
             
     };
+
+    //类内的静态成员需要在外面初始化
     Index* Index::instance = nullptr;
     std::mutex Index::mtx;
 }

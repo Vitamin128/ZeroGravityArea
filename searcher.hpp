@@ -10,6 +10,8 @@ namespace boost_searcher{
         public:
             Searcher(){}
             ~Searcher(){}
+
+            //加载索引容器,正序和倒序,并且初始化index指针
             void InitSearcher(std::string index_path)
             {
                 index = ns_index::Index::GetInstance();
@@ -19,6 +21,8 @@ namespace boost_searcher{
                 }
                 index->BuildIndex(index_path);
             }
+
+            //搜索接口
             void Search(const std::string& query, std::string* json_result)
             {
                 std::vector<std::string> words;
@@ -26,17 +30,15 @@ namespace boost_searcher{
                 ns_index::InvertedList inverted_list_all;
 
                 std::vector<std::string> wordSame;
+
+                //便利查询的每个词语，获取对应的倒排结果
                 for(auto& word : words){
                     if(std::find(wordSame.begin(), wordSame.end(), word)!=wordSame.end())
                     {
                         continue;
                     }
                     boost::to_lower(word);
-                    // std::cout<<"debug search word: "<<word<<std::endl;
-
-                    //获取对应的倒排数组
                     ns_index::InvertedList* inverted_list=index->GetInvertedList(word);
-                    // cout<<"inverted_list.size:"<<inverted_list->size()<<endl;
 
                     if(inverted_list == nullptr){
                         cout<<"inverted_list == nullptr"<<endl;
@@ -46,16 +48,16 @@ namespace boost_searcher{
                     wordSame.push_back(word);
                     inverted_list_all.insert(inverted_list_all.end(), inverted_list->begin(), inverted_list->end());
                 }
+
+                //将所有的倒排结果根据权重进行排序
                 std::sort(inverted_list_all.begin(), inverted_list_all.end(),
                           [](const ns_index::InvertedElem &e1, const ns_index::InvertedElem &e2) {
                               return e1.weight > e2.weight;
                 });
 
-                // for(auto item:inverted_list_all)
-                // {
-                //     cout<<"debug search result doc_id: "<<item.doc_id<<" weight: "<<item.weight<<endl;
-                // }
 
+
+                //将结果word对应的文档排好转换成json格式
                 Json::Value root;
                 for(const auto& item : inverted_list_all){
                     ns_index::DocInfo* doc_info = index->GetForwardIndex(item.doc_id);
