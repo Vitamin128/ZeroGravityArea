@@ -8,3 +8,4 @@ server:server.cc
 PHONY: clean
 clean:
 	rm -f parser
+	rm -f server
