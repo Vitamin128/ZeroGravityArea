@@ -18,7 +18,14 @@ namespace boost_searcher{
             {
                 std::vector<std::string> words;
                 ns_util::JsonUtil::Cut(query, &words);
-                
+
+                for(const auto& word : words){
+                    boost::to_lower(word);
+                    ns_index::InvertedList* inverted_list=index->GetInvertedList(word);
+                    if(inverted_list == nullptr){
+                        continue;
+                    }
+                }
             }
     };
 
