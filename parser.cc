@@ -19,7 +19,7 @@ bool EnumFile(const string& src_path, vector<string>* files_list)
     namespace fs = boost::filesystem;
     fs::path root_path(src_path);
     if(!fs::exists(root_path)){
-        cout <<root_path<< " path not exist!" << endl;///121515
+        cout <<root_path<< " path not exist!" << endl;///1215152121
         return false;
     }
     fs::recursive_directory_iterator end;
