@@ -5,6 +5,7 @@
 #include<vector>
 #include<unordered_map>
 #include<fstream>
+#include<mutex>
 #include"util.hpp"
 
 using namespace std;
@@ -32,10 +33,23 @@ namespace ns_index{
         private:
             vector<DocInfo> forward_index;
             unordered_map<string, InvertedList> inverted_index;
-        public:
             Index(){}
+            Index(const Index&) = delete;
+            Index& operator=(const Index&) = delete;
+
+            static Index* instance;
+            static std::mutex mtx;
             ~Index(){}
         public:
+            static Index* GetInstance()
+            {
+                mtx.lock();
+                if(instance == nullptr){
+                    instance = new Index();
+                }
+                mtx.unlock();
+                return instance;
+            }
             //正排查询
             DocInfo *GetForwardIndex(uint64_t doc_id)
             {
@@ -122,5 +136,5 @@ namespace ns_index{
             }
             
     };
-
+    static Index::instance = nullptr;
 }
