@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-const std::string index_path = "data/raw_html/raw_index.txt";
+const std::string index_path = "data/raw_html/raw.txt";
 int main()
 {
     boost_searcher::Searcher searcher;

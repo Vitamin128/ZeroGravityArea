@@ -62,8 +62,11 @@ namespace ns_index{
             //倒排查询
             InvertedList* GetInvertedList(const string &word)
             {
+                cout<<"inverted_index.size: "<<inverted_index.size()<<endl;
+                cout<<"forward_index.size: "<<forward_index.size()<<endl;
                 auto it = inverted_index.find(word);
                 if (it != inverted_index.end()) {
+
                     return &it->second;
                 }
                 cout<<"word not found in inverted index: " << word << endl;
@@ -71,13 +74,16 @@ namespace ns_index{
             }
             bool BuildIndex(const string &input)
             {
+                cout<<"进入BuildIndex"<<endl;
                 fstream in(input, ios::in | ios::binary);
                 if(!in.is_open()){
-                    cerr << "open file error" << endl;
+                    cout << "open file error" << endl;
                     return false;
                 }
                 string file;
+                cout<<"准备进入while循环"<<endl;
                 while(getline(in, file)){
+                    cout<<"进入while循环"<<endl;
                     DocInfo* doc = BuildForwardIndex(file);
                     if(doc == nullptr){
                         cerr << "BuildForwardIndex error" << endl;
