@@ -1,6 +1,6 @@
 #include"include.hpp"
 #include"util.hpp"
-
+#include <jsoncpp/json/json.h>
 namespace boost_searcher{
 
     class Searcher{
@@ -38,6 +38,20 @@ namespace boost_searcher{
                           [](const ns_index::InvertedElem &e1, const ns_index::InvertedElem &e2) {
                               return e1.weight > e2.weight;
                 });
+                Json::Value root;
+                for(const auto& elem : inverted_list_all){
+                    ns_index::DocInfo* doc_info = index->GetDocInfo(elem.doc_id);
+                    if(doc_info == nullptr){
+                        continue;
+                    }
+                    Json::Value elem;
+                    elem["title"] = doc_info->title;
+                    elem["url"] = doc_info->url;
+                    elem["content"] = doc_info->content;
+                    root.append(elem);
+                }
+                Json::StyledWriter writer;
+                *json_result = writer.write(root);
             }
     };
 
