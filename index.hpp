@@ -59,7 +59,7 @@ namespace ns_index{
                 }
                 return &forward_index[doc_id];
             }
-            //倒排查询11515
+            //倒排查询115155454
             InvertedList* GetInvertedList(const string &word)
             {
                 auto it = inverted_index.find(word);
