@@ -2,6 +2,8 @@
 #include"util.hpp"
 #include <algorithm>
 #include <jsoncpp/json/json.h>
+#include <cctype>
+#include<algorithm>
 namespace boost_searcher{
 
     class Searcher{
@@ -67,6 +69,7 @@ namespace boost_searcher{
                     Json::Value elem;
                     elem["title"] = doc_info->title;
                     elem["url"] = doc_info->url;
+                    elem["weight"] = item.weight;
                     elem["content"] = GetDesc(doc_info->content,item.word);
                     root.append(elem);
                 }
@@ -81,7 +84,15 @@ namespace boost_searcher{
             // }
             std::string GetDesc(const std::string &content, const std::string &word)
             {
-                size_t pos = content.find(word);
+                // size_t pos = content.find(word);
+                // cout<<"word: "<<word<<endl;
+                auto iter = std::search(content.begin(), content.end(), 
+                                        word.begin(), word.end(),
+                                        [](char ch1, char ch2){
+                                            return std::tolower(ch1) == std::tolower(ch2);
+                                        });
+                size_t pos = (iter != content.end()) ? std::distance(content.begin(), iter) : std::string::npos;
+
                 if(pos == std::string::npos){
                     if(content.size() <= 160){
                         return content;
@@ -89,8 +100,8 @@ namespace boost_searcher{
                         return content.substr(0, 160) + "...";
                     }
                 }else{
-                    size_t begin = (pos >= 150) ? (pos - 150) : 0;
-                    size_t end = ((content.size() - pos) >= 150) ? (pos + 150) : content.size();
+                    size_t begin = (pos >= 80) ? (pos - 80) : 0;
+                    size_t end = ((content.size() - pos) >= 80) ? (pos + 80) : content.size();
                     std::string desc = content.substr(begin, end - begin);
                     if(begin != 0){
                         desc = "..." + desc;

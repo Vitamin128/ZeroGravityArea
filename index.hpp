@@ -98,7 +98,7 @@ namespace ns_index{
                     }
                     count++;
                     if(count % 50 == 0){
-                        cout<<"build index doc count: "<<count<<endl;
+                        cout<<"build index doc count:"<<count<<'\r';
                     }
                     BuildInvertedIndex(*doc);
                 }
