@@ -1,23 +1,15 @@
-#include "searcher.hpp"
-#include <iostream>
-#include <string>
+#include"cpp-httplib/httplib.h"
 
-const std::string index_path = "data/raw_html/raw.txt";
+const std::string root_path = "./wwwroot";
 int main()
 {
-    boost_searcher::Searcher searcher;
-    searcher.InitSearcher(index_path);
-    std::string query;
-    std::cout << "Please enter your search query: ";
-    while (std::getline(std::cin, query)) {
-        if (query.empty()) {
-            std::cout << "Please enter a non-empty search query: ";
-            continue;
-        }
-        std::string json_result;
-        searcher.Search(query, &json_result);
-        std::cout << "Search results in JSON format:\n" << json_result << std::endl;
-        std::cout << "Please enter your search query: ";
-    }
+    using namespace httplib;
+    Server svr;
+    svr.set_base_dir(root_path.c_str());
+    svr.Get("/hi", [](const Request& req, Response& res) {
+        res.set_content("的VS发的不舒服", "text/plain;charset=utf-8");
+    }); 
+    
+    svr.listen("0.0.0.0", 8080);
     return 0;
 }
