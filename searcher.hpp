@@ -67,11 +67,39 @@ namespace boost_searcher{
                     Json::Value elem;
                     elem["title"] = doc_info->title;
                     elem["url"] = doc_info->url;
-                    elem["content"] = doc_info->content;
+                    elem["content"] = GetDesc(doc_info->content,item.word);
                     root.append(elem);
                 }
                 Json::StyledWriter writer;
                 *json_result = writer.write(root);
+            }
+            // std::string GetDesc(const std::string &content, const std::string &word)
+            // {
+            //     int pos = content.find(word);
+
+
+            // }
+            std::string GetDesc(const std::string &content, const std::string &word)
+            {
+                size_t pos = content.find(word);
+                if(pos == std::string::npos){
+                    if(content.size() <= 160){
+                        return content;
+                    }else{
+                        return content.substr(0, 160) + "...";
+                    }
+                }else{
+                    size_t begin = (pos >= 150) ? (pos - 150) : 0;
+                    size_t end = ((content.size() - pos) >= 150) ? (pos + 150) : content.size();
+                    std::string desc = content.substr(begin, end - begin);
+                    if(begin != 0){
+                        desc = "..." + desc;
+                    }
+                    if(end != content.size()){
+                        desc = desc + "...";
+                    }
+                    return desc;
+                }
             }
     };
 
