@@ -1,54 +1,57 @@
-# 论坛系统
+# Boost搜索引擎
 
-#### 介绍
-
-软件采用`Spring Boot`框架和`Mybatis`技术,搭建了一个可以发送帖子到专区的论坛,论坛支持用户私信和帖子点赞和帖子`MarkDown`编辑,可以通过访问 http://139.9.136.93:58080/sign-in.html 来使用该网站
-
-#### 软件架构
-└─java
-
-    └─org
-
-        └─example
-
-            └─forum
-                ├─common
-                ├─config
-                ├─controller
-                ├─dao
-                ├─exception
-                ├─LogInterceptor
-                ├─model
-                ├─services
-                │   └─impl
-                └─utils
-
-└─resource
-
-    ├─mapper
-    │  └─extension
-    ├─mybatis
-
-![输入图片说明](image2.png)
 
 #### 安装教程
 
-1.  使用`idea`的`Maven`的`package`将项目打包成`.jar`文件
+-  make指令构建parser,debug,server
 
-2.  将`.jar`文件放入服务器的目录`/gch/gch_forum`当中,直接使用`rz -E`传输即可
-3.  再将数据库代码放入该目录下，同样使用`rz -E` 
-4.  确保服务器安装了`MySQL5.3`的版本,并且进入数据库管理,`mysql -uroot -p`
-5.  使用`source /gch/gch_forum/forum_db`在`MySQL`中创建我们需要的数据库资源
-6.  在`/log`中创建一个`forum`文件,用于保存软件的执行日志
-7.  运行`.jar`程序,`nohup java -jar forum.jar &`,在程序后台运行
-8.  修改 `root` 认证方式为密码登录
-9.  `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY` '密码';
-10. `FLUSH PRIVILEGES`;
+-  ./parser生成搜索文档raw.txt文件
+-  ./server启动服务,启动服务会构建index索引,可能需要几秒时间构建
+-  访问http://localhost:8080来测试
 
-#### 使用说明
-待开发...
+#### API接口
+http://localhost:8080/hi?query=关键词
+
+- 返回JSON格式的搜索结果,包含权重,标题,描述,链接
 
 
-#### 特技
+#### 项目架构
 
-待开发....
+项目架构主要有三个
+
+- 预处理(parser)：从一堆 HTML 文件中提取有用信息（标题、正文、URL），并把它们写入一个统一的原始数据文件中（raw.txt）
+
+![alt text](parser1.drawio.png)
+
+- 索引构建(index)：为搜索引擎构建正排索引和倒排索引，从而让你输入关键词就能快速查到网页内容
+
+![alt text](index.drawio.png)
+
+- 搜索模块(searcher)：负责在已经建立好的索引中查找用户输入的关键词，并把结果转换成 JSON 格式返回给前端
+
+![alt text](searcher.drawio.png)
+
+- Web 服务端程序(server)：启动一个能接收前端请求的后端接口
+
+### 核心特性
+
+- 中文分词：使用 cppjieba 进行中文分词
+- 权重计算：标题权重比正文更高，提供更准确的搜索排序
+- 大小写不敏感：搜索时忽略大小写
+- 文档摘要：自动提取关键词周边内容作为摘要
+
+### 依赖库
+
+- Boost：文件系统操作
+- cppjieba：中文分词
+- cpp-httplib：HTTP 服务器
+- jsoncpp：JSON 数据处理
+
+### 项目结构
+
+>.\
+>├── parser.cpp # HTML解析器\
+>├── index.hpp # 索引模块\
+>├── searcher.hpp # 搜索模块\
+>├── server.cpp # Web服务器\
+>└── util.hpp # 工具类
