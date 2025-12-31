@@ -27,7 +27,7 @@ namespace ns_index{
         int weight;
     };
 
-    //倒排索引列表12
+    //倒排索引列表121515
     typedef vector<InvertedElem> InvertedList;
 
     class Index{
