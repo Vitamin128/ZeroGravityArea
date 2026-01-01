@@ -33,7 +33,7 @@ namespace ns_index{
     class Index{
         private:
             vector<DocInfo> forward_index;
-            unordered_map<string, InvertedList> inverted_index;
+            unordered_map<string, InvertedList> inverted_index;///
             Index(){}
             Index(const Index&) = delete;
             Index& operator=(const Index&) = delete;
