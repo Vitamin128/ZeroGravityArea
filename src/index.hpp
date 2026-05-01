@@ -76,7 +76,7 @@ public:
     bool BuildIndex(const std::string &input) {
         std::fstream in(input, std::ios::in | std::ios::binary);
         if (!in.is_open()) {
-            std::cerr << "open file error" << std::endl;
+            LOG(FATAL) << "open file error" << std::endl;
             return false;
         }
 
@@ -90,11 +90,20 @@ public:
 
             count++;
             if (count % 50 == 0) {
-                std::cout << "build index doc count: " << count << '\r' << std::flush;
+                LOG(NORMAL) << "build index doc count: " << count << '\r' << std::flush;
             }
         }
         std::cout << std::endl;
         return true;
+    }
+
+    // 新增：增量更新接口，直接在内存中将单篇已经格式化好的字符串（三字段 \3 分隔）加入索引
+    bool BuildSingleIndex(const std::string &line) {
+        std::shared_ptr<DocInfo> doc = BuildForwardIndex(line);
+        if (doc == nullptr) {
+            return false;
+        }
+        return BuildInvertedIndex(doc);
     }
 
 private:
