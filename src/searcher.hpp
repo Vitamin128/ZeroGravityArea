@@ -47,12 +47,12 @@ public:
     }
 
     // 暴露给上层的增量更新接口：将解析好的单行 HTML 格式化字符串插入内存索引
-    bool AddSingleDoc(const std::string &line) {
+    bool AddSingleDoc(const std::string &line, ns_index::DocType type = ns_index::DocType::HTML) {
         if (index == nullptr) {
             LOG(WARNING) << "Searcher is not initialized!" << std::endl;
             return false;
         }
-        return index->BuildSingleIndex(line);
+        return index->BuildSingleIndex(line, type);
     }
 
     // 搜索接口
@@ -120,6 +120,7 @@ public:
             Json::Value elem;
             elem["title"] = doc_info->title;
             elem["local_path"] = doc_info->local_path;
+            elem["type"] = static_cast<int>(doc_info->type);  // enum class 需显式转换为 int
             elem["weight"] = item.weight;
             // 提取摘要（传入第一个命中的关键词去定位即可）
             elem["content"] = GetDesc(doc_info->content, item.words[0]);

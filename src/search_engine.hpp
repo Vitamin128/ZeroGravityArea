@@ -18,7 +18,7 @@ public:
 
     // 接口 1：全量构建（包含洗数据 + 建索引）
     // 将指定文件夹下的 html 文件先洗进 raw_path 中，然后再拿出来构建正倒排索引
-    bool BuildFullIndex(const std::string &html_dir, const std::string &raw_path) {
+    bool BuildFullHtml(const std::string &html_dir, const std::string &raw_path) {
         // 1. 数据清洗 (解析 HTML -> 保存至 raw.txt)
         LOG(NORMAL) << "Start building full index from: " << html_dir << std::endl;
         int ret = ParserUtil::parserprocess(html_dir, raw_path);
@@ -64,7 +64,7 @@ public:
         }
 
         // 2. 将解析结果写入正倒排索引
-        if (!searcher.AddSingleDoc(parsed_str)) {
+        if (!searcher.AddSingleDoc(parsed_str, ns_index::DocType::PDF)) {
             LOG(WARNING) << "AddSinglePDF: Add to index failed: " << pdf_path << std::endl;
             return false;
         }
@@ -75,7 +75,7 @@ public:
 
     // 接口 5：批量处理目录下所有 PDF 文件，逐一调用 AddSinglePDF 建立索引
     // pdf_dir 既可以是目录，也可以是单个 .pdf 文件路径
-    bool BuildPdfIndex(const std::string &pdf_dir) {
+    bool BuildFullPDF(const std::string &pdf_dir) {
         namespace fs = boost::filesystem;
         fs::path root_path(pdf_dir);
         if (!fs::exists(root_path)) {

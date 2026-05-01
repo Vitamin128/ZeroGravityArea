@@ -14,10 +14,7 @@
 namespace ns_index {
 
 // 文档类型枚举：区分 HTML 和 PDF
-enum class DocType {
-    HTML = 0,
-    PDF  = 1
-};
+enum class DocType { HTML = 0, PDF = 1 };
 
 // 正排索引结构体
 struct DocInfo {
@@ -105,8 +102,8 @@ public:
     }
 
     // 新增：增量更新接口，直接在内存中将单篇已经格式化好的字符串（三字段 \3 分隔）加入索引
-    bool BuildSingleIndex(const std::string &line) {
-        std::shared_ptr<DocInfo> doc = BuildForwardIndex(line);
+    bool BuildSingleIndex(const std::string &line, DocType type = DocType::HTML) {
+        std::shared_ptr<DocInfo> doc = BuildForwardIndex(line, type);
         if (doc == nullptr) {
             return false;
         }
@@ -114,7 +111,8 @@ public:
     }
 
 private:
-    std::shared_ptr<DocInfo> BuildForwardIndex(const std::string &line) {
+    std::shared_ptr<DocInfo> BuildForwardIndex(const std::string &line,
+                                               DocType type = DocType::HTML) {
         std::vector<std::string> results;
         std::string sep = "\3";
         ns_util::StringUtil::Split(line, sep, &results);
@@ -124,6 +122,7 @@ private:
         doc->title = results[0];
         doc->content = results[1];
         doc->local_path = results[2];
+        doc->type = type;
 
         std::unique_lock<std::shared_mutex> lock(rw_mtx);
         doc->doc_id = forward_index.size();
