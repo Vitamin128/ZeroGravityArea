@@ -13,12 +13,19 @@
 
 namespace ns_index {
 
+// 文档类型枚举：区分 HTML 和 PDF
+enum class DocType {
+    HTML = 0,
+    PDF  = 1
+};
+
 // 正排索引结构体
 struct DocInfo {
     uint64_t doc_id;
     std::string title;
     std::string content;
     std::string local_path;
+    DocType type = DocType::HTML;  // 默认为 HTML
 };
 
 // 倒排索引元素

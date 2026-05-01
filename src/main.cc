@@ -2,8 +2,7 @@
 #include <string>
 
 #include "search_engine.hpp"
-
-int main() {
+int func() {
     ns_engine::SearchEngine engine;
 
     std::string html_dir = "../data/input";               // 原始 HTML 所在的目录
@@ -44,4 +43,12 @@ int main() {
     }
 
     return 0;
+}
+void func0() {
+    std::string content;
+    ns_util::FileUtil::ParsePDF("/home/bamboo/boost-search-engine/ganchuhao.pdf", &content);
+    LOG(NORMAL) << content << std::endl;
+}
+int main() {
+    func0();
 }

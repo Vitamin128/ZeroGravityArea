@@ -63,6 +63,33 @@ public:
         file.close();
         return true;
     }
+
+    // 调用 Python 脚本解析 PDF 文件
+    static bool ParsePDF(const std::string &pdf_path, std::string *content) {
+        if (!content) return false;
+        
+        // 使用绝对路径，确保在不同目录下执行都能找到 python 脚本
+        std::string py_script = "/home/bamboo/boost-search-engine/src/pdf_parser.py";
+        std::string command = "python3 " + py_script + " \"" + pdf_path + "\"";
+        
+        FILE *fp = popen(command.c_str(), "r");
+        if (!fp) {
+            LOG(FATAL) << "popen failed for: " << command << std::endl;
+            return false;
+        }
+        
+        char buffer[1024];
+        while (fgets(buffer, sizeof(buffer), fp) != nullptr) {
+            *content += buffer;
+        }
+        
+        int status = pclose(fp);
+        if (status != 0) {
+            LOG(FATAL) << "python script execution failed with status: " << status << std::endl;
+            return false;
+        }
+        return true;
+    }
 };
 
 class StringUtil {

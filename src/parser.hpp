@@ -50,6 +50,54 @@ public:
         return true;
     }
 
+    // 新增：解析单个 PDF 文件
+    // 调用 Python AI 脚本获取带 <title>/<content> 标签的字符串，
+    // 直接复用私有方法 ParseTitle / ParseContent 提取内容，
+    // 最终组装成与 ParseSingleFile 相同的 \3 分隔格式（title\3content\3path）
+    static bool ParseSinglePDF(const std::string &pdf_path, std::string *out_string) {
+        // 1. 调用 Python 脚本，让 AI 解析 PDF 并返回带 <title>/<content> 标签的字符串
+        std::string ai_output;
+        if (!ns_util::FileUtil::ParsePDF(pdf_path, &ai_output)) {
+            LOG(WARNING) << "ParseSinglePDF: ParsePDF failed for: " << pdf_path << std::endl;
+            return false;
+        }
+
+        // 2. 复用 ParseTitle：它本就是查找 <title>...</title>，与 AI 输出格式完全匹配
+        std::string title;
+        if (!ParseTitle(ai_output, &title)) {
+            LOG(WARNING) << "ParseSinglePDF: <title> tag not found in AI output for: "
+                         << pdf_path << std::endl;
+            return false;
+        }
+
+        // 3. 先截取 <content>...</content> 之间的子串，
+        //    再用 ParseContent 的状态机去掉标签并把 \n 转为空格
+        std::string content;
+        {
+            const std::string open_tag  = "<content>";
+            const std::string close_tag = "</content>";
+            auto begin = ai_output.find(open_tag);
+            auto end   = ai_output.find(close_tag);
+            if (begin == std::string::npos || end == std::string::npos || end < begin) {
+                LOG(WARNING) << "ParseSinglePDF: <content> tag not found in AI output for: "
+                             << pdf_path << std::endl;
+                return false;
+            }
+            // 截取包含标签在内的片段，交给 ParseContent 的状态机处理
+            std::string content_block = ai_output.substr(begin, end - begin + close_tag.size());
+            ParseContent(content_block, &content);
+        }
+
+        if (title.empty() || content.empty()) {
+            LOG(WARNING) << "ParseSinglePDF: empty title or content for: " << pdf_path << std::endl;
+            return false;
+        }
+
+        // 4. 组装成与 ParseSingleFile 相同的格式：title\3content\3local_path
+        *out_string = title + '\3' + content + '\3' + pdf_path;
+        return true;
+    }
+
 private:
     struct DocInfo {
         std::string title;
