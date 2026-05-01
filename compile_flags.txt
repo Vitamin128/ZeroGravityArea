@@ -1,0 +1,5 @@
+-I./cppjieba/include
+-I./cppjieba/deps/limonp/include
+-I./src
+-std=c++17
+-Wall

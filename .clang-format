@@ -1,0 +1,22 @@
+# 基于 Google 风格定制
+BasedOnStyle: Google
+# 缩进宽度
+IndentWidth: 4
+# 使用空格代替 Tab
+UseTab: Never
+# 每行代码的最大长度
+ColumnLimit: 100
+# 访问限定符（public/private）的缩进
+AccessModifierOffset: -4
+# 左大括号是否换行
+BreakBeforeBraces: Attach
+# 指针和引用的对齐方式
+PointerAlignment: Right
+# 允许短函数写在同一行
+AllowShortFunctionsOnASingleLine: Empty
+# 命名空间缩进
+NamespaceIndentation: None
+# 连续赋值时是否对齐
+AlignConsecutiveAssignments: false
+# 额外增加一行强制指定语言
+Language: Cpp

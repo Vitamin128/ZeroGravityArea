@@ -1,14 +1,11 @@
 cc=g++
-all:parser server debug
+FLAGS=-std=c++11 -I. -I./cppjieba/include -I./cppjieba/deps/limonp/include
 
-parser: parser.cc
-	$(cc) -o $@ $< -std=c++11 -I. -lboost_system -lboost_filesystem
-server:server.cc
-	$(cc) -o $@ $< -std=c++11 -I. -ljsoncpp -lpthread
-debug:debug.cc
-	$(cc) -o $@ $< -std=c++11 -I. -ljsoncpp
-PHONY: clean
+all: parser
+
+parser: ./src/parser.cc
+	$(cc) -o $@ $^ $(FLAGS) -lboost_system -lboost_filesystem
+
+.PHONY: clean
 clean:
-	rm -f parser
-	rm -f server
-	rm -f debug
+	rm -f parser 
