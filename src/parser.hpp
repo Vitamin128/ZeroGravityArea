@@ -17,9 +17,6 @@ public:
             return 2;
         }
 
-        for (int i = 0; i < results.size(); i++) {
-            ShowDoc(results[i]);
-        }
         if (!SaveHtml(results, output_path)) {
             LOG(FATAL) << "Save html error!" << std::endl;
             return 3;
@@ -137,7 +134,8 @@ private:
         std::cout << "content: " << doc.content << std::endl;
         std::cout << "local_path: " << doc.local_path << std::endl;
     }
-    static bool ParseHtml(const std::vector<std::string> &files_list, std::vector<DocInfo> *results) {
+    static bool ParseHtml(const std::vector<std::string> &files_list,
+                          std::vector<DocInfo> *results) {
         for (const std::string &file : files_list) {
             std::string result;
 

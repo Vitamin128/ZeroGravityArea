@@ -10,15 +10,9 @@ int main() {
     std::string raw_path = "../data_1/raw_html/raw.txt";  // 清洗后的输出路径
 
     // 1. 全量构建：一键清洗目录下的所有文件并建立索引
-    // (如果不想每次启动都洗一遍数据，这行可以注释掉，引擎会自己去读之前的 raw.txt)
-    // engine.BuildFullIndex(html_dir, raw_path);
-
-    // 我们为了测试，也可以手动单独初始化搜索器
-    // 这里我们就演示用单个文件来跑全量构建测试：
-    // engine.BuildFullIndex(html_dir, raw_path);
+    engine.BuildFullIndex(html_dir, raw_path);
 
     // 2. 增量更新示例：假如后续又来了一篇新文章，一键秒加进内存！
-    // 不用去动 raw.txt，它会自动被塞进倒排和正排里。
     engine.AddSingleHtml("/home/bamboo/boost-search-engine/data_1/input/acknowledgements.html");
 
     // 3. 开启搜索交互循环
