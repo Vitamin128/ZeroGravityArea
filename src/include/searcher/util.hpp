@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common/logger.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>
@@ -9,43 +10,7 @@
 // 匹配你提供的头文件路径
 #include <httplib.h>
 
-#include <ctime>
-
 #include "/home/bamboo/ZeroGravityArea/cppjieba/include/cppjieba/Jieba.hpp"
-
-namespace ns_util {
-
-enum LogLevel { NORMAL = 1, WARNING, DEBUG, FATAL };
-
-inline std::string LevelToString(LogLevel level) {
-    switch (level) {
-        case NORMAL:
-            return "NORMAL";
-        case WARNING:
-            return "WARNING";
-        case DEBUG:
-            return "DEBUG";
-        case FATAL:
-            return "FATAL";
-        default:
-            return "UNKNOWN";
-    }
-}
-
-inline std::string GetTime() {
-    time_t t = time(nullptr);
-    struct tm *ctime = localtime(&t);
-    char buffer[128];
-    snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d %02d:%02d:%02d", ctime->tm_year + 1900,
-             ctime->tm_mon + 1, ctime->tm_mday, ctime->tm_hour, ctime->tm_min, ctime->tm_sec);
-    return buffer;
-}
-
-}  // namespace ns_util
-
-#define LOG(level)                                                                           \
-    std::cout << "[" << ns_util::LevelToString(ns_util::level) << "][" << ns_util::GetTime() \
-              << "][" << __FILE__ << ":" << __LINE__ << "] "
 
 namespace ns_util {
 

@@ -1,5 +1,6 @@
 // #include<muduo/base/Logging.h>
 #pragma once
+#include "logger.hpp"
 #include <muduo/net/Buffer.h>
 #include <muduo/net/EventLoop.h>
 #include <muduo/net/EventLoopThread.h>
@@ -11,8 +12,6 @@
 #include "abstract.hpp"
 #include "fields.hpp"
 #include "message.hpp"
-// #include"abstract.hpp"
-#include <iostream>
 #include <mutex>
 #include <unordered_map>
 
@@ -89,12 +88,12 @@ public:
         std::string body = buf->retrieveAsString(body_len);             // 获取消息主体
         msg = MessageFactory::create(mtype);                            // 创建一个消息对象
         if (!msg) {
-            ELOG("消息类型错误,构造消息对象失败!");
+            LOG(ERROR) << "消息类型错误，构造消息对象失败" << std::endl;
             return false;
         }
-        bool ret = msg->unserialize(body);  // 将body用于构建消息对象
+        bool ret = msg->unserialize(body);
         if (!ret) {
-            ELOG("消息正文反序列化失败!");
+            LOG(ERROR) << "消息正文反序列化失败" << std::endl;
             return false;
         }
         msg->setId(id);        // 设置消息id
@@ -201,23 +200,17 @@ public:
 
 private:
     void onConnection(const muduo::net::TcpConnectionPtr &conn) {
-        ILOG("连接有新的情况,开始处理,可能是建立或者断开");
         if (conn->connected()) {
-            // 如果连接建立成功将连接存放到_conns中
-            //  std::cout<<"连接建立"<<std::endl;
-            ILOG("MuduoServer中连接建立");
+            LOG(NORMAL) << "MuduoServer: 新连接建立" << std::endl;
             auto muduo_conn = Connectionfactory::create(conn, _protocol);
             {
                 std::unique_lock<std::mutex> lock(_mutex);
                 _conns.insert(std::make_pair(conn, muduo_conn));
             }
             if (_cb_connection)
-                // 对该连接进行回调
                 _cb_connection(muduo_conn);
         } else {
-            // 如果连接断开,检查连接是否存在conns中存在则删除,并进行回调
-            //  std::cout<<"连接断开"<<std::endl;
-            ILOG("连接断开");
+            LOG(NORMAL) << "MuduoServer: 连接断开" << std::endl;
             BaseConnection::ptr muduo_conn;
             {
                 std::unique_lock<std::mutex> lock(_mutex);
@@ -233,28 +226,24 @@ private:
     }
     void onMessage(const muduo::net::TcpConnectionPtr &conn, muduo::net::Buffer *buf,
                    muduo::Timestamp) {
-        ILOG("连接有数据的到来,开始处理");
+        LOG(NORMAL) << "MuduoServer: 收到数据，开始处理" << std::endl;
         auto base_buf = BufferFactory::create(buf);
         while (1) {
-            ILOG("检查缓冲区报文是否完全")
             if (_protocol->canProcessed(base_buf) == false) {
                 if (base_buf->readableSize() > maxDataSize) {
                     conn->shutdown();
-                    ELOG("缓冲区中数据过大");
+                    LOG(ERROR) << "MuduoServer: 缓冲区数据超过最大限制，关闭连接" << std::endl;
                     return;
                 }
                 break;
             }
             BaseMessage::ptr msg;
-            ILOG("将缓冲区中的一个报文转化为BaseMessage的对象")
             bool ret = _protocol->onMessage(base_buf, msg);
             if (ret == false) {
                 conn->shutdown();
-                ELOG("缓冲区中数据错误");
+                LOG(ERROR) << "MuduoServer: 报文解析失败，关闭连接" << std::endl;
                 return;
             }
-
-            ILOG("根据连接找到对应的BaseConnection对象")
             BaseConnection::ptr base_conn;
             {
                 std::unique_lock<std::mutex> lock(_mutex);
@@ -265,9 +254,7 @@ private:
                 }
                 base_conn = it->second;
             }
-            // 将BaseMessage的对象转化成string
             if (_cb_message) {
-                ILOG("MuduoServer中使用绑定的函数处理")
                 _cb_message(base_conn, msg);
             }
         }
@@ -312,9 +299,9 @@ public:
             std::bind(&MuduoClient::onConnection, this, std::placeholders::_1));
         _client.setMessageCallback(std::bind(&MuduoClient::onMessage, this, std::placeholders::_1,
                                              std::placeholders::_2, std::placeholders::_3));
-        _client.connect();  // 连接服务端
-        _downlatch.wait();  // 等待连接
-        DLOG("服务端连接成功");
+        _client.connect();
+        _downlatch.wait();
+        LOG(NORMAL) << "MuduoClient: 连接服务端完成" << std::endl;
     }
 
     virtual void shutdown() override {
@@ -326,7 +313,7 @@ public:
         {
             std::unique_lock<std::mutex> lock(_mutex);
             if (!_conn || !_conn->connected()) {
-                ELOG("连接已断开");
+                LOG(ERROR) << "MuduoClient: 连接已断开，无法发送消息" << std::endl;
                 return false;
             }
             conn = _conn;
@@ -351,11 +338,11 @@ private:
     // 连接回调函数如果建立连接则让_client停止阻塞
     void onConnection(const muduo::net::TcpConnectionPtr &conn) {
         if (conn->connected()) {
-            std::cout << "连接建立" << std::endl;
+            LOG(NORMAL) << "MuduoClient: 连接建立" << std::endl;
             std::unique_lock<std::mutex> lock(_mutex);
             _conn = Connectionfactory::create(conn, _protocol);
         } else {
-            std::cout << "连接断开" << std::endl;
+            LOG(NORMAL) << "MuduoClient: 连接断开" << std::endl;
             std::unique_lock<std::mutex> lock(_mutex);
             _conn.reset();
         }
@@ -365,24 +352,22 @@ private:
     // 将数据写入到缓冲区当中
     void onMessage(const muduo::net::TcpConnectionPtr &conn, muduo::net::Buffer *buf,
                    muduo::Timestamp) {
-        DLOG("链接有数据的到来,开始处理!");
+        LOG(NORMAL) << "MuduoClient: 收到数据，开始处理" << std::endl;
         MuduoBuffer::ptr base_buf = BufferFactory::create(buf);
         while (1) {
             if (_protocol->canProcessed(base_buf) == false) {
                 if (buf->readableBytes() > _maxBufferSize) {
                     conn->shutdown();
-                    ELOG("可读字节超过限制");
+                    LOG(ERROR) << "MuduoClient: 可读字节超过限制，关闭连接" << std::endl;
                     return;
                 }
                 break;
             }
-
-            // 将缓冲区的数据写入BaseMessage
             BaseMessage::ptr msg;
             bool ret = _protocol->onMessage(base_buf, msg);
             if (ret == false) {
                 conn->shutdown();
-                ELOG("缓冲区中数据错误!");
+                LOG(ERROR) << "MuduoClient: 报文解析失败，关闭连接" << std::endl;
                 return;
             }
 

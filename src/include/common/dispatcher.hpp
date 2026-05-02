@@ -54,7 +54,7 @@ namespace gchrpc
             {
                 return it->second->onMessage(conn,msg);
             }
-            ELOG("消息类型错误:%d",(int)msg->mtype());
+            LOG(ERROR) << "未找到对应的消息处理器, mtype=" << (int)msg->mtype() << std::endl;
             conn->shutdown();
         }
         private:

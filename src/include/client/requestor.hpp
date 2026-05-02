@@ -22,120 +22,121 @@ namespace gchrpc
                 std::promise<BaseMessage::ptr> response;
             };
 
-            //!处理response
-            //success根据requestdescribe的描述来处理BaseMessage
-            void onResponse(const BaseConnection::ptr& conn,BaseMessage::ptr msg)
+            // 根据 requestdescribe 的描述处理服务端返回的 BaseMessage
+            void onResponse(const BaseConnection::ptr& conn, BaseMessage::ptr msg)
             {
-                std::string rid=msg->rid();
-                RequestDescribe::ptr rd=GetRequestDescribe(rid);
-                if(rd==nullptr)
+                std::string rid = msg->rid();
+                RequestDescribe::ptr rd = GetRequestDescribe(rid);
+                if (rd == nullptr)
                 {
-                    ELOG("未找到对应的RequestDescribe");
+                    LOG(ERROR) << "未找到对应的 RequestDescribe, rid=" << rid << std::endl;
                     return;
                 }
-                if(rd->rtype==RType::REQ_ASYNC)
+                if (rd->rtype == RType::REQ_ASYNC)
                 {
                     rd->response.set_value(msg);
                 }
-                else if(rd->rtype==RType::REQ_CALLBACK)
+                else if (rd->rtype == RType::REQ_CALLBACK)
                 {
-                    if(rd->callback)
+                    if (rd->callback)
                     {
                         rd->callback(msg);
                     }
                     else
                     {
-                        ELOG("未设置回调函数");
+                        LOG(ERROR) << "未设置回调函数, rid=" << rid << std::endl;
                     }
                 }
                 else
                 {
-                    ELOG("rd的rtype的类型错误");
+                    LOG(ERROR) << "RequestDescribe 的 rtype 类型错误, rid=" << rid << std::endl;
                 }
                 DeleteRequestDescribe(rid);
             }
 
-            //!send不处理response,发送Message后将requestdescribe存储在哈希表中
-            //success非阻塞无调用函数
-            bool send(const BaseConnection::ptr&conn,const BaseMessage::ptr& msg,AsyncResponse& async_rsp)
+            // 异步发送（无回调），通过 future 获取响应
+            bool send(const BaseConnection::ptr& conn, const BaseMessage::ptr& msg, AsyncResponse& async_rsp)
             {
-                RequestDescribe::ptr rd=newDescribe(msg,RType::REQ_ASYNC);
-                if(rd==nullptr)
+                RequestDescribe::ptr rd = newDescribe(msg, RType::REQ_ASYNC);
+                if (rd == nullptr)
                 {
-                    ELOG("创建RequestDescribe失败");
+                    LOG(ERROR) << "创建 RequestDescribe 失败" << std::endl;
                     return false;
                 }
                 conn->send(msg);
-                async_rsp=rd->response.get_future();
-                return true;
-            }
-        
-            //success阻塞无调用函数
-            bool send(const BaseConnection::ptr& conn,const BaseMessage::ptr& msg,BaseMessage::ptr& rep)
-            {
-                AsyncResponse AR;
-                bool ret=send(conn,msg,AR);
-                if(ret==false)
-                {
-                    ELOG("发送失败");
-                    return false;
-                }
-                rep=AR.get();
+                LOG(NORMAL) << "异步请求已发送, rid=" << msg->rid() << std::endl;
+                async_rsp = rd->response.get_future();
                 return true;
             }
 
-            //success非阻塞有调用函数
-            bool send(const BaseConnection::ptr& conn,const BaseMessage::ptr& msg,const RequestCallBack& rc)
+            // 同步发送（阻塞等待响应）
+            bool send(const BaseConnection::ptr& conn, const BaseMessage::ptr& msg, BaseMessage::ptr& rep)
             {
-                RequestDescribe::ptr rd=newDescribe(msg,RType::REQ_CALLBACK,rc);
-                if(rd==nullptr)
+                AsyncResponse AR;
+                bool ret = send(conn, msg, AR);
+                if (ret == false)
                 {
-                    ELOG("RequestDescribe创建失败");
+                    LOG(ERROR) << "异步发送失败" << std::endl;
+                    return false;
+                }
+                rep = AR.get();
+                LOG(NORMAL) << "同步请求响应已获取, rid=" << msg->rid() << std::endl;
+                return true;
+            }
+
+            // 异步发送（带回调函数）
+            bool send(const BaseConnection::ptr& conn, const BaseMessage::ptr& msg, const RequestCallBack& rc)
+            {
+                RequestDescribe::ptr rd = newDescribe(msg, RType::REQ_CALLBACK, rc);
+                if (rd == nullptr)
+                {
+                    LOG(ERROR) << "创建 RequestDescribe 失败" << std::endl;
                     return false;
                 }
                 conn->send(msg);
+                LOG(NORMAL) << "回调请求已发送, rid=" << msg->rid() << std::endl;
                 return true;
             }
             private:
 
-            //success:添加对于request的描述,描述包含promise回复,和唯一标识符rid,和回调函数
-            RequestDescribe::ptr newDescribe(const BaseMessage::ptr& mp,RType Rtype,
-            const RequestCallBack& rb=RequestCallBack())
+            // 添加对请求的描述（包含 promise、rid 和回调函数）
+            RequestDescribe::ptr newDescribe(const BaseMessage::ptr& mp, RType Rtype,
+            const RequestCallBack& rb = RequestCallBack())
             {
                 std::unique_lock<std::mutex> lock(_mutex);
-                RequestDescribe::ptr rp=std::make_shared<RequestDescribe>();
-                rp->rtype=Rtype;
-                rp->request=mp;
-                if(rp->rtype==RType::REQ_CALLBACK&&rb)
+                RequestDescribe::ptr rp = std::make_shared<RequestDescribe>();
+                rp->rtype = Rtype;
+                rp->request = mp;
+                if (rp->rtype == RType::REQ_CALLBACK && rb)
                 {
-                    rp->callback=rb;
+                    rp->callback = rb;
                 }
-                _request_desc.insert(std::make_pair(rp->request->rid(),rp));
+                _request_desc.insert(std::make_pair(rp->request->rid(), rp));
                 return rp;
             }
 
-            //success用string rid获取一个request描述
+            // 根据 rid 查找请求描述
             RequestDescribe::ptr GetRequestDescribe(const std::string& rid)
             {
                 std::unique_lock<std::mutex> lock(_mutex);
-                auto it=_request_desc.find(rid);
-                if(it==_request_desc.end())
+                auto it = _request_desc.find(rid);
+                if (it == _request_desc.end())
                 {
-                    DLOG("不存在对应的rid:%s",rid.c_str());
+                    LOG(WARNING) << "不存在对应的 rid: " << rid << std::endl;
                     return nullptr;
                 }
                 return it->second;
             }
 
-            //success用string rid删除一个request描述
+            // 根据 rid 删除请求描述
             void DeleteRequestDescribe(const std::string& rid)
             {
-                std::unique_lock<std::mutex>lock(_mutex);
+                std::unique_lock<std::mutex> lock(_mutex);
                 _request_desc.erase(rid);
             }
 
             std::mutex _mutex;
-            std::unordered_map<std::string,RequestDescribe::ptr> _request_desc;
+            std::unordered_map<std::string, RequestDescribe::ptr> _request_desc;
         };
     }
 }
