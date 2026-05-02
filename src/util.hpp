@@ -64,13 +64,16 @@ public:
         return true;
     }
 
-    // 调用 Python 脚本解析 PDF 文件
+    // 调用 Python 脚本解析 PDF 文件 (修改为请求本地常驻 HTTP 服务)
     static bool ParsePDF(const std::string &pdf_path, std::string *content) {
         if (!content) return false;
         
-        // 使用绝对路径，确保在不同目录下执行都能找到 python 脚本
-        std::string py_script = "/home/bamboo/boost-search-engine/src/pdf_parser.py";
-        std::string command = "python3 " + py_script + " \"" + pdf_path + "\"";
+        // 构造 JSON payload 发送给 Python 服务
+        // 注意转义双引号
+        std::string json_data = "{\\\"path\\\":\\\"" + pdf_path + "\\\"}";
+        
+        // 使用 curl 发起 POST 请求，通过 HTTP 跟常驻服务通信
+        std::string command = "curl -s -X POST -H \"Content-Type: application/json\" -d \"" + json_data + "\" http://127.0.0.1:8080/";
         
         FILE *fp = popen(command.c_str(), "r");
         if (!fp) {
@@ -84,10 +87,18 @@ public:
         }
         
         int status = pclose(fp);
+        // 如果服务器没有启动，curl 会失败，此时 status != 0
         if (status != 0) {
-            LOG(FATAL) << "python script execution failed with status: " << status << std::endl;
+            LOG(FATAL) << "curl request failed with status: " << status << ". Is the Python service running on 8080?" << std::endl;
             return false;
         }
+        
+        // 额外检查一下服务器是否返回了 Error (Python 服务挂掉或找不到文件)
+        if (content->find("Error:") != std::string::npos) {
+            LOG(FATAL) << "Python service returned error: " << *content << std::endl;
+            return false;
+        }
+        
         return true;
     }
 };
