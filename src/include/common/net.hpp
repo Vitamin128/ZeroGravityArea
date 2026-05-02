@@ -97,7 +97,7 @@ public:
             ELOG("消息正文反序列化失败!");
             return false;
         }
-        msg->setId(id);  // 设置消息id
+        msg->setId(id);        // 设置消息id
         msg->setMType(mtype);  // 设置消息类型,虽然这个类已经是消息类型,但还是要明确一下的
         return true;
     }
@@ -140,6 +140,7 @@ public:
         return std::make_shared<LVProtocol>(std::forward<Args>(args)...);
     }
 };
+
 class MuduoConnection : public BaseConnection {
 public:
     using ptr = std::shared_ptr<MuduoConnection>;
@@ -182,11 +183,11 @@ public:
 
     // 初始化_server,设置端口
     MuduoServer(int port)
-        : _server(&_baseloop, muduo::net::InetAddress("0.0.0.0", port), "MuduoServer",
+        : _protocol(Protocolfactory::create()),
+          _server(&_baseloop, muduo::net::InetAddress("0.0.0.0", port), "MuduoServer",
                   muduo::net::TcpServer::
                       kReusePort)  // kReusePort表示端口复用,可以多个进程绑定同一个端口
-          ,
-          _protocol(Protocolfactory::create()) {
+    {
         _server.setConnectionCallback(
             std::bind(&MuduoServer::onConnection, this, std::placeholders::_1));
         _server.setMessageCallback(
@@ -300,15 +301,12 @@ public:
     // 初始化_client,设置ip和端口
     MuduoClient(const std::string &sip, int sport)
         : _protocol(Protocolfactory::create()),
-          // 创建一个线程,用于监听套接字
-          _baseloop(_loopthread.startLoop()),
           // 用户客户端等待连接
           _downlatch(1),
+          // 创建一个线程,用于监听套接字
+          _baseloop(_loopthread.startLoop()),
           _client(_baseloop, muduo::net::InetAddress(sip, sport), "MuduoClient") {}
-    // virtual void connect()override{
-    //     DLOG("设置回调函数,连接服务器");
-    //     _client.setConnectionCallback(std::bind())
-    // }
+
     virtual void connect() override {
         _client.setConnectionCallback(
             std::bind(&MuduoClient::onConnection, this, std::placeholders::_1));
@@ -388,9 +386,9 @@ private:
 
 private:
     static const int _maxBufferSize = (1 << 16);
-    BaseProtocol::ptr _protocol;       // 协议,用于将缓冲区中的数据转化为BaseMessage
-    BaseConnection::ptr _conn;         // 和服务端的连接
-    muduo::CountDownLatch _downlatch;  // 用于等待连接建立
+    BaseProtocol::ptr _protocol;              // 协议,用于将缓冲区中的数据转化为BaseMessage
+    BaseConnection::ptr _conn;                // 和服务端的连接
+    muduo::CountDownLatch _downlatch;         // 用于等待连接建立
     muduo::net::EventLoopThread _loopthread;  // 用于创建新的线程监听套接字
     muduo::net::EventLoop *_baseloop;         // 存了子线程创建的muduo::net::EventLoop
     muduo::net::TcpClient _client;            // 用于建立连接的客户端
