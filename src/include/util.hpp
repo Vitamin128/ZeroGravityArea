@@ -7,26 +7,28 @@
 #include <string>
 #include <vector>
 // 匹配你提供的头文件路径
-#include "../cppjieba/include/cppjieba/Jieba.hpp"
-#include <ctime>
 #include <httplib.h>
+
+#include <ctime>
+
+#include "/home/bamboo/ZeroGravityArea/cppjieba/include/cppjieba/Jieba.hpp"
 
 namespace ns_util {
 
-enum LogLevel {
-    NORMAL = 1,
-    WARNING,
-    DEBUG,
-    FATAL
-};
+enum LogLevel { NORMAL = 1, WARNING, DEBUG, FATAL };
 
 inline std::string LevelToString(LogLevel level) {
     switch (level) {
-        case NORMAL: return "NORMAL";
-        case WARNING: return "WARNING";
-        case DEBUG: return "DEBUG";
-        case FATAL: return "FATAL";
-        default: return "UNKNOWN";
+        case NORMAL:
+            return "NORMAL";
+        case WARNING:
+            return "WARNING";
+        case DEBUG:
+            return "DEBUG";
+        case FATAL:
+            return "FATAL";
+        default:
+            return "UNKNOWN";
     }
 }
 
@@ -34,16 +36,16 @@ inline std::string GetTime() {
     time_t t = time(nullptr);
     struct tm *ctime = localtime(&t);
     char buffer[128];
-    snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d %02d:%02d:%02d",
-             ctime->tm_year + 1900, ctime->tm_mon + 1, ctime->tm_mday,
-             ctime->tm_hour, ctime->tm_min, ctime->tm_sec);
+    snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d %02d:%02d:%02d", ctime->tm_year + 1900,
+             ctime->tm_mon + 1, ctime->tm_mday, ctime->tm_hour, ctime->tm_min, ctime->tm_sec);
     return buffer;
 }
 
-} // namespace ns_util
+}  // namespace ns_util
 
-#define LOG(level) std::cout << "[" << ns_util::LevelToString(ns_util::level) << "][" \
-                             << ns_util::GetTime() << "][" << __FILE__ << ":" << __LINE__ << "] "
+#define LOG(level)                                                                           \
+    std::cout << "[" << ns_util::LevelToString(ns_util::level) << "][" << ns_util::GetTime() \
+              << "][" << __FILE__ << ":" << __LINE__ << "] "
 
 namespace ns_util {
 
@@ -71,7 +73,7 @@ public:
 
         // 1. 创建 HTTP 客户端对象，连接本地服务
         httplib::Client cli("http://127.0.0.1:8080");
-        cli.set_read_timeout(60, 0); // 设置读取超时为 60 秒 (Gemini 解析 PDF 耗时较长)
+        cli.set_read_timeout(60, 0);  // 设置读取超时为 60 秒 (Gemini 解析 PDF 耗时较长)
 
         // 2. 构造 JSON 请求体
         // 注意：这里我们手动拼接 JSON。对于复杂场景建议使用 nlohmann/json 库
@@ -82,7 +84,7 @@ public:
             // 4. 检查响应状态码
             if (res->status == 200) {
                 *content = res->body;
-                
+
                 // 额外检查一下业务逻辑层是否返回了错误信息
                 if (content->find("Error:") != std::string::npos) {
                     LOG(FATAL) << "Python service returned logic error: " << *content << std::endl;
@@ -90,14 +92,14 @@ public:
                 }
                 return true;
             } else {
-                LOG(FATAL) << "HTTP request failed with status: " << res->status 
+                LOG(FATAL) << "HTTP request failed with status: " << res->status
                            << ", body: " << res->body << std::endl;
                 return false;
             }
         } else {
             // 请求发送失败（比如服务没启动）
             auto err = res.error();
-            LOG(FATAL) << "HTTP connection failed. Error code: " << (int)err 
+            LOG(FATAL) << "HTTP connection failed. Error code: " << (int)err
                        << ". Is the Python service running on port 8080?" << std::endl;
             return false;
         }
@@ -114,11 +116,11 @@ public:
 };
 
 // 匹配你提供的字典路径
-const char *const DICT_PATH = "../cppjieba/dict/jieba.dict.utf8";
-const char *const HMM_PATH = "../cppjieba/dict/hmm_model.utf8";
-const char *const USER_DICT_PATH = "../cppjieba/dict/user.dict.utf8";
-const char *const IDF_PATH = "../cppjieba/dict/idf.utf8";
-const char *const STOP_WORD_PATH = "../cppjieba/dict/stop_words.utf8";
+const char *const DICT_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/jieba.dict.utf8";
+const char *const HMM_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/hmm_model.utf8";
+const char *const USER_DICT_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/user.dict.utf8";
+const char *const IDF_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/idf.utf8";
+const char *const STOP_WORD_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/stop_words.utf8";
 
 class JiebaUtil {
 private:
