@@ -3,7 +3,7 @@ FLAGS=-std=c++17 -I. -I../cppjieba/include -I../cppjieba/deps/limonp/include
 
 all: main
 main: ./main.cc
-	$(cc) -o $@ $^ $(FLAGS) -lboost_system -lboost_filesystem -ljsoncpp
+	$(cc) -o $@ $^ $(FLAGS) -lboost_system -lboost_filesystem -ljsoncpp -lcpp-httplib -lpthread
 
 .PHONY: clean
 clean:

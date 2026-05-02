@@ -9,6 +9,7 @@
 // 匹配你提供的头文件路径
 #include "../cppjieba/include/cppjieba/Jieba.hpp"
 #include <ctime>
+#include <httplib.h>
 
 namespace ns_util {
 
@@ -64,42 +65,42 @@ public:
         return true;
     }
 
-    // 调用 Python 脚本解析 PDF 文件 (修改为请求本地常驻 HTTP 服务)
+    // 调用 Python 脚本解析 PDF 文件 (修改为使用 httplib 直接请求本地服务)
     static bool ParsePDF(const std::string &pdf_path, std::string *content) {
         if (!content) return false;
-        
-        // 构造 JSON payload 发送给 Python 服务
-        // 注意转义双引号
-        std::string json_data = "{\\\"path\\\":\\\"" + pdf_path + "\\\"}";
-        
-        // 使用 curl 发起 POST 请求，通过 HTTP 跟常驻服务通信
-        std::string command = "curl -s -X POST -H \"Content-Type: application/json\" -d \"" + json_data + "\" http://127.0.0.1:8080/";
-        
-        FILE *fp = popen(command.c_str(), "r");
-        if (!fp) {
-            LOG(FATAL) << "popen failed for: " << command << std::endl;
+
+        // 1. 创建 HTTP 客户端对象，连接本地服务
+        httplib::Client cli("http://127.0.0.1:8080");
+        cli.set_read_timeout(60, 0); // 设置读取超时为 60 秒 (Gemini 解析 PDF 耗时较长)
+
+        // 2. 构造 JSON 请求体
+        // 注意：这里我们手动拼接 JSON。对于复杂场景建议使用 nlohmann/json 库
+        std::string json_body = "{\"path\":\"" + pdf_path + "\"}";
+
+        // 3. 发起 POST 请求
+        if (auto res = cli.Post("/", json_body, "application/json")) {
+            // 4. 检查响应状态码
+            if (res->status == 200) {
+                *content = res->body;
+                
+                // 额外检查一下业务逻辑层是否返回了错误信息
+                if (content->find("Error:") != std::string::npos) {
+                    LOG(FATAL) << "Python service returned logic error: " << *content << std::endl;
+                    return false;
+                }
+                return true;
+            } else {
+                LOG(FATAL) << "HTTP request failed with status: " << res->status 
+                           << ", body: " << res->body << std::endl;
+                return false;
+            }
+        } else {
+            // 请求发送失败（比如服务没启动）
+            auto err = res.error();
+            LOG(FATAL) << "HTTP connection failed. Error code: " << (int)err 
+                       << ". Is the Python service running on port 8080?" << std::endl;
             return false;
         }
-        
-        char buffer[1024];
-        while (fgets(buffer, sizeof(buffer), fp) != nullptr) {
-            *content += buffer;
-        }
-        
-        int status = pclose(fp);
-        // 如果服务器没有启动，curl 会失败，此时 status != 0
-        if (status != 0) {
-            LOG(FATAL) << "curl request failed with status: " << status << ". Is the Python service running on 8080?" << std::endl;
-            return false;
-        }
-        
-        // 额外检查一下服务器是否返回了 Error (Python 服务挂掉或找不到文件)
-        if (content->find("Error:") != std::string::npos) {
-            LOG(FATAL) << "Python service returned error: " << *content << std::endl;
-            return false;
-        }
-        
-        return true;
     }
 };
 

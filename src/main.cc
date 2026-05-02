@@ -9,7 +9,7 @@ int func() {
     std::string raw_path = "../data_1/raw_html/raw.txt";  // 清洗后的输出路径
 
     // 1. 全量构建：一键清洗目录下的所有文件并建立索引
-    engine.BuildFullIndex(html_dir, raw_path);
+    engine.BuildFullHtml(html_dir, raw_path);
 
     // 2. 增量更新示例：假如后续又来了一篇新文章，一键秒加进内存！
     engine.AddSingleHtml("/home/bamboo/boost-search-engine/data_1/input/acknowledgements.html");
@@ -49,6 +49,32 @@ void func0() {
     ns_util::FileUtil::ParsePDF("/home/bamboo/boost-search-engine/ganchuhao.pdf", &content);
     LOG(NORMAL) << content << std::endl;
 }
+void func1() {
+    ns_engine::SearchEngine engine;
+
+    // 1. 指定测试用的 PDF 路径
+    std::string pdf_path = "/home/bamboo/ZeroGravityArea/ganchuhao.pdf";
+
+    LOG(NORMAL) << "--- 开始测试 PDF 索引接口 ---" << std::endl;
+
+    // 2. 测试单篇 PDF 增量构建索引
+    if (engine.AddSinglePDF(pdf_path)) {
+        LOG(NORMAL) << "PDF 索引构建成功: " << pdf_path << std::endl;
+    } else {
+        LOG(WARNING) << "PDF 索引构建失败，请检查 Python 服务是否启动" << std::endl;
+        return;
+    }
+
+    // 3. 测试搜索功能，验证 PDF 内容是否可搜索
+    std::string query = "甘初豪";
+    std::string json_result;
+    engine.Search(query, &json_result);
+
+    LOG(NORMAL) << "搜索关键词 [" << query << "] 的结果:" << std::endl;
+    std::cout << json_result << std::endl;
+}
+
 int main() {
-    func0();
+    func1();
+    return 0;
 }
