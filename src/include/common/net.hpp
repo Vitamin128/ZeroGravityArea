@@ -322,21 +322,28 @@ public:
     }
     // 发送Message给服务端
     virtual bool send(const BaseMessage::ptr &msg) override {
-        if (connected() == false) {
-            ELOG("连接已断开");
-            return false;
+        BaseConnection::ptr conn;
+        {
+            std::unique_lock<std::mutex> lock(_mutex);
+            if (!_conn || !_conn->connected()) {
+                ELOG("连接已断开");
+                return false;
+            }
+            conn = _conn;
         }
-        _conn->send(msg);
+        conn->send(msg);
         return true;
     }
 
     // 返回和服务端的BaseConnection对象
     virtual BaseConnection::ptr connection() override {
+        std::unique_lock<std::mutex> lock(_mutex);
         return _conn;
     }
 
     // 检查与服务端的连接
     virtual bool connected() override {
+        std::unique_lock<std::mutex> lock(_mutex);
         return (_conn && _conn->connected());
     }
 
@@ -345,12 +352,14 @@ private:
     void onConnection(const muduo::net::TcpConnectionPtr &conn) {
         if (conn->connected()) {
             std::cout << "连接建立" << std::endl;
-            _downlatch.countDown();
+            std::unique_lock<std::mutex> lock(_mutex);
             _conn = Connectionfactory::create(conn, _protocol);
         } else {
             std::cout << "连接断开" << std::endl;
+            std::unique_lock<std::mutex> lock(_mutex);
             _conn.reset();
         }
+        _downlatch.countDown();
     }
 
     // 将数据写入到缓冲区当中
@@ -388,6 +397,7 @@ private:
     static const int _maxBufferSize = (1 << 16);
     BaseProtocol::ptr _protocol;              // 协议,用于将缓冲区中的数据转化为BaseMessage
     BaseConnection::ptr _conn;                // 和服务端的连接
+    std::mutex _mutex;                        // 保护 _conn 的并发访问
     muduo::CountDownLatch _downlatch;         // 用于等待连接建立
     muduo::net::EventLoopThread _loopthread;  // 用于创建新的线程监听套接字
     muduo::net::EventLoop *_baseloop;         // 存了子线程创建的muduo::net::EventLoop
