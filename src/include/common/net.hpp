@@ -1,6 +1,5 @@
 // #include<muduo/base/Logging.h>
 #pragma once
-#include "logger.hpp"
 #include <muduo/net/Buffer.h>
 #include <muduo/net/EventLoop.h>
 #include <muduo/net/EventLoopThread.h>
@@ -9,11 +8,13 @@
 #include <muduo/net/TcpConnection.h>
 #include <muduo/net/TcpServer.h>
 
-#include "abstract.hpp"
-#include "fields.hpp"
-#include "message.hpp"
 #include <mutex>
 #include <unordered_map>
+
+#include "abstract.hpp"
+#include "fields.hpp"
+#include "logger.hpp"
+#include "message.hpp"
 
 namespace gchrpc {
 class MuduoBuffer : public BaseBuffer {
@@ -194,7 +195,9 @@ public:
                       std::placeholders::_3));  // bind函数将函数和参数绑定起来,使得函数可以接受参数
     }
     virtual void start() override {
-        _server.start();   // 启动服务
+        _server.setThreadNum(4);
+        _server.start();  // 启动服务
+        // _server.setThreadNum(4);
         _baseloop.loop();  // 开始监听套接字
     }
 
@@ -207,8 +210,7 @@ private:
                 std::unique_lock<std::mutex> lock(_mutex);
                 _conns.insert(std::make_pair(conn, muduo_conn));
             }
-            if (_cb_connection)
-                _cb_connection(muduo_conn);
+            if (_cb_connection) _cb_connection(muduo_conn);
         } else {
             LOG(NORMAL) << "MuduoServer: 连接断开" << std::endl;
             BaseConnection::ptr muduo_conn;
