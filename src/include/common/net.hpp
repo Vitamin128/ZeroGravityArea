@@ -381,7 +381,7 @@ private:
     }
 
 private:
-    static const int _maxBufferSize = (1 << 16);
+    static const int _maxBufferSize = (1 << 31);
     BaseProtocol::ptr _protocol;              // 协议,用于将缓冲区中的数据转化为BaseMessage
     BaseConnection::ptr _conn;                // 和服务端的连接
     std::mutex _mutex;                        // 保护 _conn 的并发访问

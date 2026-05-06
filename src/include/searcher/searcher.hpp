@@ -111,7 +111,7 @@ public:
                   });
 
         // 转换成 json 格式
-        Json::Value root;
+        Json::Value root(Json::arrayValue);
         for (const auto &item : inverted_list_all) {
             std::shared_ptr<ns_index::DocInfo> doc_info = index->GetForwardIndex(item.doc_id);
             if (doc_info == nullptr) {
