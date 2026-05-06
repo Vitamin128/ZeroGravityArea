@@ -112,15 +112,16 @@ public:
             return 2;
         }
 
+        int total = files_list.size();
+        int processed_count = 0;
         int count = 0;
         for (const auto &file : files_list) {
+            processed_count++;
+            LOG(NORMAL) << "Processing PDF [" << processed_count << "/" << total << "]: " << file << std::endl;
             std::string out_string;
             if (ParseSinglePDF(file, &out_string)) {
                 out << out_string << "\n";
                 count++;
-                if (count % 10 == 0) {
-                    LOG(NORMAL) << "PDF parsed count: " << count << "\r" << std::flush;
-                }
             }
         }
         out.close();

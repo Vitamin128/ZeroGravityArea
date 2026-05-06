@@ -20,8 +20,12 @@ void func4() {
         if (key.empty()) continue;                // 忽略空行
         req["query"] = key;                       // 使用输入的 key 作为查询词
         client1.call("SearchService", req, resp);
-        // std::cout << "result_size: " << resp.size() << std::endl;
-        std::cout << "result: " << resp.toStyledString() << std::endl;
+        // std::cout << "result: " << resp.toStyledString() << std::endl;
+        Json::StreamWriterBuilder builder;
+        builder["indentation"] = "\t";
+        builder["emitUTF8"] = true; // 关键：直接输出 UTF8 字符，不转义
+        std::string out = Json::writeString(builder, resp);
+        std::cout << "result: " << out << std::endl;
         std::cout << "result_size: " << resp.size() << std::endl;
     }
 }
