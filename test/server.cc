@@ -11,8 +11,8 @@ void Search(const std::string &query, std::string *json_result, ns_engine::Searc
 int main() {
     ns_engine::SearchEngine search_engine;
     // 假设数据路径正确
-    search_engine.BuildFullHtml("/home/bamboo/ZeroGravityArea/data",
-                                "/home/bamboo/ZeroGravityArea/data/raw_html/raw.txt");
+    search_engine.BuildFullPDF("/home/bamboo/ZeroGravityArea/pdfdata/fold",
+                               "/home/bamboo/ZeroGravityArea/pdfdata/raw_html/raw.txt");
     // 1. 定义输入参数（只需要 query）
     gchrpc::server::ServiceDescribe::ParamsDescribe p1("query", gchrpc::server::VType::STRING);
     std::vector<gchrpc::server::ServiceDescribe::ParamsDescribe> params;

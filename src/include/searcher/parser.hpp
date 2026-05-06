@@ -6,7 +6,7 @@ class ParserUtil {
 public:
     static int parserprocess(const std::string &src_path, const std::string &output_path) {
         std::vector<std::string> files_list;
-        if (!EnumFile(src_path, &files_list)) {
+        if (!EnumFile(src_path, &files_list, ".html")) {
             LOG(FATAL) << "enum file name error!" << std::endl;
             return 1;
         }
@@ -98,6 +98,36 @@ public:
         return true;
     }
 
+    // 新增：PDF 全量清洗接口
+    static int pdfprocess(const std::string &src_path, const std::string &output_path) {
+        std::vector<std::string> files_list;
+        if (!EnumFile(src_path, &files_list, ".pdf")) {
+            LOG(FATAL) << "enum pdf file error!" << std::endl;
+            return 1;
+        }
+
+        std::ofstream out(output_path, std::ios::out | std::ios::binary);
+        if (!out.is_open()) {
+            LOG(FATAL) << "open " << output_path << " failed!" << std::endl;
+            return 2;
+        }
+
+        int count = 0;
+        for (const auto &file : files_list) {
+            std::string out_string;
+            if (ParseSinglePDF(file, &out_string)) {
+                out << out_string << "\n";
+                count++;
+                if (count % 10 == 0) {
+                    LOG(NORMAL) << "PDF parsed count: " << count << "\r" << std::flush;
+                }
+            }
+        }
+        out.close();
+        LOG(NORMAL) << "\nPDF parse and save success! Total: " << count << std::endl;
+        return 0;
+    }
+
 private:
     struct DocInfo {
         std::string title;
@@ -106,7 +136,7 @@ private:
     };
     // void
     // 将src_path文件夹下面的每个html文件的路径存储起来
-    static bool EnumFile(const std::string &src_path, std::vector<std::string> *files_list) {
+    static bool EnumFile(const std::string &src_path, std::vector<std::string> *files_list, const std::string &ext = ".html") {
         namespace fs = boost::filesystem;
         fs::path root_path(src_path);
         if (!fs::exists(root_path)) {
@@ -115,7 +145,7 @@ private:
         }
         // --- 新增逻辑：如果传进来的是个文件，直接放进列表即可 ---
         if (fs::is_regular_file(root_path)) {
-            if (root_path.extension() == ".html") {
+            if (root_path.extension() == ext) {
                 files_list->push_back(root_path.string());
             }
             return true;
@@ -125,7 +155,7 @@ private:
             if (!fs::is_regular_file(*iter)) {
                 continue;
             }
-            if (iter->path().extension() != ".html") {
+            if (iter->path().extension() != ext) {
                 continue;
             }
             // cout<<"debug: "<<iter->path().string()<<endl;

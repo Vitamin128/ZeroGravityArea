@@ -73,43 +73,25 @@ public:
         return true;
     }
 
-    // 接口 5：批量处理目录下所有 PDF 文件，逐一调用 AddSinglePDF 建立索引
-    // pdf_dir 既可以是目录，也可以是单个 .pdf 文件路径
-    bool BuildFullPDF(const std::string &pdf_dir) {
-        namespace fs = boost::filesystem;
-        fs::path root_path(pdf_dir);
-        if (!fs::exists(root_path)) {
-            LOG(FATAL) << "BuildPdfIndex: path not exist: " << pdf_dir << std::endl;
+    // 接口 5：全量构建 PDF 索引（采用清洗 + 批量构建模式）
+    // pdf_dir: pdf 文件夹路径, raw_path: 中间清洗结果保存路径 (如 pdf_raw.txt)
+    bool BuildFullPDF(const std::string &pdf_dir, const std::string &raw_path) {
+        // 1. 数据清洗：PDF -> AI解析 -> 写入 pdf_raw.txt
+        LOG(NORMAL) << "Start batch parsing PDFs from: " << pdf_dir << std::endl;
+        if (ParserUtil::pdfprocess(pdf_dir, raw_path) != 0) {
+            LOG(ERROR) << "PDF batch process failed." << std::endl;
             return false;
         }
 
-        // 收集所有 .pdf 文件路径
-        std::vector<std::string> pdf_files;
-        if (fs::is_regular_file(root_path)) {
-            if (root_path.extension() == ".pdf") {
-                pdf_files.push_back(root_path.string());
-            } else {
-                LOG(WARNING) << "BuildPdfIndex: not a pdf file: " << pdf_dir << std::endl;
-                return false;
-            }
-        } else {
-            fs::recursive_directory_iterator end;
-            for (fs::recursive_directory_iterator it(root_path); it != end; ++it) {
-                if (fs::is_regular_file(*it) && it->path().extension() == ".pdf") {
-                    pdf_files.push_back(it->path().string());
-                }
-            }
+        // 2. 批量构建索引：从 pdf_raw.txt 加载到内存倒排索引
+        // 注意：InitSearcher 内部调用 BuildIndex
+        if (!searcher.InitSearcher(raw_path)) {
+            LOG(ERROR) << "Build PDF index from " << raw_path << " failed." << std::endl;
+            return false;
         }
 
-        int success = 0;
-        for (const auto &pdf : pdf_files) {
-            if (AddSinglePDF(pdf)) {
-                ++success;
-            }
-        }
-        LOG(NORMAL) << "BuildPdfIndex: finished. success=" << success
-                    << " / total=" << pdf_files.size() << std::endl;
-        return success > 0 || pdf_files.empty();
+        LOG(NORMAL) << "BuildFullPDF: All PDF index build complete!" << std::endl;
+        return true;
     }
 
     // 接口 3：对外的搜索服务接口

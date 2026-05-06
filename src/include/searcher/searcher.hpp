@@ -31,19 +31,18 @@ public:
     ~Searcher() {}
 
     // 加载索引容器
-    void InitSearcher(std::string index_path) {
+    bool InitSearcher(std::string index_path) {
         if (index == nullptr) {
             LOG(FATAL) << "GetInstance failed" << std::endl;
-            return;
+            return false;
         }
 
-        // [修改前]：不检查构建结果
-        // index->BuildIndex(index_path);
-
-        //[修改后]：增加错误检查，避免索引构建失败仍假装成功
+        //[修改后]：增加错误检查，返回构建结果
         if (!index->BuildIndex(index_path)) {
             LOG(FATAL) << "InitSearcher: BuildIndex failed for path: " << index_path << std::endl;
+            return false;
         }
+        return true;
     }
 
     // 暴露给上层的增量更新接口：将解析好的单行 HTML 格式化字符串插入内存索引
