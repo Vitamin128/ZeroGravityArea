@@ -6,7 +6,7 @@
         <input 
           v-model="searchQuery" 
           type="text" 
-          placeholder="探索星辰大海..." 
+          placeholder="搜索你想要的..." 
           @keyup.enter="handleSearch"
           id="search-input"
         />
@@ -17,75 +17,64 @@
     </div>
   </div>
 </template>
-
 <script setup lang="js">
 import { ref } from 'vue';
-
-// 搜索关键词响应式变量
 const searchQuery = ref('');
-
-// 搜索处理函数
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
-    // 默认跳转到百度搜索
     window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(searchQuery.value)}`, '_blank');
   } else {
     alert('请输入搜索内容');
   }
 };
 </script>
-
 <style scoped>
-/* 全屏容器：使用高级渐变背景 */
+/* 使用用户提供的清新渐变色 */
 .app-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
   font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-  color: white;
+  color: #2c3e50; /* 切换为深色文字以适配浅色背景 */
 }
-
 .search-wrapper {
   text-align: center;
   width: 100%;
   max-width: 600px;
   padding: 20px;
 }
-
 .title {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: 2.8rem;
+  font-weight: 800;
   margin-bottom: 2rem;
-  letter-spacing: -1px;
-  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  letter-spacing: -1.5px;
+  /* 标题颜色调整为深色渐变，增加层次感 */
+  background: linear-gradient(to right, #243949 0%, #517fa4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: fadeInDown 0.8s ease-out;
 }
-
-/* 搜索框：磨砂玻璃效果 */
+/* 亮色玻璃拟态效果 */
 .search-box {
   display: flex;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.4); /* 增加白色透明度 */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 50px;
   padding: 8px 10px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  /* 阴影改为柔和的深色，突出浮空感 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
 .search-box:focus-within {
-  transform: translateY(-5px) scale(1.02);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
-
 input {
   flex: 1;
   background: transparent;
@@ -93,17 +82,15 @@ input {
   outline: none;
   padding: 12px 25px;
   font-size: 1.1rem;
-  color: white;
+  color: #2c3e50; /* 输入文字颜色 */
   width: 100%;
 }
-
 input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(44, 62, 80, 0.5);
 }
-
-/* 搜索按钮 */
+/* 按钮颜色也同步调整为更协调的深蓝色系 */
 .search-btn {
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  background: linear-gradient(135deg, #2c3e50 0%, #4b6cb7 100%);
   border: none;
   border-radius: 50%;
   width: 48px;
@@ -112,27 +99,19 @@ input::placeholder {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.2);
 }
-
 .search-btn:hover {
-  transform: rotate(15deg) scale(1.1);
-  box-shadow: 0 0 20px rgba(79, 172, 254, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
 }
-
 .icon {
   font-size: 1.2rem;
+  filter: brightness(0) invert(1); /* 将黑色搜索图标变为白色 */
 }
-
-/* 入场动画 */
 @keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
