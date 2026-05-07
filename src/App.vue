@@ -1,26 +1,78 @@
 <template>
-  <!-- 背景保留在这里 -->
   <div class="app-container">
+    <!-- 粒子背景组件 -->
+    <vue-particles
+      id="tsparticles"
+      :options="particlesOptions"
+    />
+    
     <div class="search-wrapper">
       <h1 class="title">Zero Gravity Search</h1>
-
-      <!-- 使用引入的搜索框组件 -->
-      <SearchBar />
+      <SearchBar @update-results="searchResults = $event" />
     </div>
-    <!-- 搜索结果卡片组件 -->
     <div class="cards-wrapper">
-      <ResultCards />
+      <ResultCards :results="searchResults" />
     </div>
   </div>
 </template>
 <script setup lang="js">
-// 引入组件
+import { ref } from 'vue';
 import SearchBar from './components/SearchBar.vue';
 import ResultCards from './components/ResultCards.vue';
+
+// 用来存储从 C++ 返回的数据
+const searchResults = ref([]);
+// 粒子背景的高级配置
+const particlesOptions = {
+  background: {
+    color: { value: "transparent" } // 保持原来的 CSS 渐变底色
+  },
+  fpsLimit: 120,
+  interactivity: {
+    events: {
+      onClick: { enable: true, mode: "push" }, // 点击时增加粒子
+      onHover: { enable: true, mode: "grab" },  // 悬停时产生连线抓取感
+    },
+    modes: {
+      grab: { distance: 140, links: { opacity: 0.5 } },
+      push: { quantity: 4 }
+    }
+  },
+  particles: {
+    color: { value: "#4facfe" }, // 使用你标题的青蓝色
+    links: {
+      color: "#4facfe",
+      distance: 150,
+      enable: true,
+      opacity: 0.2,
+      width: 1
+    },
+    move: {
+      enable: true,
+      speed: 1.2,
+      direction: "none",
+      random: false,
+      straight: false,
+      outModes: { default: "out" }
+    },
+    number: {
+      density: { enable: true, area: 800 },
+      value: 80
+    },
+    opacity: {
+      value: { min: 0.1, max: 0.5 }
+    },
+    shape: { type: "circle" },
+    size: {
+      value: { min: 1, max: 3 }
+    }
+  },
+  detectRetina: true
+};
 </script>
 <style scoped>
-/* 容器背景和布局样式保留 */
 .app-container {
+  position: relative; /* 必须是 relative 才能让粒子绝对定位在里面 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,13 +80,28 @@ import ResultCards from './components/ResultCards.vue';
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   font-family: 'Outfit', sans-serif;
   color: white;
-  /* padding-bottom: 60px; */
+  overflow-x: hidden; /* 防止粒子溢出产生滚动条 */
+}
+/* 粒子背景样式 */
+#tsparticles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* 置于背景渐变之上，但内容之下 */
+  pointer-events: all; /* 允许粒子捕捉鼠标交互 */
+}
+/* 确保内容在粒子层之上 */
+.search-wrapper, .cards-wrapper {
+  position: relative;
+  z-index: 1;
 }
 .search-wrapper {
   text-align: center;
   width: 35%;
   padding: 20px;
-  margin-top: 20px;
+  margin-top: 50px;
   margin-bottom: 30px;
 }
 .cards-wrapper {

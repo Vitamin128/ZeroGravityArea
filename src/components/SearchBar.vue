@@ -1,27 +1,42 @@
+<!-- src/components/SearchBar.vue -->
 <template>
   <div class="search-box">
     <input 
       v-model="searchQuery" 
       type="text" 
       placeholder="探索星辰大海..." 
-      @keyup.enter="handleSearch"
+      @keyup.enter="callCppBackend" 
     />
-    <button @click="handleSearch" class="search-btn">
+    <button @click="callCppBackend" class="search-btn">
       <span class="icon">🔍</span>
     </button>
   </div>
 </template>
-
 <script setup lang="js">
-import { ref } from 'vue';
-
+import { ref, defineEmits } from 'vue';
+const emit = defineEmits(['update-results']); 
 const searchQuery = ref('');
-
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(searchQuery.value)}`, '_blank');
-  } else {
-    alert('请输入搜索内容');
+const callCppBackend = async () => {
+  if (!searchQuery.value.trim()) return;
+  try {
+    // 1. 修改为你的新地址：http://127.0.0.1:8081/search?word=xxx
+    // 2. 使用 GET 方式（fetch 默认就是 GET）
+    const url = `http://127.0.0.1:8081/search?word=${encodeURIComponent(searchQuery.value)}`;
+    
+    console.log("正在请求:", url);
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP 错误! 状态码: ${response.status}`);
+    }
+    const data = await response.json();
+    
+    // 3. 将结果发送给父组件 App.vue
+    emit('update-results', data); 
+    
+  } catch (err) {
+    console.error("无法连接到 C++ Gateway:", err);
+    alert("搜索服务呼叫失败，请确保 C++ Gateway (8081) 已启动并允许跨域");
   }
 };
 </script>

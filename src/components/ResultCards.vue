@@ -1,60 +1,93 @@
 <template>
   <div class="cards-container">
-    <!-- 外层 div 负责入场动画和延迟 -->
+    <!-- 1. 只渲染当前页的数据 -->
     <div 
       class="card-entrance" 
-      v-for="(item, index) in results" 
+      v-for="(item, index) in paginatedResults" 
       :key="index"
-      :style="{ animationDelay: index * 0.12 + 's' }"
     >
-      <!-- 内层 div 负责悬停动效 -->
       <div class="result-card">
-        <div class="card-header">
-          <span class="card-index">{{ String(index + 1).padStart(2, '0') }}</span>
-          <h2 class="card-title">{{ item.title }}</h2>
-        </div>
+        <h2 class="card-title">{{ item.title }}</h2>
         <p class="card-content">{{ item.content }}</p>
       </div>
     </div>
+    <!-- 2. 翻页器：只有总页数 > 1 时才显示 -->
+    <div class="pagination-wrapper" v-if="totalPages > 1">
+      <button 
+        class="page-btn prev" 
+        :disabled="currentPage === 1" 
+        @click="changePage(currentPage - 1)"
+      >上一页</button>
+      <div class="page-numbers">
+        <button 
+          v-for="page in visiblePages" 
+          :key="page"
+          class="page-num"
+          :class="{ active: currentPage === page, dot: page === '...' }"
+          @click="page !== '...' && changePage(page)"
+        >
+          {{ page }}
+        </button>
+      </div>
+      <button 
+        class="page-btn next" 
+        :disabled="currentPage === totalPages" 
+        @click="changePage(currentPage + 1)"
+      >下一页</button>
+    </div>
   </div>
 </template>
-
 <script setup lang="js">
-import { ref } from 'vue';
-
-const results = ref([
-  {
-    content: "...urely optional. One alternative is to define static factory functions for your classes. The factory function can create an object, pass ownership of...",
-    local_path: "/home/bamboo/ZeroGravityArea/data/input/signals2/tutorial.html",
-    title: "Tutorial",
-    type: 0,
-    weight: 1
-  },
-  {
-    content: "...uded in Boost. If these indexes are not enough for you, you can define your own index type. To know how to do this, go to Building custom inde...",
-    local_path: "/home/bamboo/ZeroGravityArea/data/input/interprocess/managed_memory_segments.html",
-    title: "Managed Memory Segments",
-    type: 0,
-    weight: 1
-  },
-  {
-    content: "...use the smart_library. The first thing to do when creating your own plugins is define the plugin interface. There is an example of a...",
-    local_path: "/home/bamboo/ZeroGravityArea/data/input/boost_dll/mangled_import.html",
-    title: "Mangled Import",
-    type: 0,
-    weight: 1
-  },
-  {
-    content: "...d by the committee. By the way, it's a great opportunity to make your operator>> more general. Read a good C+...",
-    local_path: "/home/bamboo/ZeroGravityArea/data/input/boost_lexical_cast/frequently_asked_questions.html",
-    title: "Frequently Asked Questions",
-    type: 0,
-    weight: 1
+import { ref, computed, defineProps, watch } from 'vue';
+const props = defineProps({
+  results: { type: Array, default: () => [] }
+});
+const pageSize = 4;
+const currentPage = ref(1);
+// 当搜索结果改变时，自动重置回第一页
+watch(() => props.results, () => {
+  currentPage.value = 1;
+});
+const totalPages = computed(() => Math.ceil(props.results.length / pageSize));
+// 当前页显示的数据
+const paginatedResults = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  const end = start + pageSize;
+  return props.results.slice(start, end);
+});
+const changePage = (page) => {
+  currentPage.value = page;
+  // 翻页后平滑滚动到顶部（可选）
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+// 仿 B 站的页码显示逻辑 [1, ..., 4, 5, 6, ..., 28]
+const visiblePages = computed(() => {
+  const total = totalPages.value;
+  const current = currentPage.value;
+  const pages = [];
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    if (current > 4) pages.push('...');
+    
+    let start = Math.max(2, current - 2);
+    let end = Math.min(total - 1, current + 2);
+    
+    if (current <= 4) end = 5;
+    if (current > total - 4) start = total - 4;
+    for (let i = start; i <= end; i++) pages.push(i);
+    
+    if (current < total - 3) pages.push('...');
+    pages.push(total);
   }
-]);
+  return pages;
+});
 </script>
 
 <style scoped>
+/* P5 风格卡片核心逻辑 */
+
 .card-entrance {
   animation: fadeInUp 0.6s ease-out both;
   width: 100%;
@@ -170,5 +203,64 @@ const results = ref([
     opacity: 1;
     transform: translateY(0);
   }
+}
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 40px;
+  padding: 20px 0;
+  animation: fadeIn 0.8s ease-out;
+}
+.page-numbers {
+  display: flex;
+  gap: 8px;
+}
+/* 按钮通用基础样式：玻璃拟态 */
+.page-btn, .page-num {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+.page-num {
+  padding: 8px 14px;
+  min-width: 40px;
+}
+/* 悬停效果 */
+.page-btn:hover:not(:disabled), .page-num:hover:not(.dot) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+/* 激活状态：B 站蓝渐变 */
+.page-num.active {
+  background: linear-gradient(135deg, #00aeec 0%, #00f2fe 100%);
+  border: none;
+  color: #0f3460;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(0, 174, 236, 0.4);
+}
+/* 禁用状态 */
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+/* 省略号样式 */
+.page-num.dot {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 </style>
