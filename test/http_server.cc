@@ -1,6 +1,10 @@
-#include <gchrpc/client/rpc_client.hpp>
 #include <httplib.h>
+
+#include <filesystem>  // 新增
+#include <fstream>     // 新增
+#include <gchrpc/client/rpc_client.hpp>
 #include <iostream>
+#include <iterator>  // 新增
 
 int main() {
     // 1. 初始化 RPC Client，连接到后台的 RPC Server (8088)
@@ -12,8 +16,49 @@ int main() {
     // 设置静态资源目录 (HTML/JS/CSS)
     svr.set_mount_point("/", "./wwwroot");
 
-    // 3. 处理搜索请求：/search?word=xxx
-    svr.Get("/search", [&](const httplib::Request& req, httplib::Response& res) {
+    // 4. 处理下载请求：/download?doc_id=xxx
+    svr.Get("/download", [&](const httplib::Request &req, httplib::Response &res) {
+        if (!req.has_param("doc_id")) {
+            res.set_content("Missing parameter 'doc_id'", "text/plain");
+            return;
+        }
+        std::string doc_id_str = req.get_param_value("doc_id");
+        uint64_t doc_id = std::stoull(doc_id_str);
+        std::cout << "Received download request for doc_id: " << doc_id << std::endl;
+
+        // 构造 RPC 请求
+        Json::Value rpc_req;
+        rpc_req["doc_id"] = (Json::UInt64)doc_id;
+        Json::Value rpc_resp;
+
+        // 调用后台 RPC Server 的 DownloadService
+        if (rpc_client.call("DownloadService", rpc_req, rpc_resp)) {
+            std::string path = rpc_resp.asString();  // 假设 RPC 返回的是物理路径
+
+            // --- 核心修改：读取文件并发送 ---
+            std::ifstream ifs(path, std::ios::binary);
+            if (ifs.is_open()) {
+                // 将文件内容读入字符串（小文件方案，大文件建议用流式发送）
+                std::string content((std::istreambuf_iterator<char>(ifs)),
+                                    (std::istreambuf_iterator<char>()));
+
+                // 提取文件名
+                std::string filename = std::filesystem::path(path).filename().string();
+                // 设置响应头，告诉浏览器这是一个附件，需要下载
+                res.set_header("Access-Control-Allow-Origin", "*");
+                res.set_header("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+                res.set_content(content, "application/octet-stream");  // 设置为二进制流
+            } else {
+                res.status = 404;
+                res.set_content("File not found on server", "text/plain");
+            }
+        } else {
+            res.status = 500;
+            res.set_content("RPC call failed", "text/plain");
+        }
+    });
+
+    svr.Get("/search", [&](const httplib::Request &req, httplib::Response &res) {
         if (!req.has_param("word")) {
             res.set_content("Missing parameter 'word'", "text/plain");
             return;
@@ -32,7 +77,7 @@ int main() {
             Json::StreamWriterBuilder builder;
             builder["emitUTF8"] = true;
             std::string out = Json::writeString(builder, rpc_resp);
-            
+
             res.set_header("Access-Control-Allow-Origin", "*");
             res.set_content(out, "application/json");
         } else {

@@ -77,7 +77,7 @@ public:
         return nullptr;
     }
 
-    bool BuildIndex(const std::string &input) {
+    bool BuildIndex(const std::string &input, DocType type = DocType::HTML) {
         std::fstream in(input, std::ios::in | std::ios::binary);
         if (!in.is_open()) {
             LOG(FATAL) << "open file error" << std::endl;
@@ -87,7 +87,7 @@ public:
         std::string file;
         int count = 0;
         while (std::getline(in, file)) {
-            std::shared_ptr<DocInfo> doc = BuildForwardIndex(file);
+            std::shared_ptr<DocInfo> doc = BuildForwardIndex(file, type);
             if (doc == nullptr) continue;
 
             BuildInvertedIndex(doc);

@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# 1. 进入 build 目录并安装最新的头文件到系统目录
-echo "--- 正在安装最新的头文件 ---"
-cd /home/bamboo/ZeroGravityArea/build
-sudo make install
+# 1. 将 src/include 下的文件软链接到系统目录 /usr/local/include/gchrpc
+echo "--- 正在建立头文件软链接 ---"
+# 如果目标已存在且不是软链接，先删除（备份）以防冲突
+if [ -d "/usr/local/include/gchrpc" ] && [ ! -L "/usr/local/include/gchrpc" ]; then
+    sudo mv /usr/local/include/gchrpc /usr/local/include/gchrpc.bak
+fi
+sudo ln -sf /home/bamboo/ZeroGravityArea/src/include /usr/local/include/gchrpc
+echo "软链接已建立: /usr/local/include/gchrpc -> /home/bamboo/ZeroGravityArea/src/include"
 
 # 2. 进入测试目录并编译
 echo "--- 正在编译 server 和 client ---"

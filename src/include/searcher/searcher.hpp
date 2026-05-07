@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
+#include <string>
 #include <unordered_map>  // 新增：用于文档去重与权重合并
 #include <unordered_set>  // 新增：用于查询词 O(1) 去重
 
@@ -31,14 +33,19 @@ public:
     ~Searcher() {}
 
     // 加载索引容器
-    bool InitSearcher(std::string index_path) {
+    std::string GetLocalPath(uint64_t doc_id) {
+        std::string local_path = index->GetForwardIndex(doc_id)->local_path;
+        return local_path;
+    }
+
+    bool InitSearcher(std::string index_path, ns_index::DocType type = ns_index::DocType::HTML) {
         if (index == nullptr) {
             LOG(FATAL) << "GetInstance failed" << std::endl;
             return false;
         }
 
         //[修改后]：增加错误检查，返回构建结果
-        if (!index->BuildIndex(index_path)) {
+        if (!index->BuildIndex(index_path, type)) {
             LOG(FATAL) << "InitSearcher: BuildIndex failed for path: " << index_path << std::endl;
             return false;
         }
@@ -117,6 +124,7 @@ public:
                 continue;
             }
             Json::Value elem;
+            elem["doc_id"] = item.doc_id;
             elem["title"] = doc_info->title;
             elem["local_path"] = doc_info->local_path;
             elem["type"] = static_cast<int>(doc_info->type);  // enum class 需显式转换为 int

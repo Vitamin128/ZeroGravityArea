@@ -85,13 +85,17 @@ public:
 
         // 2. 批量构建索引：从 pdf_raw.txt 加载到内存倒排索引
         // 注意：InitSearcher 内部调用 BuildIndex
-        if (!searcher.InitSearcher(raw_path)) {
+        if (!searcher.InitSearcher(raw_path, ns_index::DocType::PDF)) {
             LOG(ERROR) << "Build PDF index from " << raw_path << " failed." << std::endl;
             return false;
         }
 
         LOG(NORMAL) << "BuildFullPDF: All PDF index build complete!" << std::endl;
         return true;
+    }
+
+    std::string GetLocalPath(uint64_t doc_id) {
+        return searcher.GetLocalPath(doc_id);
     }
 
     // 接口 3：对外的搜索服务接口
