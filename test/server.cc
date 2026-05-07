@@ -14,6 +14,8 @@ int main() {
     search_engine.BuildFullPDF("/home/bamboo/ZeroGravityArea/pdfdata/fold",
                                "/home/bamboo/ZeroGravityArea/pdfdata/raw_html/raw.txt");
     // 1. 定义输入参数（只需要 query）
+    search_engine.BuildFullHtml("/home/bamboo/ZeroGravityArea/data/input",
+                                "/home/bamboo/ZeroGravityArea/data/raw_html/raw.txt");
     gchrpc::server::ServiceDescribe::ParamsDescribe p1("query", gchrpc::server::VType::STRING);
     std::vector<gchrpc::server::ServiceDescribe::ParamsDescribe> params;
     params.push_back(p1);
