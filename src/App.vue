@@ -28,7 +28,7 @@ import ResultCards from './components/ResultCards.vue';
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   font-family: 'Outfit', sans-serif;
   color: white;
-  padding-bottom: 60px;
+  /* padding-bottom: 60px; */
 }
 .search-wrapper {
   text-align: center;

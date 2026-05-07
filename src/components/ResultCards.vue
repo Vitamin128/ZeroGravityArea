@@ -1,19 +1,19 @@
 <template>
   <div class="cards-container">
+    <!-- 外层 div 负责入场动画和延迟 -->
     <div 
-      class="result-card" 
+      class="card-entrance" 
       v-for="(item, index) in results" 
       :key="index"
       :style="{ animationDelay: index * 0.12 + 's' }"
     >
-      <div class="card-header">
-        <span class="card-index">{{ String(index + 1).padStart(2, '0') }}</span>
-        <h2 class="card-title">{{ item.title }}</h2>
-      </div>
-      <p class="card-content">{{ item.content }}</p>
-      <div class="card-footer">
-        <span class="card-path">{{ item.local_path }}</span>
-        <span class="card-weight">权重: {{ item.weight }}</span>
+      <!-- 内层 div 负责悬停动效 -->
+      <div class="result-card">
+        <div class="card-header">
+          <span class="card-index">{{ String(index + 1).padStart(2, '0') }}</span>
+          <h2 class="card-title">{{ item.title }}</h2>
+        </div>
+        <p class="card-content">{{ item.content }}</p>
       </div>
     </div>
   </div>
@@ -55,14 +55,18 @@ const results = ref([
 </script>
 
 <style scoped>
+.card-entrance {
+  animation: fadeInUp 0.6s ease-out both;
+  width: 100%;
+}
 .cards-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
-  max-width: 720px;
+  /* max-width: 720px; */
   margin: 0 auto;
-  padding: 0 20px;
+  /* padding: 0 20px; */
 }
 
 /* 卡片：玻璃拟态样式 */
@@ -75,15 +79,19 @@ const results = ref([
   padding: 24px 28px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  animation: fadeInUp 0.6s ease-out both;
 }
 
 .result-card:hover {
-  transform: translateY(-6px) scale(1.015);
+  transform: translateY(-5px) scale(1.02);
+  
+  /* 2. 背景透明度对齐搜索框 */
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(79, 172, 254, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
-              0 0 30px rgba(79, 172, 254, 0.08);
+  
+  /* 3. 边框颜色对齐搜索框（使用半透明白） */
+  border-color: rgba(255, 255, 255, 0.3);
+  
+  /* 4. 阴影强度对齐搜索框 */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* 卡片头部 */
@@ -95,7 +103,7 @@ const results = ref([
 }
 
 .card-index {
-  font-size: 0.75rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #0f3460;
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -106,7 +114,7 @@ const results = ref([
 }
 
 .card-title {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
   color: #ffffff;
@@ -115,13 +123,14 @@ const results = ref([
 
 /* 卡片正文 */
 .card-content {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.55);
   margin: 0 0 16px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
   overflow: hidden;
 }
 
