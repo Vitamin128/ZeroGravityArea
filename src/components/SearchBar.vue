@@ -14,29 +14,23 @@
 </template>
 <script setup lang="js">
 import { ref, defineEmits } from 'vue';
-const emit = defineEmits(['update-results']); 
+const emit = defineEmits(['update-results', 'search-start']); // 新增 search-start 事件
 const searchQuery = ref('');
 const callCppBackend = async () => {
   if (!searchQuery.value.trim()) return;
+  // 1. 发射“开始搜索”信号，让父组件显示加载动画
+  emit('search-start');
   try {
-    // 1. 修改为你的新地址：http://127.0.0.1:8081/search?word=xxx
-    // 2. 使用 GET 方式（fetch 默认就是 GET）
     const url = `http://127.0.0.1:8081/search?word=${encodeURIComponent(searchQuery.value)}`;
-    
-    console.log("正在请求:", url);
-    
     const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP 错误! 状态码: ${response.status}`);
-    }
     const data = await response.json();
     
-    // 3. 将结果发送给父组件 App.vue
+    // 2. 发射结果信号（父组件收到结果后会自动关闭加载）
     emit('update-results', data); 
     
   } catch (err) {
-    console.error("无法连接到 C++ Gateway:", err);
-    alert("搜索服务呼叫失败，请确保 C++ Gateway (8081) 已启动并允许跨域");
+    console.error("RPC 调用失败:", err);
+    emit('update-results', []); // 失败也传个空数组，触发关闭加载
   }
 };
 </script>

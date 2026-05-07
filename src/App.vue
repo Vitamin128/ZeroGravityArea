@@ -1,16 +1,26 @@
 <template>
   <div class="app-container">
-    <!-- 粒子背景组件 -->
-    <vue-particles
-      id="tsparticles"
-      :options="particlesOptions"
-    />
+    <vue-particles id="tsparticles" :options="particlesOptions" />
     
+    <!-- 加载动画组件 -->
+    <loading 
+      v-model:active="isLoading"
+      :can-cancel="false"
+      :is-full-page="true"
+      color="#00aeec"
+      background-color="#000"
+      :opacity="0.7"
+    />
     <div class="search-wrapper">
       <h1 class="title">Zero Gravity Search</h1>
-      <SearchBar @update-results="searchResults = $event" />
+      <!-- 监听开始搜索和更新结果两个事件 -->
+      <SearchBar 
+        @search-start="handleStart" 
+        @update-results="handleResults" 
+      />
     </div>
-    <div class="cards-wrapper">
+    <!-- 当不在加载状态，且有搜索结果时才显示卡片 -->
+    <div class="cards-wrapper" v-if="!isLoading && searchResults.length > 0">
       <ResultCards :results="searchResults" />
     </div>
   </div>
@@ -19,9 +29,22 @@
 import { ref } from 'vue';
 import SearchBar from './components/SearchBar.vue';
 import ResultCards from './components/ResultCards.vue';
-
-// 用来存储从 C++ 返回的数据
+// 引入加载组件及其样式
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
 const searchResults = ref([]);
+const isLoading = ref(false); // 控制加载状态
+const handleStart = () => {
+  isLoading.value = true;    // 开启加载
+  searchResults.value = [];  // 搜索新内容前清空旧结果，确保卡片隐藏
+};
+const handleResults = (data) => {
+  searchResults.value = data; // 存入结果
+  // 为了让用户看清加载动画（防止后端返回太快），可以加个小延迟
+  setTimeout(() => {
+    isLoading.value = false;  // 关闭加载
+  }, 500);
+};
 // 粒子背景的高级配置
 const particlesOptions = {
   background: {
