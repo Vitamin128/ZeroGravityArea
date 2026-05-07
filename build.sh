@@ -23,6 +23,12 @@ g++ -std=c++17 /home/bamboo/ZeroGravityArea/test/client.cc -o client \
     -I/usr/local/include \
     -ljsoncpp -lmuduo_net -lmuduo_base -lpthread
 
+# 编译 HTTP 桥接服务端 (用于连接 Web 前端)
+g++ -std=c++17 /home/bamboo/ZeroGravityArea/test/http_server.cc -o http_server \
+    -I/usr/local/include \
+    -ljsoncpp -lmuduo_net -lmuduo_base -lpthread \
+    -lcpp-httplib -lssl -lcrypto
+
 echo "--- 编译完成！ ---"
 
 # 3. 启动 Python PDF 解析服务 (后台运行)
