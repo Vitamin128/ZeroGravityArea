@@ -98,7 +98,7 @@ input {
 }
 
 input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.4);//
 }
 
 /* 搜索按钮 */
