@@ -2,24 +2,18 @@
   <div class="app-container">
     <vue-particles id="tsparticles" :options="particlesOptions" />
     
-    <!-- 加载动画组件 -->
-    <loading 
-      v-model:active="isLoading"
-      :can-cancel="false"
-      :is-full-page="true"
-      color="#00aeec"
-      background-color="#000"
-      :opacity="0.7"
-    />
     <div class="search-wrapper">
       <h1 class="title">Zero Gravity Search</h1>
-      <!-- 监听开始搜索和更新结果两个事件 -->
       <SearchBar 
         @search-start="handleStart" 
         @update-results="handleResults" 
       />
     </div>
-    <!-- 当不在加载状态，且有搜索结果时才显示卡片 -->
+    
+    <!-- 加载中：显示旋转动画 -->
+    <LoadingOverlay :active="isLoading" />
+
+    <!-- 加载完成且有结果：显示卡片 -->
     <div class="cards-wrapper" v-if="!isLoading && searchResults.length > 0">
       <ResultCards :results="searchResults" />
     </div>
@@ -29,15 +23,17 @@
 import { ref } from 'vue';
 import SearchBar from './components/SearchBar.vue';
 import ResultCards from './components/ResultCards.vue';
-// 引入加载组件及其样式
-import Loading from 'vue-loading-overlay';
-import 'vue-loading-overlay/dist/css/index.css';
+// 引入自定义加载组件
+import LoadingOverlay from './components/LoadingOverlay.vue';
+
 const searchResults = ref([]);
-const isLoading = ref(false); // 控制加载状态
+const isLoading = ref(false); // 【调试用】临时改为 true，确认组件是否正常渲染
+
 const handleStart = () => {
   isLoading.value = true;    // 开启加载
   searchResults.value = [];  // 搜索新内容前清空旧结果，确保卡片隐藏
 };
+
 const handleResults = (data) => {
   searchResults.value = data; // 存入结果
   // 为了让用户看清加载动画（防止后端返回太快），可以加个小延迟
@@ -45,6 +41,8 @@ const handleResults = (data) => {
     isLoading.value = false;  // 关闭加载
   }, 500);
 };
+
+
 // 粒子背景的高级配置
 const particlesOptions = {
   background: {
@@ -93,27 +91,36 @@ const particlesOptions = {
   detectRetina: true
 };
 </script>
-<style scoped>
-.app-container {
-  position: relative; /* 必须是 relative 才能让粒子绝对定位在里面 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+<!-- 全局样式：背景放在 body 上，不能用 scoped（否则会影响 fixed 定位） -->
+<style>
+body {
+  margin: 0;
   min-height: 100vh;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   font-family: 'Outfit', sans-serif;
   color: white;
-  overflow-x: hidden; /* 防止粒子溢出产生滚动条 */
+  overflow-x: hidden;
 }
-/* 粒子背景样式 */
+</style>
+
+<style scoped>
+/* app-container 不再设置 background/overflow，避免创建堆叠上下文限制 fixed 定位 */
+.app-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+/* 粒子背景：改用 fixed，随视口而非容器定位 */
 #tsparticles {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0; /* 置于背景渐变之上，但内容之下 */
-  pointer-events: all; /* 允许粒子捕捉鼠标交互 */
+  z-index: 0;
+  pointer-events: none;
 }
 /* 确保内容在粒子层之上 */
 .search-wrapper, .cards-wrapper {
