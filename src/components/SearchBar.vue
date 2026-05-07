@@ -14,10 +14,14 @@
 </template>
 <script setup lang="js">
 import { ref, defineEmits } from 'vue';
-const emit = defineEmits(['update-results', 'search-start']); // 新增 search-start 事件
+const emit = defineEmits(['update-results', 'search-start', 'empty-query']); // 新增 empty-query 事件
 const searchQuery = ref('');
 const callCppBackend = async () => {
-  if (!searchQuery.value.trim()) return;
+  if (!searchQuery.value.trim()) {
+    // 如果为空，发射空查询事件
+    emit('empty-query');
+    return;
+  }
   // 1. 发射“开始搜索”信号，让父组件显示加载动画
   emit('search-start');
   try {

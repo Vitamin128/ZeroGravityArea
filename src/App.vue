@@ -2,11 +2,13 @@
   <div class="app-container">
     <vue-particles id="tsparticles" :options="particlesOptions" />
     
+    <ToastCard :show="showToast" />
     <div class="search-wrapper">
       <h1 class="title">Zero Gravity Search</h1>
       <SearchBar 
         @search-start="handleStart" 
         @update-results="handleResults" 
+        @empty-query="triggerToast" 
       />
     </div>
     
@@ -21,10 +23,23 @@
 </template>
 <script setup lang="js">
 import { ref } from 'vue';
+import ToastCard from './components/ToastCard.vue';
 import SearchBar from './components/SearchBar.vue';
 import ResultCards from './components/ResultCards.vue';
 // 引入自定义加载组件
 import LoadingOverlay from './components/LoadingOverlay.vue';
+
+const showToast = ref(false);
+const triggerToast = () => {
+  if (showToast.value) return; // 防止重复触发
+  showToast.value = true;
+  
+  // 1.8秒后自动关闭
+  setTimeout(() => {
+    showToast.value = false;
+  }, 1800);
+};
+
 
 const searchResults = ref([]);
 const isLoading = ref(false); // 【调试用】临时改为 true，确认组件是否正常渲染
