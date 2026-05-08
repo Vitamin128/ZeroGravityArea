@@ -14,7 +14,7 @@
         <!-- ===== 核心上传区 ===== -->
         <div
           class="upload-zone"
-          :class="{ 'drag-active': isDragOver }"
+          :class="{ 'drag-active': isDragOver, 'is-empty': files.length === 0 }"
           @dragover.prevent="onDragOver"
           @dragleave.prevent="onDragLeave"
           @drop.prevent="onDrop"
@@ -33,9 +33,9 @@
             </div>
           </Transition>
 
-          <!-- 状态 1：默认态 —— 图标 + 提示文字（无文件时） -->
+          <!-- 状态 1：默认态 —— 图标 + 提示文字 (仅在空文件且非拖拽时显示，居中排列) -->
           <div class="upload-placeholder" v-if="files.length === 0 && !isDragOver">
-            <Icon icon="ph:cloud-arrow-up" width="48" height="48" class="upload-icon" />
+            <Icon icon="ph:cloud-arrow-up" width="70" height="70" class="upload-icon" />
             <p class="upload-hint">拖拽即可添加附件</p>
           </div>
 
@@ -47,7 +47,7 @@
               :key="index"
             >
               <!-- 左侧：文件类型图标 -->
-              <Icon :icon="getFileIcon(file.name)" width="28" height="28" class="file-type-icon" />
+              <Icon :icon="getFileIcon(file.name)" width="56" height="56" class="file-type-icon" />
 
               <!-- 中间：文件信息 -->
               <div class="file-info">
@@ -57,7 +57,7 @@
 
               <!-- 右侧：删除按钮（悬停时显示） -->
               <button class="file-delete-btn" @click.stop="removeFile(index)" title="移除文件">
-                <Icon icon="ph:trash-bold" width="16" height="16" />
+                <Icon icon="ph:trash-bold" width="48" height="48" />
               </button>
             </div>
           </div>
@@ -229,10 +229,11 @@ const handleConfirm = async () => {
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  background: rgba(22, 33, 62, 0.95);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-radius: 20px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
@@ -283,15 +284,40 @@ const handleConfirm = async () => {
 .upload-zone {
   position: relative;
   margin: 20px 24px;
-  min-height: 520px;
+  height: 520px;
+  background: rgba(255, 255, 255, 0.02);
   border: 2px dashed rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  justify-content: flex-start; /* 有文件时置顶 */
+  padding: 30px;
+  overflow-y: auto;
+  overflow-x: hidden; /* 强制隐藏横向滑动条 */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
-  overflow: hidden;
+}
+
+.upload-zone:hover:not(.drag-active) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.02);
+}
+
+/* 当文件列表为空时，内容强制居中 */
+.upload-zone.is-empty {
+  justify-content: center;
+}
+
+/* 自定义上传区域滚动条 */
+.upload-zone::-webkit-scrollbar {
+  width: 6px;
+}
+
+.upload-zone::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
 /* 拖拽激活时边框高亮 */
@@ -300,12 +326,13 @@ const handleConfirm = async () => {
   cursor: default;
 }
 
-/* ----- 状态 1：默认态 ----- */
+/* ----- 状态 1：默认入口态 ----- */
 .upload-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
+  flex-shrink: 0;
   pointer-events: none;
 }
 
@@ -315,9 +342,9 @@ const handleConfirm = async () => {
 
 .upload-hint {
   margin: 0;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.35);
-  letter-spacing: 0.5px;
+  font-size: 1.4rem;  /* 字号从 0.95rem 增加到 1.4rem */
+  color: rgba(255, 255, 255, 0.45); /* 稍微加深一点颜色，更清晰 */
+  letter-spacing: 2px; /* 增加字间距，更有设计感 */
 }
 
 /* ----- 状态 2：拖拽悬停态 —— 毛玻璃遮罩 ----- */
@@ -340,7 +367,7 @@ const handleConfirm = async () => {
 
 .drag-hint-title {
   margin: 0 0 12px 0;
-  font-size: 1.15rem;
+  font-size: 2.0rem;
   font-weight: 600;
   color: #ffffff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -353,7 +380,7 @@ const handleConfirm = async () => {
 }
 
 .drag-hint-limits span {
-  font-size: 0.78rem;
+  font-size: 1.7rem;
   color: rgba(255, 255, 255, 0.65);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
@@ -361,33 +388,30 @@ const handleConfirm = async () => {
 /* ----- 状态 3：文件列表态 ----- */
 .file-list {
   width: 100%;
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 8px 4px;
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* 自定义滚动条 */
-.file-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.file-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 2px;
-}
-
-/* 单条文件项 */
+/* 单条文件项 (模拟 ResultCard 风格) */
 .file-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .file-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-4px) scale(1.015);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
 .file-type-icon {
@@ -404,7 +428,7 @@ const handleConfirm = async () => {
 }
 
 .file-name {
-  font-size: 0.88rem;
+  font-size: 1.76rem;
   color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
   overflow: hidden;
@@ -412,7 +436,7 @@ const handleConfirm = async () => {
 }
 
 .file-size {
-  font-size: 0.75rem;
+  font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.35);
 }
 
@@ -421,8 +445,8 @@ const handleConfirm = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 48px;
+  height: 48px;
   background: transparent;
   border: none;
   border-radius: 6px;
@@ -452,22 +476,23 @@ const handleConfirm = async () => {
 .confirm-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 28px;
-  background: linear-gradient(135deg, #00aeec 0%, #4facfe 100%);
+  gap: 8px;
+  padding: 12px 36px;
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
   border: none;
-  border-radius: 10px;
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 600;
+  border-radius: 50px;
+  color: #0f3460;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.2);
 }
 
 .confirm-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 174, 236, 0.35);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
 }
 
 .confirm-btn:active:not(:disabled) {
