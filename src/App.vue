@@ -87,53 +87,21 @@ const onUploadSuccess = (uploadedFiles) => {
 };
 
 
-// 粒子背景的高级配置
+// 粒子背景：使用真实的星空预设
 const particlesOptions = {
+  preset: "stars",
   background: {
-    color: { value: "transparent" } // 保持原来的 CSS 渐变底色
-  },
-  fpsLimit: 120,
-  interactivity: {
-    events: {
-      onClick: { enable: true, mode: "push" }, // 点击时增加粒子
-      onHover: { enable: true, mode: "grab" },  // 悬停时产生连线抓取感
-    },
-    modes: {
-      grab: { distance: 140, links: { opacity: 0.5 } },
-      push: { quantity: 4 }
-    }
+    color: { value: "transparent" } // 保持我们原本的渐变底色
   },
   particles: {
-    color: { value: "#4facfe" }, // 使用你标题的青蓝色
-    links: {
-      color: "#4facfe",
-      distance: 150,
-      enable: true,
-      opacity: 0.2,
-      width: 1
+    number: {
+      value: 150, // 稍微增加星星数量，显得更深邃
+      density: { enable: true, value_area: 800 }
     },
     move: {
-      enable: true,
-      speed: 1.2,
-      direction: "none",
-      random: false,
-      straight: false,
-      outModes: { default: "out" }
-    },
-    number: {
-      density: { enable: true, area: 800 },
-      value: 80,
-      limit: 20 // 限制最大粒子数，防止点击过多导致卡顿
-    },
-    opacity: {
-      value: { min: 0.1, max: 0.5 }
-    },
-    shape: { type: "circle" },
-    size: {
-      value: { min: 1, max: 3 }
+      speed: 0.8 // 放慢星星移动速度，增加失重感
     }
-  },
-  detectRetina: true
+  }
 };
 </script>
 <!-- 全局样式：背景放在 body 上，不能用 scoped（否则会影响 fixed 定位） -->
@@ -157,7 +125,7 @@ body {
   align-items: center;
   min-height: 100vh;
 }
-/* 粒子背景：改用 fixed，随视口而非容器定位 */
+/* 粒子背景：改用 fixed，随视口定位 */
 #tsparticles {
   position: fixed;
   top: 0;
@@ -165,7 +133,7 @@ body {
   width: 100%;
   height: 100%;
   z-index: 0;
-  pointer-events: none;
+  pointer-events: none; /* 让鼠标事件穿透到下层内容 */
 }
 /* 确保内容在粒子层之上 */
 .search-wrapper, .cards-wrapper {
