@@ -5,10 +5,28 @@
 #include <gchrpc/client/rpc_client.hpp>
 #include <iostream>
 #include <iterator>  // 新增
+#include <unordered_map>
 
 int main() {
     // 1. 初始化 RPC Client，连接到后台的 RPC Server (8088)
     gchrpc::client::RpcClient rpc_client(false, "127.0.0.1", 8088);
+
+    // 映射文件路径：每次启动程序时扫描指定目录下的 pdf 和 html 文件
+    std::unordered_map<std::string, int> file_exists_map;
+    auto scan_dir = [&](const std::string &path) {
+        if (!std::filesystem::exists(path)) return;
+        for (const auto &entry : std::filesystem::recursive_directory_iterator(path)) {
+            if (entry.is_regular_file()) {
+                std::string ext = entry.path().extension().string();
+                if (ext == ".html" || ext == ".pdf") {
+                    file_exists_map[entry.path().string()] = 1;
+                }
+            }
+        }
+    };
+    scan_dir("/home/bamboo/ZeroGravityArea/data");
+    scan_dir("/home/bamboo/ZeroGravityArea/pdfdata");
+    std::cout << "Successfully mapped " << file_exists_map.size() << " files into memory." << std::endl;
 
     // 2. 初始化 HTTP Server (cpphttplib)
     httplib::Server svr;
