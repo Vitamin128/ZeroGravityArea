@@ -16,10 +16,17 @@
         
         <!-- 文件上传按钮 (已组件化) -->
         <div class="upload-pos-wrapper">
-          <FileUpload @upload="handleFileUpload" />
+          <FileUpload @upload="openUploadModal" />
         </div>
       </div>
     </div>
+
+    <!-- 文件上传模态框 -->
+    <UploadInterface
+      :visible="showUploadModal"
+      @close="showUploadModal = false"
+      @upload-success="onUploadSuccess"
+    />
     
     <!-- 加载中：显示旋转动画 -->
     <LoadingOverlay :active="isLoading" />
@@ -36,6 +43,7 @@ import ToastCard from './components/ToastCard.vue';
 import SearchBar from './components/SearchBar.vue';
 import ResultCards from './components/ResultCards.vue';
 import FileUpload from './components/FileUpload.vue';
+import UploadInterface from './components/UploadInterface.vue';
 // 引入自定义加载组件
 import LoadingOverlay from './components/LoadingOverlay.vue';
 
@@ -67,13 +75,15 @@ const handleResults = (data) => {
   }, 500);
 };
 
-// 处理文件上传
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    console.log("已选择文件:", file.name);
-    // 这里可以触发后续逻辑
-  }
+// 文件上传模态框
+const showUploadModal = ref(false);
+
+const openUploadModal = () => {
+  showUploadModal.value = true;
+};
+
+const onUploadSuccess = (uploadedFiles) => {
+  console.log('上传成功，共', uploadedFiles.length, '个文件');
 };
 
 

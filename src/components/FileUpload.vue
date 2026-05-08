@@ -1,12 +1,11 @@
 <template>
   <div class="upload-btn-wrapper">
-    <input type="file" id="file-upload" @change="onFileChange" hidden />
-    <label for="file-upload" class="upload-label" :title="title">
+    <button class="upload-label" :title="title" @click="$emit('upload')">
       <slot>
         <!-- 默认上传图标 -->
         <Icon icon="ph:upload-simple-bold" width="20" height="20" />
       </slot>
-    </label>
+    </button>
   </div>
 </template>
 
@@ -20,21 +19,12 @@ defineProps({
   }
 });
 
-const emit = defineEmits(['upload']);
-
-const onFileChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    emit('upload', file);
-    // 重置 input 以后允许再次选择同一个文件
-    event.target.value = '';
-  }
-};
+defineEmits(['upload']);
 </script>
 
 <style scoped>
 .upload-btn-wrapper {
-  /* 这里不再使用 absolute 定位，由父组件决定定位方式，保持组件的通用性 */
+  /* 由父组件决定定位方式，保持组件的通用性 */
   display: inline-block;
 }
 
