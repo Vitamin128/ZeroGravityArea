@@ -53,7 +53,7 @@ const props = defineProps({
   results: { type: Array, default: () => [] }
 });
 
-const pageSize = 4;
+const pageSize = 12;
 
 const currentPage = ref(1);
 // 当搜索结果改变时，自动重置回第一页
@@ -132,16 +132,17 @@ const downloadItem = (item) => {
 
 .card-entrance {
   animation: fadeInUp 0.6s ease-out both;
-  width: 100%;
+  width: 30%;
 }
+
 .cards-container {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px 1%;
   width: 100%;
-  /* max-width: 720px; */
+  padding-left: 4%;
   margin: 0 auto;
-  /* padding: 0 20px; */
 }
 
 /* 卡片：玻璃拟态样式 */
@@ -291,12 +292,14 @@ const downloadItem = (item) => {
   }
 }
 .pagination-wrapper {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 12px;
   margin-top: 40px;
   padding: 20px 0;
+  padding-right: 8%;
   animation: fadeIn 0.8s ease-out;
 }
 .page-numbers {

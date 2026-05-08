@@ -148,7 +148,7 @@ body {
   margin-bottom: 30px;
 }
 .cards-wrapper {
-  width: 35%;
+  width: 100%;
   padding: 20px;
 }
 

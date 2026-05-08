@@ -77,7 +77,7 @@
         <div class="modal-footer">
           <button class="confirm-btn" :disabled="files.length === 0 || isUploading" @click="handleConfirm">
             <Icon v-if="isUploading" icon="ph:spinner" width="18" height="18" class="spin-icon" />
-            <span>{{ isUploading ? '上传中...' : '确定' }}</span>
+            <span >{{ isUploading ? '上传中...' : '确定' }}</span>
           </button>
         </div>
       </div>
