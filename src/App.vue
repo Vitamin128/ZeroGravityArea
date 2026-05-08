@@ -5,11 +5,20 @@
     <ToastCard :show="showToast" />
     <div class="search-wrapper">
       <h1 class="title">Zero Gravity Search</h1>
-      <SearchBar 
-        @search-start="handleStart" 
-        @update-results="handleResults" 
-        @empty-query="triggerToast" 
-      />
+      
+      <!-- 搜索区域锚点 -->
+      <div class="search-anchor">
+        <SearchBar 
+          @search-start="handleStart" 
+          @update-results="handleResults" 
+          @empty-query="triggerToast" 
+        />
+        
+        <!-- 文件上传按钮 (已组件化) -->
+        <div class="upload-pos-wrapper">
+          <FileUpload @upload="handleFileUpload" />
+        </div>
+      </div>
     </div>
     
     <!-- 加载中：显示旋转动画 -->
@@ -26,6 +35,7 @@ import { ref } from 'vue';
 import ToastCard from './components/ToastCard.vue';
 import SearchBar from './components/SearchBar.vue';
 import ResultCards from './components/ResultCards.vue';
+import FileUpload from './components/FileUpload.vue';
 // 引入自定义加载组件
 import LoadingOverlay from './components/LoadingOverlay.vue';
 
@@ -55,6 +65,15 @@ const handleResults = (data) => {
   setTimeout(() => {
     isLoading.value = false;  // 关闭加载
   }, 500);
+};
+
+// 处理文件上传
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    console.log("已选择文件:", file.name);
+    // 这里可以触发后续逻辑
+  }
 };
 
 
@@ -93,7 +112,8 @@ const particlesOptions = {
     },
     number: {
       density: { enable: true, area: 800 },
-      value: 80
+      value: 80,
+      limit: 20 // 限制最大粒子数，防止点击过多导致卡顿
     },
     opacity: {
       value: { min: 0.1, max: 0.5 }
@@ -152,6 +172,20 @@ body {
 .cards-wrapper {
   width: 35%;
   padding: 20px;
+}
+
+/* 搜索框锚点：确保按钮定位基准 */
+.search-anchor {
+  position: relative;
+  width: 100%;
+}
+
+/* 上传按钮定位包裹器：仅负责绝对定位到右侧 */
+.upload-pos-wrapper {
+  position: absolute;
+  left: calc(100% + 15px);
+  top: 50%;
+  transform: translateY(-50%);
 }
 .title {
   font-size: 2.5rem;

@@ -14,9 +14,7 @@
           <p class="card-content">{{ item.content }}</p>
         </div>
         <button class="download-btn" @click.stop="downloadItem(item)">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 16L7 11H10V4H14V11H17L12 16ZM5 18H19V20H5V18Z" />
-          </svg>
+          <Icon icon="ph:download-simple-bold" width="20" height="20" />
           <span>下载</span>
         </button>
       </div>
@@ -49,6 +47,7 @@
 </template>
 <script setup lang="js">
 import { ref, computed, defineProps, watch } from 'vue';
+import { Icon } from '@iconify/vue';
 
 const props = defineProps({
   results: { type: Array, default: () => [] }
@@ -195,7 +194,7 @@ const downloadItem = (item) => {
   box-shadow: 0 8px 20px rgba(0, 174, 236, 0.4);
 }
 
-.download-btn svg {
+.download-btn :deep(svg) {
   width: 20px;
   height: 20px;
   fill: currentColor;

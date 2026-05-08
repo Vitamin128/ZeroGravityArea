@@ -2,14 +2,16 @@
   <Transition name="toast">
     <div class="toast-card" v-if="show">
       <div class="toast-content">
-        <span class="toast-icon">⚠️</span>
-        <p>{{ message }}</p>
+        <Icon icon="ph:warning-bold" width="50" height="50" class="toast-icon" />
+        <p style="color: white; font-weight: 500; font-size: 1.7rem;">{{ message }}</p>
       </div>
     </div>
   </Transition>
 </template>
 
 <script setup lang="js">
+import { Icon } from '@iconify/vue';
+
 defineProps({
   show: Boolean,
   message: { type: String, default: '请输入搜索内容后再试' }
@@ -30,7 +32,7 @@ defineProps({
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 69, 58, 0.4);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  padding: 16px 32px;
+  padding: 16px;
   border-radius: 12px;
   min-width: 280px;
 }

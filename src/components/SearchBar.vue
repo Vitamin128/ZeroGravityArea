@@ -8,12 +8,13 @@
       @keyup.enter="callCppBackend" 
     />
     <button @click="callCppBackend" class="search-btn">
-      <span class="icon">🔍</span>
+      <Icon icon="ph:magnifying-glass-bold" width="22" height="22" />
     </button>
   </div>
 </template>
 <script setup lang="js">
 import { ref, defineEmits } from 'vue';
+import { Icon } from '@iconify/vue';
 const emit = defineEmits(['update-results', 'search-start', 'empty-query']); // 新增 empty-query 事件
 const searchQuery = ref('');
 const callCppBackend = async () => {
@@ -92,7 +93,5 @@ input::placeholder {
   transform: rotate(15deg) scale(1.1);
 }
 
-.icon {
-  font-size: 1.2rem;
-}
+
 </style>
