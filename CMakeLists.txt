@@ -5,11 +5,11 @@ project(gchrpc)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# muduo 路径设置
-set(MUDUO_INCLUDE_DIR "/usr/local/include")
+# muduo 路径设置 (优先使用项目内自带的库，支持 Docker 跨环境编译)
+set(MUDUO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/depends/include")
 set(MUDUO_LIBS 
-    "/usr/local/lib/libmuduo_net.a" 
-    "/usr/local/lib/libmuduo_base.a"
+    "${CMAKE_CURRENT_SOURCE_DIR}/depends/lib/libmuduo_net.a" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/depends/lib/libmuduo_base.a"
 )
 
 # 定义 gchrpc 为接口库（Header-only 框架）
