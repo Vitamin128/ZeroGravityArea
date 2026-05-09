@@ -9,6 +9,7 @@ RUN find /etc/apt/ -name "*.list" -o -name "*.sources" | xargs sed -i 's/archive
     apt-get update && apt-get install -y \
     build-essential \
     cmake \
+    libboost-all-dev \
     libjsoncpp-dev \
     libssl-dev \
     libcrypto++-dev \
@@ -26,8 +27,11 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 安装运行所需的动态库
-RUN apt-get update && apt-get install -y \
+# 安装运行所需的动态库 (换源以加速)
+RUN find /etc/apt/ -name "*.list" -o -name "*.sources" | xargs sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' && \
+    apt-get update && apt-get install -y \
+    libboost-system-dev \
+    libboost-filesystem-dev \
     libjsoncpp-dev \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
