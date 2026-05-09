@@ -10,7 +10,7 @@
 // 匹配你提供的头文件路径
 #include <httplib.h>
 
-#include "/home/bamboo/ZeroGravityArea/cppjieba/include/cppjieba/Jieba.hpp"
+#include <cppjieba/Jieba.hpp>
 
 namespace ns_util {
 
@@ -80,12 +80,12 @@ public:
     }
 };
 
-// 匹配你提供的字典路径
-const char *const DICT_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/jieba.dict.utf8";
-const char *const HMM_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/hmm_model.utf8";
-const char *const USER_DICT_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/user.dict.utf8";
-const char *const IDF_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/idf.utf8";
-const char *const STOP_WORD_PATH = "/home/bamboo/ZeroGravityArea/cppjieba/dict/stop_words.utf8";
+// 使用 CMake 注入的宏定义词库路径
+const char *const DICT_PATH = CPPJIEBA_DICT_PATH;
+const char *const HMM_PATH = CPPJIEBA_HMM_PATH;
+const char *const USER_DICT_PATH = CPPJIEBA_USER_DICT_PATH;
+const char *const IDF_PATH = CPPJIEBA_IDF_PATH;
+const char *const STOP_WORD_PATH = CPPJIEBA_STOP_WORD_PATH;
 
 class JiebaUtil {
 private:

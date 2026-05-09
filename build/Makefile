@@ -161,6 +161,117 @@ depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+#=============================================================================
+# Target rules for targets named server
+
+# Build rule for target.
+server: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 server
+.PHONY : server
+
+# fast build rule for target.
+server/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
+.PHONY : server/fast
+
+#=============================================================================
+# Target rules for targets named client
+
+# Build rule for target.
+client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 client
+.PHONY : client
+
+# fast build rule for target.
+client/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/build
+.PHONY : client/fast
+
+#=============================================================================
+# Target rules for targets named http_server
+
+# Build rule for target.
+http_server: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 http_server
+.PHONY : http_server
+
+# fast build rule for target.
+http_server/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/http_server.dir/build.make CMakeFiles/http_server.dir/build
+.PHONY : http_server/fast
+
+test/client.o: test/client.cc.o
+.PHONY : test/client.o
+
+# target to build an object file
+test/client.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/test/client.cc.o
+.PHONY : test/client.cc.o
+
+test/client.i: test/client.cc.i
+.PHONY : test/client.i
+
+# target to preprocess a source file
+test/client.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/test/client.cc.i
+.PHONY : test/client.cc.i
+
+test/client.s: test/client.cc.s
+.PHONY : test/client.s
+
+# target to generate assembly for a file
+test/client.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/test/client.cc.s
+.PHONY : test/client.cc.s
+
+test/http_server.o: test/http_server.cc.o
+.PHONY : test/http_server.o
+
+# target to build an object file
+test/http_server.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/http_server.dir/build.make CMakeFiles/http_server.dir/test/http_server.cc.o
+.PHONY : test/http_server.cc.o
+
+test/http_server.i: test/http_server.cc.i
+.PHONY : test/http_server.i
+
+# target to preprocess a source file
+test/http_server.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/http_server.dir/build.make CMakeFiles/http_server.dir/test/http_server.cc.i
+.PHONY : test/http_server.cc.i
+
+test/http_server.s: test/http_server.cc.s
+.PHONY : test/http_server.s
+
+# target to generate assembly for a file
+test/http_server.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/http_server.dir/build.make CMakeFiles/http_server.dir/test/http_server.cc.s
+.PHONY : test/http_server.cc.s
+
+test/server.o: test/server.cc.o
+.PHONY : test/server.o
+
+# target to build an object file
+test/server.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/test/server.cc.o
+.PHONY : test/server.cc.o
+
+test/server.i: test/server.cc.i
+.PHONY : test/server.i
+
+# target to preprocess a source file
+test/server.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/test/server.cc.i
+.PHONY : test/server.cc.i
+
+test/server.s: test/server.cc.s
+.PHONY : test/server.s
+
+# target to generate assembly for a file
+test/server.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/test/server.cc.s
+.PHONY : test/server.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -173,6 +284,18 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... client"
+	@echo "... http_server"
+	@echo "... server"
+	@echo "... test/client.o"
+	@echo "... test/client.i"
+	@echo "... test/client.s"
+	@echo "... test/http_server.o"
+	@echo "... test/http_server.i"
+	@echo "... test/http_server.s"
+	@echo "... test/server.o"
+	@echo "... test/server.i"
+	@echo "... test/server.s"
 .PHONY : help
 
 

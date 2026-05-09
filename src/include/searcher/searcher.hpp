@@ -9,7 +9,7 @@
 #include <unordered_map>  // 新增：用于文档去重与权重合并
 #include <unordered_set>  // 新增：用于查询词 O(1) 去重
 
-#include "./index.hpp"
+#include "index.hpp"
 #include "parser.hpp"
 #include "util.hpp"
 
@@ -128,8 +128,8 @@ public:
         std::unordered_set<std::string> word_set;
 
         // [修改前]：把查到的所有倒排元素无脑 append
-        // 到一起，导致不同关键词命中同一篇文档时，结果重复出现 ns_index::InvertedList
-        // inverted_list_all;
+        // 到一起，导致不同关键词命中同一篇文档时，结果重复出现
+        // ns_index::InvertedList inverted_list_all;
 
         // [修改后]：使用 map，将相同 doc_id 的元素合并，实现文档去重并累加权重
         std::unordered_map<uint64_t, InvertedElemCombined> doc_map;
@@ -243,8 +243,9 @@ private:
             // JSON 解析崩溃。
 
             // [修改后]：UTF-8 边界安全探测。
-            // 原理：UTF-8 多字节字符的“延续字节”总是以二进制 `10xxxxxx` 开头（即 0x80 ~ 0xBF
-            // 之间）。 只要位于这个区间，就说明切在了汉字中间，需要向前或向后对齐。
+            // 原理：UTF-8 多字节字符的“延续字节”总是以二进制 `10xxxxxx` 开头（即 0x80
+            // ~ 0xBF 之间）。
+            // 只要位于这个区间，就说明切在了汉字中间，需要向前或向后对齐。
 
             // 修正 begin，向前寻找完整的字符起始位
             while (begin > 0 && (content[begin] & 0xC0) == 0x80) {

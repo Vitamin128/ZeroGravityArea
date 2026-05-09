@@ -15,6 +15,13 @@ set(MUDUO_LIBS
 # 定义 gchrpc 为接口库（Header-only 框架）
 add_library(gchrpc INTERFACE)
 
+# 注入 cppjieba 词库路径宏
+add_definitions(-DCPPJIEBA_DICT_PATH="/usr/local/share/cppjieba/dict/jieba.dict.utf8")
+add_definitions(-DCPPJIEBA_HMM_PATH="/usr/local/share/cppjieba/dict/hmm_model.utf8")
+add_definitions(-DCPPJIEBA_USER_DICT_PATH="/usr/local/share/cppjieba/dict/user.dict.utf8")
+add_definitions(-DCPPJIEBA_IDF_PATH="/usr/local/share/cppjieba/dict/idf.utf8")
+add_definitions(-DCPPJIEBA_STOP_WORD_PATH="/usr/local/share/cppjieba/dict/stop_words.utf8")
+
 # 设置包含路径
 target_include_directories(gchrpc INTERFACE 
     # 开发阶段：相对于 src/include 查找头文件
@@ -32,3 +39,13 @@ install(DIRECTORY src/include/
         DESTINATION include/gchrpc
         FILES_MATCHING PATTERN "*.hpp"
 )
+
+# 1. 编译服务端
+add_executable(server test/server.cc)
+target_link_libraries(server gchrpc jsoncpp boost_system boost_filesystem cpp-httplib ssl crypto)
+# 2. 编译客户端
+add_executable(client test/client.cc)
+target_link_libraries(client gchrpc jsoncpp)
+# 3. 编译 HTTP 桥接服务端
+add_executable(http_server test/http_server.cc)
+target_link_libraries(http_server gchrpc jsoncpp cpp-httplib ssl crypto)

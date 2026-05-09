@@ -1,3 +1,6 @@
+/home/bamboo/ZeroGravityArea/build/CMakeFiles/server.dir
+/home/bamboo/ZeroGravityArea/build/CMakeFiles/client.dir
+/home/bamboo/ZeroGravityArea/build/CMakeFiles/http_server.dir
 /home/bamboo/ZeroGravityArea/build/CMakeFiles/edit_cache.dir
 /home/bamboo/ZeroGravityArea/build/CMakeFiles/rebuild_cache.dir
 /home/bamboo/ZeroGravityArea/build/CMakeFiles/list_install_components.dir
