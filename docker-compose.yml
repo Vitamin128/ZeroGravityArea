@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. AI 解析服务
+  pdf-ai-parser:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: pdf-ai-parser
+    ports:
+      - "8080:8080"
+    restart: always
+
+  # 2. 搜索引擎后端
+  search-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpp
+    container_name: search-backend
+    command: ["./server"]
+    environment:
+      - PDF_PARSER_HOST=pdf-ai-parser
+    ports:
+      - "8088:8088"
+    depends_on:
+      - pdf-ai-parser
+    volumes:
+      - ./InternalData:/app/InternalData # 挂载数据目录
+    restart: always
+
+  # 3. Web 桥接网关 (前端入口)
+  web-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpp
+    container_name: web-gateway
+    command: ["./http_server"]
+    environment:
+      - SEARCH_BACKEND_HOST=search-backend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - search-backend
+    volumes:
+      - ./src/dist:/app/dist # 将前端文件挂载到容器内
+    restart: always

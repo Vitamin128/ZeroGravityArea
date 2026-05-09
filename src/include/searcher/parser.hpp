@@ -35,10 +35,10 @@ public:
         }
 
         DocInfo doc;
-        if (!ParseTitle(result, &doc.title)) {
-            LOG(WARNING) << "parse title error! file: " << file_path << std::endl;
-            return false;
-        }
+        // 既然 HTML 也要用文件名作为标题
+        namespace fs = boost::filesystem;
+        doc.title = fs::path(file_path).filename().string();
+
         if (!ParseContent(result, &doc.content)) {
             LOG(WARNING) << "parse content error! file: " << file_path << std::endl;
             return false;
@@ -62,38 +62,20 @@ public:
             return false;
         }
 
-        // 2. 复用 ParseTitle：它本就是查找 <title>...</title>，与 AI 输出格式完全匹配
-        std::string title;
-        if (!ParseTitle(ai_output, &title)) {
-            LOG(WARNING) << "ParseSinglePDF: <title> tag not found in AI output for: " << pdf_path
-                         << std::endl;
-            return false;
-        }
+        // 2. 既然 AI 不再输出标签，我们使用 PDF 文件名作为标题
+        namespace fs = boost::filesystem;
+        std::string title = fs::path(pdf_path).filename().string();
 
-        // 3. 先截取 <content>...</content> 之间的子串，
-        //    再用 ParseContent 的状态机去掉标签并把 \n 转为空格
-        std::string content;
-        {
-            const std::string open_tag = "<content>";
-            const std::string close_tag = "</content>";
-            auto begin = ai_output.find(open_tag);
-            auto end = ai_output.find(close_tag);
-            if (begin == std::string::npos || end == std::string::npos || end < begin) {
-                LOG(WARNING) << "ParseSinglePDF: <content> tag not found in AI output for: "
-                             << pdf_path << std::endl;
-                return false;
-            }
-            // 截取包含标签在内的片段，交给 ParseContent 的状态机处理
-            std::string content_block = ai_output.substr(begin, end - begin + close_tag.size());
-            ParseContent(content_block, &content);
-        }
+        // 3. 将 AI 还原的全文作为 content，并将换行符替换为空格（保持单行格式）
+        std::string content = ai_output;
+        std::replace(content.begin(), content.end(), '\n', ' ');
 
         if (title.empty() || content.empty()) {
             LOG(WARNING) << "ParseSinglePDF: empty title or content for: " << pdf_path << std::endl;
             return false;
         }
 
-        // 4. 组装成与 ParseSingleFile 相同的格式：title\3content\3local_path
+        // 4. 组装成标准格式：title\3content\3local_path
         *out_string = title + '\3' + content + '\3' + pdf_path;
         return true;
     }
@@ -227,10 +209,10 @@ private:
             }
             // cout<<"debug result: "<<result<<endl;
             DocInfo doc;
-            if (!ParseTitle(result, &doc.title)) {
-                LOG(WARNING) << "parse title error! file: " << file << std::endl;
-                continue;
-            }
+            // 批量处理时同样使用文件名作为标题
+            namespace fs = boost::filesystem;
+            doc.title = fs::path(file).filename().string();
+
             if (!ParseContent(result, &doc.content)) {
                 LOG(WARNING) << "parse content error! file: " << file << std::endl;
                 continue;

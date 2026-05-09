@@ -40,11 +40,12 @@ def parse_pdf_with_deepseek(pdf_path: str) -> str:
         raise ValueError("PDF text extraction returned empty content")
 
     prompt = (
-        "Analyze the following resume/document text. "
-        "Generate a concise title summarizing the content and wrap it in <title> and </title> tags. "
-        "Then, extract or summarize the main body of the text and wrap it in <content> and </content> tags. "
-        "Return ONLY the tags and their contents, with no asterisks and no markdown format.\n\n"
-        f"Document text:\n{pdf_text}"
+        "The following is a messy text extracted from a PDF. "
+        "Please restore it into a smooth, continuous, and complete body of text. "
+        "Remove any corrupted characters, fix broken line breaks, and maintain the original meaning. "
+        "DO NOT summarize. DO NOT generate a title. DO NOT use any XML-like tags (like <title> or <content>). "
+        "Return ONLY the restored plain text, with no additional comments or markdown formatting.\n\n"
+        f"Messy PDF text:\n{pdf_text}"
     )
 
     last_error = None
@@ -121,9 +122,9 @@ class PDFParserHandler(BaseHTTPRequestHandler):
 
 
 def run(port=8080):
-    server_address = ('127.0.0.1', port)
+    server_address = ('0.0.0.0', port)
     httpd = HTTPServer(server_address, PDFParserHandler)
-    print(f"Starting PDF Parser Service (DeepSeek) on http://127.0.0.1:{port} ...")
+    print(f"Starting PDF Parser Service (DeepSeek) on http://0.0.0.0:{port} ...")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

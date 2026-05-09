@@ -10,8 +10,12 @@
 #include <unordered_map>
 
 int main() {
-    // 1. 初始化 RPC Client，连接到后台的 RPC Server (8088)
-    gchrpc::client::RpcClient rpc_client(false, "127.0.0.1", 8088);
+    // 1. 获取后端 RPC 地址（支持 Docker 环境变量）
+    const char* host_env = std::getenv("SEARCH_BACKEND_HOST");
+    std::string host = (host_env == nullptr) ? "127.0.0.1" : host_env;
+
+    // 2. 初始化 RPC Client，连接到后台的 RPC Server (8088)
+    gchrpc::client::RpcClient rpc_client(false, host, 8088);
 
     // 映射文件路径：每次启动程序时扫描指定目录下的 pdf 和 html 文件
     std::unordered_map<std::string, int> file_exists_map;
@@ -26,13 +30,16 @@ int main() {
             }
         }
     };
-    scan_dir("/home/bamboo/ZeroGravityArea/data");
-    scan_dir("/home/bamboo/ZeroGravityArea/pdfdata");
+    scan_dir("./InternalData/html");
+    scan_dir("./InternalData/pdf");
     std::cout << "Successfully mapped " << file_exists_map.size() << " files into memory."
               << std::endl;
 
     // 2. 初始化 HTTP Server (cpphttplib)
     httplib::Server svr;
+
+    // 新增：挂载静态资源目录，用于托管前端网页
+    svr.set_mount_point("/", "./dist");
 
     // 5. 处理上传请求：/upload
     svr.Post("/upload", [&](const httplib::Request &req, httplib::Response &res) {
@@ -45,8 +52,8 @@ int main() {
                 std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
             std::string ts_str = std::to_string(timestamp);
 
-            std::string html_base = "/home/bamboo/ZeroGravityArea/ExternalData/html/" + ts_str;
-            std::string pdf_base = "/home/bamboo/ZeroGravityArea/ExternalData/pdf/" + ts_str;
+            std::string html_base = "./InternalData/html/" + ts_str;
+            std::string pdf_base = "./InternalData/pdf/" + ts_str;
 
             // 构造传给后端的路径参数
             Json::Value paths;
