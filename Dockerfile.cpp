@@ -20,6 +20,9 @@ WORKDIR /build_tmp
 COPY . .
 
 # 执行编译
+# 先模拟 make install：将 src/include 安装到 /usr/local/include/gchrpc
+# 这样 #include <gchrpc/...> 就能正确找到头文件
+RUN cp -r src/include /usr/local/include/gchrpc
 RUN mkdir -p build && cd build && cmake .. && make -j4
 
 # --- 第二阶段：运行阶段 (Runtime Stage) ---
