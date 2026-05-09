@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./util.hpp"
+#include "util.hpp"
 
 class ParserUtil {
 public:
@@ -65,8 +65,8 @@ public:
         // 2. 复用 ParseTitle：它本就是查找 <title>...</title>，与 AI 输出格式完全匹配
         std::string title;
         if (!ParseTitle(ai_output, &title)) {
-            LOG(WARNING) << "ParseSinglePDF: <title> tag not found in AI output for: "
-                         << pdf_path << std::endl;
+            LOG(WARNING) << "ParseSinglePDF: <title> tag not found in AI output for: " << pdf_path
+                         << std::endl;
             return false;
         }
 
@@ -74,10 +74,10 @@ public:
         //    再用 ParseContent 的状态机去掉标签并把 \n 转为空格
         std::string content;
         {
-            const std::string open_tag  = "<content>";
+            const std::string open_tag = "<content>";
             const std::string close_tag = "</content>";
             auto begin = ai_output.find(open_tag);
-            auto end   = ai_output.find(close_tag);
+            auto end = ai_output.find(close_tag);
             if (begin == std::string::npos || end == std::string::npos || end < begin) {
                 LOG(WARNING) << "ParseSinglePDF: <content> tag not found in AI output for: "
                              << pdf_path << std::endl;
@@ -117,7 +117,8 @@ public:
         int count = 0;
         for (const auto &file : files_list) {
             processed_count++;
-            LOG(NORMAL) << "Processing PDF [" << processed_count << "/" << total << "]: " << file << std::endl;
+            LOG(NORMAL) << "Processing PDF [" << processed_count << "/" << total << "]: " << file
+                        << std::endl;
             std::string out_string;
             if (ParseSinglePDF(file, &out_string)) {
                 out << out_string << "\n";
@@ -137,7 +138,8 @@ private:
     };
     // void
     // 将src_path文件夹下面的每个html文件的路径存储起来
-    static bool EnumFile(const std::string &src_path, std::vector<std::string> *files_list, const std::string &ext = ".html") {
+    static bool EnumFile(const std::string &src_path, std::vector<std::string> *files_list,
+                         const std::string &ext = ".html") {
         namespace fs = boost::filesystem;
         fs::path root_path(src_path);
         if (!fs::exists(root_path)) {

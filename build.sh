@@ -5,7 +5,7 @@ mkdir -p build && cd build
 cmake ..
 make -j4
 # (可选) 执行安装
-# sudo make install 
+echo 041215 | sudo -S make install
 # 2. 启动 Python PDF 解析服务 (原有逻辑)
 echo "--- 正在重启 Python PDF 解析服务 ---"
 pkill -f pdf_parser.py 2>/dev/null
