@@ -34,8 +34,24 @@ int main() {
     // 2. 初始化 HTTP Server (cpphttplib)
     httplib::Server svr;
 
-    // 新增：挂载静态资源目录，用于托管前端网页
-    svr.set_mount_point("/", "./dist");
+    svr.set_mount_point("/", "../dist");
+    // 2. 配置 SPA 兜底逻辑
+    // 如果用户刷新页面或直接输入 /search 这种非文件的路径，
+    // 默认返回 index.html，交给前端 Vue Router 处理。
+    svr.Get(R"(/(.*))", [&](const httplib::Request &req, httplib::Response &res) {
+        // 如果请求的不是 API (不以 /api 开头)，且不是已存在的静态文件
+        if (req.path.find("/api") != 0) {
+            std::ifstream file("../dist/index.html");
+            if (file.is_open()) {
+                std::stringstream buffer;
+                buffer << file.rdbuf();
+                res.set_content(buffer.str(), "text/html");
+                return;
+            }
+        }
+        res.status = 404;
+        res.set_content("Not Found", "text/plain");
+    });
 
     // 5. 处理上传请求：/upload
     svr.Post("/upload", [&](const httplib::Request &req, httplib::Response &res) {
@@ -48,8 +64,8 @@ int main() {
                 std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
             std::string ts_str = std::to_string(timestamp);
 
-            std::string html_base = "./InternalData/html/" + ts_str;
-            std::string pdf_base = "./InternalData/pdf/" + ts_str;
+            std::string html_base = "/home/bamboo/ZeroGravityArea/ExternalData/html/" + ts_str;
+            std::string pdf_base = "/home/bamboo/ZeroGravityArea/ExternalData/pdf/" + ts_str;
 
             // 构造传给后端的路径参数
             Json::Value paths;
