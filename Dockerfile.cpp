@@ -1,5 +1,5 @@
 # --- 第一阶段：编译阶段 (Builder Stage) ---
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:22.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -23,7 +23,7 @@ COPY . .
 RUN mkdir -p build && cd build && cmake .. && make -j4
 
 # --- 第二阶段：运行阶段 (Runtime Stage) ---
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
