@@ -1,0 +1,12 @@
+# 忽略本地编译产生的缓存和二进制文件
+build/
+bin/
+
+# 忽略版本控制文件
+.git/
+.gitignore
+
+# 忽略日志和临时文件
+*.log
+.vscode/
+.gemini/
