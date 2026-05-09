@@ -4,8 +4,8 @@ FROM ubuntu:20.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 安装编译所需的最小化工具链 (换源以加速)
-RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list && \
-    sed -i 's/security.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list && \
+RUN find /etc/apt/ -name "*.list" -o -name "*.sources" | xargs sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' && \
+    find /etc/apt/ -name "*.list" -o -name "*.sources" | xargs sed -i 's/security.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' && \
     apt-get update && apt-get install -y \
     build-essential \
     cmake \
