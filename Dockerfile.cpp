@@ -3,8 +3,10 @@ FROM ubuntu:20.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 安装编译所需的最小化工具链
-RUN apt-get update && apt-get install -y \
+# 安装编译所需的最小化工具链 (换源以加速)
+RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list && \
+    apt-get update && apt-get install -y \
     build-essential \
     cmake \
     libjsoncpp-dev \
