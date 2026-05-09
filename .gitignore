@@ -13,6 +13,8 @@ text/
 *.air
 *.ipa
 *.apk
+*.pdf
+*.txt
 
 demo
 server

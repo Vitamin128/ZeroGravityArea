@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <gchrpc/common/message.hpp>
 #include <gchrpc/common/net.hpp>
 #include <gchrpc/searcher/searcher.hpp>
@@ -27,6 +28,13 @@ int main() {
     std::vector<gchrpc::server::ServiceDescribe::ParamsDescribe> params_download;
     params_download.push_back(p2);
 
+    // 索引方法参数注册
+    gchrpc::server::ServiceDescribe::ParamsDescribe p3("html_path", gchrpc::server::VType::STRING);
+    gchrpc::server::ServiceDescribe::ParamsDescribe p4("pdf_path", gchrpc::server::VType::STRING);
+    std::vector<gchrpc::server::ServiceDescribe::ParamsDescribe> params_index;
+    params_index.push_back(p3);
+    params_index.push_back(p4);
+
     // 2. 使用 Lambda 包装搜索逻辑
     auto search_handler = [&search_engine](const Json::Value &params, Json::Value &result) {
         std::string query = params["query"].asString();
@@ -53,6 +61,38 @@ int main() {
         result = local_path;
     };
 
+    auto index_handler = [&search_engine](const Json::Value &params, Json::Value &result) {
+        std::string html_path = params["html_path"].asString();
+        std::string pdf_path = params["pdf_path"].asString();
+
+        auto get_files = [](const std::string &dir) {
+            std::vector<std::string> files;
+            if (std::filesystem::exists(dir) && std::filesystem::is_directory(dir)) {
+                for (const auto &entry : std::filesystem::directory_iterator(dir)) {
+                    if (entry.is_regular_file()) files.push_back(entry.path().string());
+                }
+            }
+            return files;
+        };
+
+        // 1. 处理 HTML 目录
+        auto html_files = get_files(html_path);
+        if (html_files.size() == 1) {
+            search_engine.AddSingleHtml(html_files[0]);
+        } else if (html_files.size() >= 2) {
+            search_engine.BuildFullHtml(html_path, html_path + "/raw.txt");
+        }
+
+        // 2. 处理 PDF 目录
+        auto pdf_files = get_files(pdf_path);
+        if (pdf_files.size() == 1) {
+            search_engine.AddSinglePDF(pdf_files[0]);
+        } else if (pdf_files.size() >= 2) {
+            search_engine.BuildFullPDF(pdf_path, pdf_path + "/raw.txt");
+        }
+        result["status"] = "success";
+    };
+
     // 3. 初始化 ServiceDescribe，注册服务
     gchrpc::server::ServiceDescribe::ptr search_service =
         std::make_shared<gchrpc::server::ServiceDescribe>("SearchService", std::move(params_search),
@@ -64,8 +104,14 @@ int main() {
             "DownloadService", std::move(params_download), gchrpc::server::VType::STRING,
             download_handler);
 
+    gchrpc::server::ServiceDescribe::ptr index_service =
+        std::make_shared<gchrpc::server::ServiceDescribe>(
+            "IndexService", std::move(params_index), gchrpc::server::VType::OBJECT,
+            index_handler);
+
     server.RegistryMethod(search_service);
     server.RegistryMethod(download_service);
+    server.RegistryMethod(index_service);
 
     server.Start();
     return 0;

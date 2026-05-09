@@ -1,5 +1,7 @@
 #include <httplib.h>
 
+#include <chrono>
+#include <ctime>
 #include <filesystem>  // 新增
 #include <fstream>     // 新增
 #include <gchrpc/client/rpc_client.hpp>
@@ -26,13 +28,83 @@ int main() {
     };
     scan_dir("/home/bamboo/ZeroGravityArea/data");
     scan_dir("/home/bamboo/ZeroGravityArea/pdfdata");
-    std::cout << "Successfully mapped " << file_exists_map.size() << " files into memory." << std::endl;
+    std::cout << "Successfully mapped " << file_exists_map.size() << " files into memory."
+              << std::endl;
 
     // 2. 初始化 HTTP Server (cpphttplib)
     httplib::Server svr;
 
-    // 设置静态资源目录 (HTML/JS/CSS)
-    svr.set_mount_point("/", "./wwwroot");
+    // 5. 处理上传请求：/upload
+    svr.Post("/upload", [&](const httplib::Request &req, httplib::Response &res) {
+        res.set_header("Access-Control-Allow-Origin", "*");
+
+        // 检查是否是 multipart 且包含文件
+        if (req.is_multipart_form_data() && req.files.count("file") > 0) {
+            auto now = std::chrono::system_clock::now();
+            auto timestamp =
+                std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+            std::string ts_str = std::to_string(timestamp);
+
+            std::string html_base = "/home/bamboo/ZeroGravityArea/ExternalData/html/" + ts_str;
+            std::string pdf_base = "/home/bamboo/ZeroGravityArea/ExternalData/pdf/" + ts_str;
+
+            // 构造传给后端的路径参数
+            Json::Value paths;
+            paths["html_path"] = html_base;
+            paths["pdf_path"] = pdf_base;
+
+            try {
+                // 提前在循环外把两个目录都建好
+                std::filesystem::create_directories(html_base);
+                std::filesystem::create_directories(pdf_base);
+            } catch (const std::exception &e) {
+                LOG(ERROR) << "Failed to pre-create directories: " << e.what() << std::endl;
+            }
+
+            auto range = req.files.equal_range("file");
+            for (auto it = range.first; it != range.second; ++it) {
+                const auto &file = it->second;
+                std::string filename = file.filename;
+                std::string target_path = "";
+
+                if (filename.size() >= 5 && filename.substr(filename.size() - 5) == ".html") {
+                    target_path = html_base + "/" + filename;
+                } else if (filename.size() >= 4 && filename.substr(filename.size() - 4) == ".pdf") {
+                    target_path = pdf_base + "/" + filename;
+                }
+
+                if (!target_path.empty()) {
+                    std::ofstream ofs(target_path, std::ios::binary);
+                    if (ofs.is_open()) {
+                        ofs.write(file.content.c_str(), file.content.size());
+                        ofs.close();
+                        std::cout << "✅ 快速保存: " << target_path << std::endl;
+                        file_exists_map[target_path] = 1;
+                    }
+                }
+            }
+
+            // 【关键新增】调用后端的 IndexService 触发索引构建
+            Json::Value index_resp;
+            bool index_ok = rpc_client.call("IndexService", paths, index_resp);
+
+            // 构造返回给前端的响应
+            Json::Value response;
+            response["status"] = index_ok ? "success" : "partial_success";
+            response["message"] = index_ok ? "上传并索引完成" : "文件已保存但索引触发失败";
+            response["data"] = paths;
+
+            Json::FastWriter writer;
+            res.status = 200;
+            res.set_content(writer.write(response), "application/json");
+            return;
+        }
+
+        // 兜底的错误处理
+        res.status = 400;
+        res.set_content(R"({"status": "error", "message": "上传失败，未检测到有效文件"})",
+                        "application/json");
+    });
 
     // 4. 处理下载请求：/download?doc_id=xxx
     svr.Get("/download", [&](const httplib::Request &req, httplib::Response &res) {
