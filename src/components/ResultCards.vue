@@ -111,8 +111,8 @@ const downloadItem = (item) => {
     console.error('错误：当前卡片数据中没有 doc_id', item);
     return;
   }
-  // 2. 拼接 URL。建议地址与你搜索接口的域名保持一致（比如都是 127.0.0.1）
-  const downloadUrl = `http://127.0.0.1:8081/download?doc_id=${docId}`;
+  // 2. 拼接 URL。建议地址与你搜索接口的域名保持一致（比如都是 124.220.21.204）
+  const downloadUrl = `http://124.220.21.204:8081/download?doc_id=${docId}`;
   console.log('正在请求下载:', downloadUrl);
   // 3. 触发下载
   const link = document.createElement('a');
@@ -150,13 +150,16 @@ const downloadItem = (item) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 2px;
+  height: 170px; /* 或者你想要的任何高度，比如 160px */
+  box-sizing: border-box;
+  /* max-height: 250px; */
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 24px 28px;
+  padding: 32px 28px 20px 28px; /* 上 24px，左右 28px，下 0px */
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -165,6 +168,16 @@ const downloadItem = (item) => {
   flex: 9;          /* 占据 90% 的空间 */
   text-align: left;
   min-width: 0;     /* 关键：允许内容缩小，防止挤开按钮 */
+  height: 100%;     /* 撑满可用高度，使其可以滚动 */
+  overflow-y: auto; /* 超过内容出现滚动条 */
+  padding-bottom: 24px; /* 在内部滚动区底部加点留白，以免滚到底时文字贴边 */
+  
+  /* 隐藏滚动条 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.card-body::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 .download-btn {
@@ -234,7 +247,7 @@ const downloadItem = (item) => {
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 600;
   margin: 0;
   color: #ffffff;
@@ -247,11 +260,7 @@ const downloadItem = (item) => {
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.55);
   margin: 0 0 16px 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  line-clamp: 2;
-  overflow: hidden;
+  /* 移除了 line-clamp 限制，文本可以自由无限向下换行 */
 }
 
 /* 卡片底部 */

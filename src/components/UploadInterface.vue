@@ -189,24 +189,51 @@ const getFileIcon = (filename) => {
   return iconMap[ext] || 'ph:file-bold';
 };
 
-// ===== Mock 上传 =====
+// ===== 真实后端上传 =====
 const handleConfirm = async () => {
   if (files.value.length === 0 || isUploading.value) return;
 
   isUploading.value = true;
-  console.log('开始上传以下文件:');
-  files.value.forEach((f, i) => {
-    console.log(`  [${i + 1}] ${f.name}  (${formatFileSize(f.size)})`);
-  });
+  console.log('准备上传文件到 C++ 后端...');
 
-  // 模拟异步上传（1.5 秒延迟）
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  try {
+    // 1. 构造 FormData 包裹文件
+    const formData = new FormData();
+    files.value.forEach((file) => {
+      // 这里的 'file' 必须与后端 req.files.count("file") 中的名称一致
+      formData.append('file', file);
+    });
 
-  console.log('✅ 所有文件上传成功！');
-  isUploading.value = false;
-  emit('upload-success', [...files.value]);
-  files.value = [];
-  close();
+    // 2. 发送 POST 请求
+    const response = await fetch('http://124.220.21.204:8081/upload', {
+      method: 'POST',
+      body: formData,
+      // 注意：fetch 发送 FormData 时不需要手动设置 Content-Type，浏览器会自动生成带有 boundary 的 header
+    });
+
+    // 3. 处理响应
+    if (response.ok) {
+      const result = await response.json();
+      console.log('✅ 后端返回数据:', result);
+      
+      if (result.status === 'success' || result.status === 'partial_success') {
+        console.log('✅ 上传成功:', result.message);
+        emit('upload-success', [...files.value]);
+        files.value = []; // 清空待上传列表
+        close();         // 关闭弹窗
+      } else {
+        console.error('❌ 上传失败:', result.message);
+        alert('上传失败: ' + result.message);
+      }
+    } else {
+      throw new Error(`服务器响应错误: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('❌ 网络请求失败:', error);
+    alert('无法连接到后端服务器，请检查 C++ 服务是否在 8081 端口运行。');
+  } finally {
+    isUploading.value = false;
+  }
 };
 </script>
 
@@ -248,7 +275,7 @@ const handleConfirm = async () => {
 
 .modal-title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   letter-spacing: 0.5px;
@@ -258,8 +285,8 @@ const handleConfirm = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   background: transparent;
   border: none;
   border-radius: 8px;
