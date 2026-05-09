@@ -1,12 +1,13 @@
 #pragma once
 
-#include "common/logger.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "common/logger.hpp"
 // 匹配你提供的头文件路径
 #include <httplib.h>
 
@@ -36,12 +37,8 @@ public:
     static bool ParsePDF(const std::string &pdf_path, std::string *content) {
         if (!content) return false;
 
-        // 1. 获取 AI 服务地址（支持 Docker 环境变量）
-        const char* host_env = std::getenv("PDF_PARSER_HOST");
-        std::string host = (host_env == nullptr) ? "127.0.0.1" : host_env;
-
-        // 2. 创建 HTTP 客户端对象，连接服务
-        httplib::Client cli("http://" + host + ":8080");
+        // 1. 连接本地 AI 解析服务
+        httplib::Client cli("http://127.0.0.1:8080");
         cli.set_read_timeout(180, 0);  // 增加到 180 秒，为多模型轮换留出足够时间
 
         // 2. 构造 JSON 请求体

@@ -10,12 +10,8 @@
 #include <unordered_map>
 
 int main() {
-    // 1. 获取后端 RPC 地址（支持 Docker 环境变量）
-    const char* host_env = std::getenv("SEARCH_BACKEND_HOST");
-    std::string host = (host_env == nullptr) ? "127.0.0.1" : host_env;
-
-    // 2. 初始化 RPC Client，连接到后台的 RPC Server (8088)
-    gchrpc::client::RpcClient rpc_client(false, host, 8088);
+    // 1. 初始化 RPC Client，连接本地 RPC Server (8088)
+    gchrpc::client::RpcClient rpc_client(false, "127.0.0.1", 8088);
 
     // 映射文件路径：每次启动程序时扫描指定目录下的 pdf 和 html 文件
     std::unordered_map<std::string, int> file_exists_map;

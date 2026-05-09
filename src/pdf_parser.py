@@ -122,7 +122,7 @@ class PDFParserHandler(BaseHTTPRequestHandler):
 
 
 def run(port=8080):
-    server_address = ('0.0.0.0', port)
+    server_address = ('127.0.0.1', port)
     httpd = HTTPServer(server_address, PDFParserHandler)
     print(f"Starting PDF Parser Service (DeepSeek) on http://0.0.0.0:{port} ...")
     try:

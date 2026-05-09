@@ -10,13 +10,13 @@ void Search(const std::string &query, std::string *json_result, ns_searcher::Sea
     engine.Search(query, json_result);
 }
 int main() {
-    gchrpc::server::RpcServer server(gchrpc::Address("0.0.0.0", 8088));
+    gchrpc::server::RpcServer server(gchrpc::Address("127.0.0.1", 8088));
     ns_searcher::Searcher search_engine;
     // 假设数据路径正确
-    search_engine.BuildFullPDF("./InternalData/pdf",
-                               "./InternalData/pdf/raw.txt");
-    search_engine.BuildFullHtml("./InternalData/html",
-                                "./InternalData/html/raw.txt");
+    search_engine.BuildFullPDF("/home/bamboo/ZeroGravityArea/InternalData/pdf",
+                               "/home/bamboo/ZeroGravityArea/InternalData/pdf/raw.txt");
+    search_engine.BuildFullHtml("/home/bamboo/ZeroGravityArea/InternalData/html",
+                                "/home/bamboo/ZeroGravityArea/InternalData/html/raw.txt");
     // 1. 定义输入参数（只需要 query）
     // 搜索方法注册
     gchrpc::server::ServiceDescribe::ParamsDescribe p1("query", gchrpc::server::VType::STRING);
