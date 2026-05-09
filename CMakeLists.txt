@@ -6,10 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # muduo 路径设置 (优先使用项目内自带的库，支持 Docker 跨环境编译)
+# 注意：只包含 muduo/cppjieba/limonp/httplib，不包含 gchrpc（gchrpc 来自 src/include）
 set(MUDUO_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/depends/include")
 set(MUDUO_LIBS 
     "${CMAKE_CURRENT_SOURCE_DIR}/depends/lib/libmuduo_net.a" 
     "${CMAKE_CURRENT_SOURCE_DIR}/depends/lib/libmuduo_base.a"
+    pthread
 )
 
 # 定义 gchrpc 为接口库（Header-only 框架）
@@ -42,10 +44,10 @@ install(DIRECTORY src/include/
 
 # 1. 编译服务端
 add_executable(server test/server.cc)
-target_link_libraries(server gchrpc jsoncpp boost_system boost_filesystem cpp-httplib ssl crypto)
+target_link_libraries(server gchrpc jsoncpp boost_system boost_filesystem ssl crypto)
 # 2. 编译客户端
 add_executable(client test/client.cc)
 target_link_libraries(client gchrpc jsoncpp)
 # 3. 编译 HTTP 桥接服务端
 add_executable(http_server test/http_server.cc)
-target_link_libraries(http_server gchrpc jsoncpp cpp-httplib ssl crypto)
+target_link_libraries(http_server gchrpc jsoncpp ssl crypto)
