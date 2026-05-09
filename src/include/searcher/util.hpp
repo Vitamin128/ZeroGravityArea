@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../common/logger.hpp"
+#include "common/logger.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>

@@ -1,6 +1,7 @@
 #pragma once
-#include"../common/net.hpp"
-#include"../common/message.hpp"
+#include"common/net.hpp"
+#include"common/message.hpp"
+#include"common/logger.hpp"
 namespace gchrpc
 {
     namespace server
@@ -47,12 +48,12 @@ namespace gchrpc
                 {
                     if(!params.isMember(desc.first))
                     {
-                        ELOG("参数成员校验失败,存在缺失的参数:%s",desc.first.c_str());
+                        LOG(ERROR) << "参数成员校验失败,存在缺失的参数:" << desc.first << std::endl;
                         return false;
                     }
                     if(!check(desc.second,params[desc.first]))
                     {
-                        ELOG("参数校验失败,存在错误的类型参数:%s",desc.first.c_str());
+                        LOG(ERROR) << "参数校验失败,存在错误的类型参数:" << desc.first << std::endl;
                         return false;
                     }
                 }
@@ -65,7 +66,7 @@ namespace gchrpc
                 call_back(params,result);
                 if(!rtypeCheck(result))
                 {
-                    ELOG("返回参数类型校验失败");
+                    LOG(ERROR) << "返回参数类型校验失败" << std::endl;
                     return false;
                 }
                 return true;
@@ -158,7 +159,7 @@ namespace gchrpc
                 auto it=_services.find(servicename);
                 if(it==_services.end())
                 {
-                    ELOG("服务未发现");
+                    LOG(ERROR) << "服务未发现" << std::endl;
                     // return ServiceDescribe::ptr();
                     return nullptr;
                 }
@@ -187,17 +188,18 @@ namespace gchrpc
             //success服务端处理报文
             void onRpcRequest(const BaseConnection::ptr& conn,RpcRequest::ptr& request)
             {
+                LOG(NORMAL) << "接收到 RPC 请求: " << request->method() << ", ID: " << request->rid() << std::endl;
                 auto it=_service_manager->select(request->method());
                 if(it==nullptr)
                 {
-                    ELOG("不存在对应请求的方法:%s",request->method().c_str());
+                    LOG(ERROR) << "不存在对应请求的方法:" << request->method() << std::endl;
                     return response(conn,request,Json::Value(),Rcode::RCODE_NOT_FOUND_SERVICE);
                 }
 
                 bool ret=it->paramCheck(request->params());
                 if(ret==false)
                 {
-                    ELOG("参数校验错误");
+                    LOG(ERROR) << "参数校验错误" << std::endl;
                     return response(conn,request,Json::Value(),Rcode::RCODE_INVALID_PARAMS);
                 }
 
@@ -205,7 +207,7 @@ namespace gchrpc
                 bool ret1=it->call(request->params(),result);
                 if(ret1==false)
                 {
-                    ELOG("返回值错误");
+                    LOG(ERROR) << "返回值错误" << std::endl;
                     return response(conn,request,Json::Value(),Rcode::RCODE_INTERNAL_ERROR);
                 }
 
@@ -229,6 +231,7 @@ namespace gchrpc
                     rep->setMType(MType::RSP_RPC);
                     rep->setRCode(rcode);
                     rep->setResult(body);
+                    LOG(NORMAL) << "发送 RPC 响应, ID: " << rqs->rid() << ", 结果码: " << (int)rcode << std::endl;
                     conn->send(rep);
                 }
             ServiceManager::ptr _service_manager;

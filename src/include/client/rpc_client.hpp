@@ -1,5 +1,5 @@
 #pragma once
-#include"../common/dispatcher.hpp"
+#include "common/dispatcher.hpp"
 #include"requestor.hpp"
 #include"rpc_caller.hpp"
 #include"rpc_registry.hpp"

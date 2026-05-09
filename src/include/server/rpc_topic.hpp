@@ -1,7 +1,8 @@
 #pragma once
-#include "../common/net.hpp"
+#include "common/net.hpp"
 #include <unordered_map>
-#include "../common/message.hpp"
+#include "common/message.hpp"
+#include "common/logger.hpp"
 #include <memory>
 #include <mutex>
 #include <unordered_set>
@@ -168,6 +169,7 @@ namespace gchrpc
             void Topiccreate(const BaseConnection::ptr &conn, const TopicRequest::ptr& msg)
             {
                 std::unique_lock<std::mutex>lock(_mutex);
+                LOG(NORMAL) << "创建 Topic: " << msg->topicKey() << std::endl;
                 auto it=std::make_shared<topic>(msg->topicKey());
                 ManagerTopics.insert(std::make_pair(msg->topicKey(),it));
             }
@@ -185,6 +187,7 @@ namespace gchrpc
                         return;
                     }
                     opttopic = topic_it->second;
+                    LOG(NORMAL) << "移除 Topic: " << msg->topicKey() << std::endl;
                     ManagerTopics.erase(topic_it);
                 }
                 subscriberArr = opttopic->GetSubscribers();
@@ -221,6 +224,7 @@ namespace gchrpc
                         optsub = sub_it->second;
                     }
                 }
+                LOG(NORMAL) << "订阅者订阅 Topic: " << msg->topicKey() << std::endl;
                 optsub->AppendTopic(msg->topicKey());
                 opttopic->AppendSubscriber(optsub);
                 return true;
@@ -250,6 +254,7 @@ namespace gchrpc
                 }
                 if (client && Topic)
                 {
+                    LOG(NORMAL) << "订阅者取消订阅 Topic: " << msg->topicKey() << std::endl;
                     Topic->RemoveSubscriber(client);
                 }
             }
@@ -270,6 +275,7 @@ namespace gchrpc
                         return false;
                     }
                 }
+                LOG(NORMAL) << "发布消息到 Topic: " << msg->topicKey() << std::endl;
                 PublishTopic->PublishMessage(msg);
                 return true;
             }

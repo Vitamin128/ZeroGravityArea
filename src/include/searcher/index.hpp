@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "util.hpp"
+#include "./util.hpp"
 
 namespace ns_index {
 

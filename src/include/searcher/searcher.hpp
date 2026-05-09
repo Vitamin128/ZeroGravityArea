@@ -9,7 +9,7 @@
 #include <unordered_map>  // 新增：用于文档去重与权重合并
 #include <unordered_set>  // 新增：用于查询词 O(1) 去重
 
-#include "index.hpp"
+#include "./index.hpp"
 #include "parser.hpp"
 #include "util.hpp"
 

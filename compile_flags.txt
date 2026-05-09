@@ -1,3 +1,4 @@
+-I./src/include
 -I./cppjieba/include
 -I./cppjieba/deps/limonp/include
 -I./src

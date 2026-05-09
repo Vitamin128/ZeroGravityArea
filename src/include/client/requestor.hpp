@@ -1,6 +1,6 @@
 #pragma once
-#include"../common/message.hpp"
-#include"../common/net.hpp"
+#include "common/message.hpp"
+#include "common/net.hpp"
 #include<future>
 #include<functional>
 
