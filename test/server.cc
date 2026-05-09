@@ -13,7 +13,7 @@ int main() {
     gchrpc::server::RpcServer server(gchrpc::Address("127.0.0.1", 8088));
     ns_searcher::Searcher search_engine;
     // 假设数据路径正确
-    search_engine.BuildFullPDF("/home/bamboo/ZeroGravityArea/pdfdata/fold",
+    search_engine.BuildFullPDF("/home/bamboo/ZeroGravityArea/pdfdata/input",
                                "/home/bamboo/ZeroGravityArea/pdfdata/raw_html/raw.txt");
     search_engine.BuildFullHtml("/home/bamboo/ZeroGravityArea/data/input",
                                 "/home/bamboo/ZeroGravityArea/data/raw_html/raw.txt");
@@ -106,8 +106,7 @@ int main() {
 
     gchrpc::server::ServiceDescribe::ptr index_service =
         std::make_shared<gchrpc::server::ServiceDescribe>(
-            "IndexService", std::move(params_index), gchrpc::server::VType::OBJECT,
-            index_handler);
+            "IndexService", std::move(params_index), gchrpc::server::VType::OBJECT, index_handler);
 
     server.RegistryMethod(search_service);
     server.RegistryMethod(download_service);
