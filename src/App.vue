@@ -113,6 +113,10 @@ body {
   font-family: 'Outfit', sans-serif;
   color: white;
   overflow-x: hidden;
+  font-size: 15px;
+}
+html {
+  font-size: 15px;
 }
 </style>
 
@@ -142,10 +146,10 @@ body {
 }
 .search-wrapper {
   text-align: center;
-  width: 35%;
-  padding: 20px;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  width: 30%;
+  padding: 15px;
+  margin-top: 15px;
+  margin-bottom: 22px;
 }
 .cards-wrapper {
   width: 100%;
@@ -161,13 +165,13 @@ body {
 /* 上传按钮定位包裹器：仅负责绝对定位到右侧 */
 .upload-pos-wrapper {
   position: absolute;
-  left: calc(100% + 15px);
+  left: calc(100% + 11px);
   top: 50%;
   transform: translateY(-50%);
 }
 .title {
-  font-size: 2.0rem;
-  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
   background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
   -webkit-background-clip: text;
   background-clip: text;

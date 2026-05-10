@@ -59,12 +59,12 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 60px 0;
+  padding: 45px 0;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
+  width: 38px;
+  height: 38px;
   border: 3px solid rgba(79, 172, 254, 0.15);
   border-top-color: #4facfe;
   border-radius: 50%;

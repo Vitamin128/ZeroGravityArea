@@ -252,8 +252,8 @@ const handleConfirm = async () => {
 
 /* ========== 模态框容器 ========== */
 .modal-container {
-  width: 1040px;
-  max-height: 85vh;
+  width: 780px;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   background: rgba(255, 255, 255, 0.05);
@@ -310,8 +310,8 @@ const handleConfirm = async () => {
 /* ========== 核心上传区 ========== */
 .upload-zone {
   position: relative;
-  margin: 20px 24px;
-  height: 520px;
+  margin: 15px 18px;
+  height: 400px;
   background: rgba(255, 255, 255, 0.02);
   border: 2px dashed rgba(255, 255, 255, 0.15);
   border-radius: 16px;
@@ -319,7 +319,7 @@ const handleConfirm = async () => {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start; /* 有文件时置顶 */
-  padding: 30px;
+  padding: 22px;
   overflow-y: auto;
   overflow-x: hidden; /* 强制隐藏横向滑动条 */
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -426,11 +426,11 @@ const handleConfirm = async () => {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 12px 15px;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  border-radius: 10px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -455,7 +455,7 @@ const handleConfirm = async () => {
 }
 
 .file-name {
-  font-size: 1.76rem;
+  font-size: 1.3rem;
   color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
   overflow: hidden;
@@ -463,7 +463,7 @@ const handleConfirm = async () => {
 }
 
 .file-size {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.35);
 }
 

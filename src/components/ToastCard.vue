@@ -2,7 +2,7 @@
   <Transition name="toast">
     <div class="toast-card" v-if="show">
       <div class="toast-content">
-        <Icon icon="ph:warning-bold" width="50" height="50" class="toast-icon" />
+        <Icon icon="ph:warning-bold" width="36" height="36" class="toast-icon" />
         <p style="color: white; font-weight: 500; font-size: 1.7rem;">{{ message }}</p>
       </div>
     </div>

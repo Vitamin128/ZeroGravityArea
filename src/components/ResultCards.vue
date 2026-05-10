@@ -151,15 +151,14 @@ const downloadItem = (item) => {
   justify-content: space-between;
   align-items: center;
   gap: 2px;
-  height: 170px; /* 或者你想要的任何高度，比如 160px */
+  height: 130px;
   box-sizing: border-box;
-  /* max-height: 250px; */
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 32px 28px 20px 28px; /* 上 24px，左右 28px，下 0px */
+  border-radius: 12px;
+  padding: 24px 20px 15px 20px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -186,10 +185,10 @@ const downloadItem = (item) => {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
+  padding: 8px 14px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: 9px;
   color: #ffffff;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -247,7 +246,7 @@ const downloadItem = (item) => {
 }
 
 .card-title {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
   color: #ffffff;
@@ -256,7 +255,7 @@ const downloadItem = (item) => {
 
 /* 卡片正文 */
 .card-content {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.55);
   margin: 0 0 16px 0;
@@ -322,16 +321,16 @@ const downloadItem = (item) => {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  padding: 8px 8px;
-  border-radius: 8px;
+  padding: 6px 6px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
 }
 .page-num {
-  padding: 8px 8px;
-  min-width: 40px;
+  padding: 6px 6px;
+  min-width: 30px;
 }
 /* 悬停效果 */
 .page-btn:hover:not(:disabled), .page-num:hover:not(.dot) {
