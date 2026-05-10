@@ -9,7 +9,7 @@
       <div class="result-card">
         <div class="card-body">
           <h2 class="card-title">
-  {{ item.title }}{{ item.type === 0 ? '.html' : (item.type === 1 ? '.pdf' : '') }}
+  {{ item.title }}
 </h2>
           <p class="card-content">{{ item.content }}</p>
         </div>
@@ -154,8 +154,8 @@ const downloadItem = (item) => {
   height: 130px;
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  /* backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px); */
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 24px 20px 15px 20px;

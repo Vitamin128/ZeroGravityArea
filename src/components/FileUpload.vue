@@ -36,7 +36,7 @@ import { Icon } from '@iconify/vue';
 defineProps({
   title: {
     type: String,
-    default: '上传文件进行分析'
+    default: '上传文件存储'
   }
 });
 
