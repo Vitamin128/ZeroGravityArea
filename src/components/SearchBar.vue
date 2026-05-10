@@ -26,7 +26,7 @@ const callCppBackend = async () => {
   // 1. 发射“开始搜索”信号，让父组件显示加载动画
   emit('search-start');
   try {
-    const url = `http://124.220.21.204:8081/search?word=${encodeURIComponent(searchQuery.value)}`;
+    const url = `http://192.168.52.131:8081/search?word=${encodeURIComponent(searchQuery.value)}`;
     const response = await fetch(url);
     const data = await response.json();
     

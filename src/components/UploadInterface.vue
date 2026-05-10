@@ -205,7 +205,7 @@ const handleConfirm = async () => {
     });
 
     // 2. 发送 POST 请求
-    const response = await fetch('http://124.220.21.204:8081/upload', {
+    const response = await fetch('http://192.168.52.131:8081/upload', {
       method: 'POST',
       body: formData,
       // 注意：fetch 发送 FormData 时不需要手动设置 Content-Type，浏览器会自动生成带有 boundary 的 header

@@ -144,7 +144,7 @@ body {
   text-align: center;
   width: 35%;
   padding: 20px;
-  margin-top: 50px;
+  margin-top: 20px;
   margin-bottom: 30px;
 }
 .cards-wrapper {
@@ -166,7 +166,7 @@ body {
   transform: translateY(-50%);
 }
 .title {
-  font-size: 2.5rem;
+  font-size: 2.0rem;
   margin-bottom: 2rem;
   background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
   -webkit-background-clip: text;

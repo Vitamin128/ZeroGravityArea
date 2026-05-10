@@ -112,7 +112,7 @@ const downloadItem = (item) => {
     return;
   }
   // 2. 拼接 URL。建议地址与你搜索接口的域名保持一致（比如都是 124.220.21.204）
-  const downloadUrl = `http://124.220.21.204:8081/download?doc_id=${docId}`;
+  const downloadUrl = `http://192.168.52.131:8081/download?doc_id=${docId}`;
   console.log('正在请求下载:', downloadUrl);
   // 3. 触发下载
   const link = document.createElement('a');
