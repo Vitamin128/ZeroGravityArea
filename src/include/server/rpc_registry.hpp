@@ -1,5 +1,7 @@
-#pragma once
 #include <set>
+#include <thread>
+#include <chrono>
+#include <ctime>
 
 #include "common/logger.hpp"
 #include "common/message.hpp"
@@ -19,11 +21,18 @@ public:
         Address host;
         std::vector<std::string> methods;
         BaseConnection::ptr conn;
+        std::time_t _last_active_time;
         Provider(const BaseConnection::ptr &NewConn, const Address &NewHost)
-            : conn(NewConn), host(NewHost) {}
+            : conn(NewConn), host(NewHost) {
+            _last_active_time = std::time(nullptr);
+        }
         void AppendMethod(const std::string &method) {
             std::unique_lock<std::mutex> lock(_mutex);
             methods.push_back(method);
+        }
+        void UpdateActiveTime() {
+            std::unique_lock<std::mutex> lock(_mutex);
+            _last_active_time = std::time(nullptr);
         }
     };
 
@@ -88,6 +97,19 @@ public:
             ret.push_back(item->host);
         }
         return ret;
+    }
+
+    // 获取长时间未活跃的提供者
+    std::vector<BaseConnection::ptr> GetStaleProviders(int timeout_s) {
+        std::unique_lock<std::mutex> lock(_mutex);
+        std::vector<BaseConnection::ptr> stale_conns;
+        std::time_t now = std::time(nullptr);
+        for (auto &it : _conns) {
+            if (now - it.second->_last_active_time > timeout_s) {
+                stale_conns.push_back(it.first);
+            }
+        }
+        return stale_conns;
     }
 
 private:
@@ -212,7 +234,20 @@ public:
     using ptr = std::shared_ptr<PDManager>;
     PDManager()
         : _providers(std::make_shared<ProviderManager>()),
-          _discovers(std::make_shared<DiscovererManager>()) {}
+          _discovers(std::make_shared<DiscovererManager>()) {
+        // 启动后台健康检查线程
+        std::thread([this]() {
+            while (true) {
+                std::this_thread::sleep_for(std::chrono::seconds(10));
+                auto stale_conns = _providers->GetStaleProviders(30); // 30秒超时
+                for (auto &conn : stale_conns) {
+                    LOG(NORMAL) << "检测到节点心跳超时，强制下线..." << std::endl;
+                    onShutdown(conn);
+                    conn->shutdown();
+                }
+            }
+        }).detach();
+    }
 
     // success注册的对外接口用于处理连接和连接发送的请求
     void onServiceResponse(const BaseConnection::ptr &conn, const ServiceRequest::ptr &svr_msg) {
@@ -231,6 +266,19 @@ public:
             LOG(NORMAL) << "服务类型错误" << std::endl;
             return Errorresponse(conn, svr_msg);
         }
+    }
+
+    // 处理心跳请求
+    void onHeartbeat(const BaseConnection::ptr &conn, const HeartbeatRequest::ptr &req) {
+        auto provider = _providers->GetProvider(conn);
+        if (provider) {
+            provider->UpdateActiveTime();
+            // LOG(NORMAL) << "收到来自 " << provider->host.first << ":" << provider->host.second << " 的心跳" << std::endl;
+        }
+        HeartbeatResponse::ptr rsp = MessageFactory::create<HeartbeatResponse>();
+        rsp->setId(req->rid());
+        rsp->setRCode(Rcode::RCODE_OK);
+        conn->send(rsp);
     }
 
     // success关闭对应的连接和连接对应的服务

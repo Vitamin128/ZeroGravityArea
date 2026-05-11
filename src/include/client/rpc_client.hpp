@@ -5,6 +5,8 @@
 #include"rpc_registry.hpp"
 #include "rpc_topic.hpp"
 #include <memory>
+#include <thread>
+#include <chrono>
 
 namespace gchrpc
 {
@@ -23,10 +25,27 @@ namespace gchrpc
                 LOG(NORMAL) << "RegistryClient 初始化, 连接注册中心 " << ip << ":" << port << std::endl;
                 auto req = std::bind(&Requestor::onResponse, _requestor.get(), std::placeholders::_1, std::placeholders::_2);
                 _dispatcher->registerHandler<BaseMessage>(MType::RSP_SERVICE, req);
+
+                auto hb_cb = std::bind(&Requestor::onResponse, _requestor.get(), std::placeholders::_1, std::placeholders::_2);
+                _dispatcher->registerHandler<BaseMessage>(MType::RSP_HEARTBEAT, hb_cb);
+
                 auto dis = std::bind(&Dispatcher::OnMessage, _dispatcher.get(), std::placeholders::_1, std::placeholders::_2);
                 _client->setMessageCallback(dis);
                 _client->connect();
                 LOG(NORMAL) << "RegistryClient 连接完成" << std::endl;
+
+                // 启动定时心跳线程
+                std::thread([this]() {
+                    while (true) {
+                        std::this_thread::sleep_for(std::chrono::seconds(10));
+                        if (_client->connected()) {
+                            HeartbeatRequest::ptr req = MessageFactory::create<HeartbeatRequest>();
+                            req->setId(UUID::uuid());
+                            BaseMessage::ptr rsp;
+                            _requestor->send(_client->connection(), req, rsp);
+                        }
+                    }
+                }).detach();
             }
 
             bool RegistryProvider(const std::string &method, const Address &host)

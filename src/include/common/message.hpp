@@ -288,6 +288,22 @@ namespace gchrpc
         using ptr=std::shared_ptr<TopicResponse>;
     };
 
+    class HeartbeatRequest: public JsonRequest
+    {
+        public:
+        using ptr=std::shared_ptr<HeartbeatRequest>;
+        HeartbeatRequest(){setMType(MType::REQ_HEARTBEAT);}
+        virtual bool check() override { return true; }
+    };
+
+    class HeartbeatResponse: public JsonResponse
+    {
+        public:
+        using ptr=std::shared_ptr<HeartbeatResponse>;
+        HeartbeatResponse(){setMType(MType::RSP_HEARTBEAT);}
+        virtual bool check() override { return true; }
+    };
+
     class ServiceResponse:public JsonResponse
     {
         public:
@@ -386,6 +402,10 @@ namespace gchrpc
                 return std::make_shared<ServiceRequest>();
                 case MType::RSP_SERVICE:
                 return std::make_shared<ServiceResponse>();
+                case MType::REQ_HEARTBEAT:
+                return std::make_shared<HeartbeatRequest>();
+                case MType::RSP_HEARTBEAT:
+                return std::make_shared<HeartbeatResponse>();
             }
             return BaseMessage::ptr();
         }

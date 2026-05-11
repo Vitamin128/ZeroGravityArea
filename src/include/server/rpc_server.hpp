@@ -22,6 +22,10 @@ public:
                              std::placeholders::_2);
         _dispatcher->registerHandler<ServiceRequest>(MType::REQ_SERVICE, it1);
 
+        auto it_hb = std::bind(&PDManager::onHeartbeat, _pdmanager.get(), std::placeholders::_1,
+                               std::placeholders::_2);
+        _dispatcher->registerHandler<HeartbeatRequest>(MType::REQ_HEARTBEAT, it_hb);
+
         auto it2 = std::bind(&Dispatcher::OnMessage, _dispatcher.get(), std::placeholders::_1,
                              std::placeholders::_2);
         _server->setMessageCallback(it2);

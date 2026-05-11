@@ -24,7 +24,9 @@ namespace gchrpc
         REQ_TOPIC,
         RSP_TOPIC,
         REQ_SERVICE,
-        RSP_SERVICE
+        RSP_SERVICE,
+        REQ_HEARTBEAT,
+        RSP_HEARTBEAT
     };
 
     //message的回复码,用于回复消息的结果定义
