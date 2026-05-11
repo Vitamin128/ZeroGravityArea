@@ -4,7 +4,7 @@
     
     <ToastCard :show="showToast" />
     <div class="search-wrapper">
-      <h1 class="title">Zero Gravity Search</h1>
+      <h1 class="title">Zero Gravity Area</h1>
       
       <!-- 搜索区域锚点 -->
       <div class="search-anchor">
