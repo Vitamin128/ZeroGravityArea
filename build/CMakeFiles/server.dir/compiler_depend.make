@@ -990,10 +990,10 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
   /usr/local/include/gchrpc/common/logger.hpp \
   /usr/local/include/gchrpc/common/message.hpp \
   /usr/local/include/gchrpc/common/net.hpp \
-  /usr/local/include/gchrpc/searcher/util.hpp \
   /usr/local/include/gchrpc/searcher/index.hpp \
   /usr/local/include/gchrpc/searcher/parser.hpp \
   /usr/local/include/gchrpc/searcher/searcher.hpp \
+  /usr/local/include/gchrpc/searcher/util.hpp \
   /usr/local/include/gchrpc/server/rpc_registry.hpp \
   /usr/local/include/gchrpc/server/rpc_router.hpp \
   /usr/local/include/gchrpc/server/rpc_server.hpp \

@@ -38,21 +38,6 @@ int main() {
     // 2. 配置 SPA 兜底逻辑
     // 如果用户刷新页面或直接输入 /search 这种非文件的路径，
     // 默认返回 index.html，交给前端 Vue Router 处理。
-    svr.Get(R"(/(.*))", [&](const httplib::Request &req, httplib::Response &res) {
-        // 如果请求的不是 API (不以 /api 开头)，且不是已存在的静态文件
-        if (req.path.find("/api") != 0) {
-            std::ifstream file("./dist/index.html");
-            if (file.is_open()) {
-                std::stringstream buffer;
-                buffer << file.rdbuf();
-                res.set_content(buffer.str(), "text/html");
-                return;
-            }
-        }
-        res.status = 404;
-        res.set_content("Not Found", "text/plain");
-    });
-
     // 5. 处理上传请求：/upload
     svr.Post("/upload", [&](const httplib::Request &req, httplib::Response &res) {
         res.set_header("Access-Control-Allow-Origin", "*");
@@ -194,6 +179,21 @@ int main() {
             res.status = 500;
             res.set_content("{\"error\": \"RPC call failed\"}", "application/json");
         }
+    });
+
+    svr.Get(R"(/(.*))", [&](const httplib::Request &req, httplib::Response &res) {
+        // 如果请求的不是 API (不以 /api 开头)，且不是已存在的静态文件
+        if (req.path.find("/api") != 0) {
+            std::ifstream file("./dist/index.html");
+            if (file.is_open()) {
+                std::stringstream buffer;
+                buffer << file.rdbuf();
+                res.set_content(buffer.str(), "text/html");
+                return;
+            }
+        }
+        res.status = 404;
+        res.set_content("Not Found", "text/plain");
     });
 
     std::cout << "HTTP Gateway started at http://0.0.0.0:8081" << std::endl;

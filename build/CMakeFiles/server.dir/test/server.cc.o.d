@@ -355,7 +355,7 @@ CMakeFiles/server.dir/test/server.cc.o: \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
  /usr/include/c++/13/bits/fstream.tcc /usr/include/c++/13/shared_mutex \
- /usr/local/include/gchrpc/searcher/./util.hpp \
+ /usr/local/include/gchrpc/searcher/util.hpp \
  /usr/include/boost/algorithm/string.hpp \
  /usr/include/boost/algorithm/string/std_containers_traits.hpp \
  /usr/include/boost/algorithm/string/std/string_traits.hpp \

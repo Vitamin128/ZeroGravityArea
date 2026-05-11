@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
     libcpp-httplib-dev \
     python3 \
     python3-pip \
+    && python3 -m pip install openai flask pdfminer.six --break-system-packages \
     && rm -rf /var/lib/apt/lists/*
 
 # 4. 拷贝刚刚整理好的第三方非标库 (Muduo & Jieba)
@@ -32,12 +33,23 @@ COPY ./docker_deps/share /usr/local/share/
 WORKDIR /app
 COPY . /app
 
-# 6. 运行构建脚本（注意：build.sh 会自动执行 make install/fast 和 make）
+# 6. 运行构建脚本
 RUN chmod +x build.sh && ./build.sh
 
-# 7. 配置服务端启动环境变量（0.0.0.0 供外部访问）
-ENV GCHRPC_HOST=0.0.0.0
-ENV GCHRPC_PORT=8088
+# --- 新增：创建多进程启动脚本 ---
+RUN echo '#!/bin/bash\n\
+echo "--- Starting Python PDF Parser ---"\n\
+nohup python3 ./src/pdf_parser.py > ./pdf_parser.log 2>&1 &\n\
+sleep 2\n\
+echo "--- Starting RPC Server ---"\n\
+./build/server &\n\
+sleep 2\n\
+echo "--- Starting HTTP Gateway ---"\n\
+./build/http_server\n\
+' > /app/start.sh && chmod +x /app/start.sh
 
-# 8. 默认启动命令 (只启动 C++ 搜索服务端，Python 解析服务建议后期分容器或单独配脚本)
-CMD ["./build/server"]
+# 7. 配置端口暴露
+EXPOSE 8081 8088
+
+# 8. 默认启动命令
+CMD ["/app/start.sh"]
