@@ -119,7 +119,13 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   position: relative; /* 为滑块提供定位基准 */
   display: flex;
   align-items: center;
-  padding: 0 40px;
+  justify-content: center; 
+  gap: 40px; /* 控制它们之间的等额间距 */
+  
+  /* --- 关键：通过左边距把整个居中的组合往右推 --- */
+  padding-left: 100px; /* 这个数字越大，整体就越往右偏 */
+  
+  padding-right: 40px; /* 保持原有的右边距 */
 }
 
 /* --- 动态滑块样式 --- */
@@ -134,9 +140,10 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
 }
 
 .nav-links {
+  white-space: nowrap; 
   display: flex;
   gap: 30px;
-  margin: 0 40px;
+  margin: 0 80px;
 }
 
 .nav-item {
@@ -162,6 +169,9 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   gap: 12px;
   font-size: 1.6rem;
   font-weight: 800;
+  /* margin-left: 73px; */
+  /* padding-left: 125px; */
+  /* padding-right: 125px; */
   white-space: nowrap;
   background: linear-gradient(to right, #4facfe, #00f2fe);
   -webkit-background-clip: text;
@@ -180,6 +190,7 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   color: white;
   font-size: 2rem;
   cursor: pointer;
-  margin-left: auto;
+  /* margin-left: auto; */
+  margin-left: 10px;
 }
 </style>
