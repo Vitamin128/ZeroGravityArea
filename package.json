@@ -17,7 +17,8 @@
     "three": "^0.184.0",
     "vanta": "^0.5.24",
     "vue": "^3.5.32",
-    "vue-loading-overlay": "6.0"
+    "vue-loading-overlay": "6.0",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.6",
