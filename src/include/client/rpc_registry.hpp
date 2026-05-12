@@ -95,11 +95,16 @@ namespace gchrpc
                     double l = 0.0;
                     if (_host_loads.count(h)) l = _host_loads[h];
                     
+                    // 调试打印：显示每个节点的负载
+                    LOG(NORMAL) << "  [负载检查] Host=" << h.first << ":" << h.second << ", Load=" << l << std::endl;
+
                     if (l < min_load) {
                         min_load = l;
                         best_host = h;
                     }
                 }
+                LOG(NORMAL) << ">>> [负载均衡选择] 最终选定 Host=" << best_host.first << ":" << best_host.second 
+                            << " (负载: " << (min_load > 1.0 ? 0.0 : min_load) << ")" << std::endl;
                 return best_host;
             }
 
