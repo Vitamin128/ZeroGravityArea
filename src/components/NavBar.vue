@@ -9,15 +9,15 @@
       <div class="nav-links">
         <router-link to="/search" class="nav-item">
           <Icon icon="ph:magnifying-glass-bold" />
-          <span>搜索</span>
+          <span>主页</span>
         </router-link>
         <router-link to="/history" class="nav-item">
-          <Icon icon="ph:clock-history-bold" />
-          <span>历史</span>
+          <Icon icon="ph:magnifying-glass-bold" />
+          <span>搜索</span>
         </router-link>
         <router-link to="/about" class="nav-item">
-          <Icon icon="ph:info-bold" />
-          <span>关于</span>
+          <Icon icon="tabler:alien"/>
+          <span>伙伴</span>
         </router-link>
       </div>
       <div class="nav-logo">
@@ -60,7 +60,7 @@ import { Icon } from '@iconify/vue';
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 70px;
   z-index: 1000; /* 确保在粒子和内容之上 */
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(12px);
@@ -87,7 +87,8 @@ import { Icon } from '@iconify/vue';
   font-size: 1.6rem;
   font-weight: 700;
   padding-right: 50px;
-  padding-left: 55px;
+  padding-left: 130px;
+  white-space: nowrap;
   background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -103,7 +104,7 @@ import { Icon } from '@iconify/vue';
 .nav-links {
   margin-left: 50px;
   display: flex;
-  gap: 150px;
+  gap: 110px;
 }
 
 .nav-item {
@@ -112,8 +113,9 @@ import { Icon } from '@iconify/vue';
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 1.2rem;
-  width: 60px;
+  font-size: 1.5rem;
+  width: 80px;
+  white-space: nowrap;
   transition: all 0.3s ease;
   padding: 5px 10px;
   border-radius: 8px;
