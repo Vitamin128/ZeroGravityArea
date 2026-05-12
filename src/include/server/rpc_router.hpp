@@ -2,6 +2,7 @@
 #include"common/net.hpp"
 #include"common/message.hpp"
 #include"common/logger.hpp"
+#include"searcher/util.hpp"
 namespace gchrpc
 {
     namespace server
@@ -231,7 +232,9 @@ namespace gchrpc
                     rep->setMType(MType::RSP_RPC);
                     rep->setRCode(rcode);
                     rep->setResult(body);
-                    LOG(NORMAL) << "发送 RPC 响应, ID: " << rqs->rid() << ", 结果码: " << (int)rcode << std::endl;
+                    // 方案 A：在每一个响应中塞入当前的系统负载 (使用全限定名确保可见性)
+                    rep->setLoad(::ns_util::SystemUtil::get_cpu_load());
+                    LOG(NORMAL) << "发送 RPC 响应, ID: " << rqs->rid() << ", 结果码: " << (int)rcode << ", 当前负载: " << rep->load() << std::endl;
                     conn->send(rep);
                 }
             ServiceManager::ptr _service_manager;

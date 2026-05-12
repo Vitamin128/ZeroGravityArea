@@ -67,6 +67,14 @@ namespace gchrpc
         virtual void setRCode(Rcode rcode){
             _body[KEY_RCODE]=(int)rcode;
         }
+
+        virtual void setLoad(double val){
+            _body[KEY_LOAD_VAL]=val;
+        }
+
+        virtual double load(){
+            return _body[KEY_LOAD_VAL].asDouble();
+        }
     };
 
 
@@ -303,16 +311,6 @@ namespace gchrpc
         HeartbeatResponse(){setMType(MType::RSP_HEARTBEAT);}
         virtual bool check() override { return true; }
     };
-    
-    class LoadInfoRequest: public JsonRequest
-    {
-        public:
-        using ptr=std::shared_ptr<LoadInfoRequest>;
-        LoadInfoRequest(){setMType(MType::REQ_LOAD_INFO);}
-        virtual bool check() override { return true; }
-        void setLoad(double val) { _body[KEY_LOAD_VAL] = val; }
-        double load() { return _body[KEY_LOAD_VAL].asDouble(); }
-    };
 
     class ServiceResponse:public JsonResponse
     {
@@ -416,8 +414,6 @@ namespace gchrpc
                 return std::make_shared<HeartbeatRequest>();
                 case MType::RSP_HEARTBEAT:
                 return std::make_shared<HeartbeatResponse>();
-                case MType::REQ_LOAD_INFO:
-                return std::make_shared<LoadInfoRequest>();
             }
             return BaseMessage::ptr();
         }
