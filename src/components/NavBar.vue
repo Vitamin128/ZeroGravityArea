@@ -70,7 +70,7 @@ const leftLinks = [
 
 const rightLinks = [
   { name: '消息', path: '/message', icon: 'tabler:message' },
-  { name: '书馆', path: '/library', icon: 'akar-icons:book' },
+  { name: '视频', path: '/video', icon: 'mingcute:video-line' },
   { name: '个人主页', path: '/mainpage', icon: 'material-symbols:home-outline-rounded' },
 ];
 

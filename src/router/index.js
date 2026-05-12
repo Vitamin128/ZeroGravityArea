@@ -5,7 +5,7 @@ import MainSearch from '../views/MainSearch.vue'
 import Gaming from '../views/Gaming.vue'
 import AIFriend from '../views/AIFriend.vue'
 import IMessage from '../views/IMessage.vue'
-import Library from '../views/Library.vue'
+import Video from '../views/Video.vue'
 import MainPage from '../views/MainPage.vue'
 
 const routes = [
@@ -34,9 +34,9 @@ const routes = [
     component: IMessage
   },
   {
-    path: '/library',
-    name: 'Library',
-    component: Library
+    path: '/video',
+    name: 'Video',
+    component: Video
   },
   {
     path: '/mainpage',
