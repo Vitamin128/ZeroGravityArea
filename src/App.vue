@@ -1,12 +1,22 @@
 <template>
   <div class="app-root">
+    <!-- 全局星空背景 -->
     <vue-particles id="tsparticles" :options="particlesOptions" />
-    <router-view />
+    
+    <!-- 全局顶部导航栏 -->
+    <NavBar />
+
+    <!-- 路由出口：增加一个包裹层来处理顶部间距 -->
+    <main class="main-content">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script setup lang="js">
-// 粒子背景配置迁移到 App.vue，作为全局背景
+import NavBar from './components/NavBar.vue';
+
+// 粒子背景配置
 const particlesOptions = {
   preset: "stars",
   background: {
@@ -25,7 +35,7 @@ const particlesOptions = {
 </script>
 
 <style>
-/* 全局样式：保持背景和字体设置 */
+/* 全局样式 */
 body {
   margin: 0;
   min-height: 100vh;
@@ -35,11 +45,11 @@ body {
   overflow-x: hidden;
   font-size: 15px;
 }
+
 html {
   font-size: 15px;
 }
 
-/* 粒子背景样式：确保覆盖全屏且在底层 */
 #tsparticles {
   position: fixed;
   top: 0;
@@ -51,8 +61,14 @@ html {
 }
 
 .app-root {
-  min-height: 100vh; /* 保证根容器至少占满全屏 */
+  min-height: 100vh;
   position: relative;
   z-index: 1;
+}
+
+/* 主内容区域：预留出导航栏的高度 (60px) */
+.main-content {
+  padding-top: 30px;
+  width: 100%;
 }
 </style>

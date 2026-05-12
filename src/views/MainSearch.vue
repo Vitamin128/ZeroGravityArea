@@ -2,7 +2,7 @@
   <div class="app-container">
     <ToastCard :show="showToast" />
     <div class="search-wrapper">
-      <h1 class="title">Zero Gravity Area</h1>
+      <!-- <h1 class="title">Zero Gravity Area</h1> -->
       
       <!-- 搜索区域锚点 -->
       <div class="search-anchor">
@@ -102,7 +102,7 @@ const onUploadSuccess = (uploadedFiles) => {
   text-align: center;
   width: 30%;
   padding: 15px;
-  margin-top: 15px;
+  margin-top: 50px;
   margin-bottom: 22px;
 }
 .cards-wrapper {
