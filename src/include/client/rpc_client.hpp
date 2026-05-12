@@ -233,6 +233,7 @@ namespace gchrpc
                     double load = rsp->load();
                     // 核心：调用更新权重接口
                     _discovery_client->UpdateWeight(conn->peerAddress(), load);
+                    std::cout << "[CLIENT_DEBUG] 收到服务器 " << conn->peerAddress().first << ":" << conn->peerAddress().second << " 的负载上报: " << load << std::endl;
                     LOG(NORMAL) << "从响应中提取负载并更新权重, host=" << conn->peerAddress().first << ":" << conn->peerAddress().second << ", load=" << load << std::endl;
                 }
                 

@@ -7,7 +7,21 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
   /home/bamboo/ZeroGravityArea/src/include/client/rpc_client.hpp \
   /home/bamboo/ZeroGravityArea/src/include/client/rpc_registry.hpp \
   /home/bamboo/ZeroGravityArea/src/include/client/rpc_topic.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/common/abstract.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/common/detail.hpp \
   /home/bamboo/ZeroGravityArea/src/include/common/dispatcher.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/common/fields.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/common/logger.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/common/message.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/common/net.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/searcher/util.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/searcher/index.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/searcher/parser.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/searcher/searcher.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/server/rpc_registry.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/server/rpc_router.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/server/rpc_server.hpp \
+  /home/bamboo/ZeroGravityArea/src/include/server/rpc_topic.hpp \
   /usr/include/alloca.h \
   /usr/include/arpa/inet.h \
   /usr/include/arpa/nameser.h \
@@ -664,6 +678,7 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
   /usr/include/c++/13/cassert \
   /usr/include/c++/13/cctype \
   /usr/include/c++/13/cerrno \
+  /usr/include/c++/13/chrono \
   /usr/include/c++/13/climits \
   /usr/include/c++/13/clocale \
   /usr/include/c++/13/cmath \
@@ -984,20 +999,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
   /usr/local/include/cppjieba/Trie.hpp \
   /usr/local/include/cppjieba/Unicode.hpp \
   /usr/local/include/cppjieba/UnicodeFile.hpp \
-  /usr/local/include/gchrpc/common/abstract.hpp \
-  /usr/local/include/gchrpc/common/detail.hpp \
-  /usr/local/include/gchrpc/common/fields.hpp \
-  /usr/local/include/gchrpc/common/logger.hpp \
-  /usr/local/include/gchrpc/common/message.hpp \
-  /usr/local/include/gchrpc/common/net.hpp \
-  /usr/local/include/gchrpc/searcher/index.hpp \
-  /usr/local/include/gchrpc/searcher/parser.hpp \
-  /usr/local/include/gchrpc/searcher/searcher.hpp \
-  /usr/local/include/gchrpc/searcher/util.hpp \
-  /usr/local/include/gchrpc/server/rpc_registry.hpp \
-  /usr/local/include/gchrpc/server/rpc_router.hpp \
-  /usr/local/include/gchrpc/server/rpc_server.hpp \
-  /usr/local/include/gchrpc/server/rpc_topic.hpp \
   /usr/local/include/limonp/LocalVector.hpp \
   /usr/local/include/limonp/Logging.hpp \
   /usr/local/include/limonp/StdExtension.hpp \
@@ -1043,14 +1044,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/local/include/muduo/base/Atomic.h:
 
-/usr/local/include/gchrpc/server/rpc_server.hpp:
-
-/usr/local/include/gchrpc/searcher/searcher.hpp:
-
-/usr/local/include/gchrpc/searcher/index.hpp:
-
-/usr/local/include/gchrpc/common/fields.hpp:
-
 /usr/local/include/cppjieba/UnicodeFile.hpp:
 
 /usr/local/include/cppjieba/Trie.hpp:
@@ -1080,8 +1073,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h:
-
-/usr/local/include/gchrpc/common/net.hpp:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/opt_random.h:
 
@@ -1143,8 +1134,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
 
-/usr/include/x86_64-linux-gnu/bits/sockaddr.h:
-
 /usr/include/x86_64-linux-gnu/bits/sigstksz.h:
 
 /usr/include/x86_64-linux-gnu/bits/signum-generic.h:
@@ -1164,8 +1153,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
-
-/usr/local/include/gchrpc/common/message.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
 
@@ -1234,8 +1221,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/strings.h:
 
 /usr/include/string.h:
-
-/usr/local/include/gchrpc/server/rpc_registry.hpp:
 
 /usr/include/stdio.h:
 
@@ -1617,43 +1602,29 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/c++/13/bits/basic_ios.tcc:
 
-/usr/include/boost/mpl/void.hpp:
+/usr/include/c++/13/bits/basic_ios.h:
 
-/usr/include/boost/mpl/aux_/config/ctps.hpp:
+/usr/include/c++/13/bits/stl_heap.h:
 
-/usr/include/boost/mpl/or.hpp:
+/usr/include/c++/13/bits/atomic_lockfree_defines.h:
 
-/usr/include/boost/mpl/not.hpp:
+/usr/include/c++/13/bits/atomic_futex.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+/usr/include/c++/13/bits/atomic_base.h:
 
-/usr/include/c++/13/bits/locale_conv.h:
+/usr/include/c++/13/bits/allocator.h:
 
-/usr/include/boost/function/detail/maybe_include.hpp:
+/usr/include/c++/13/bits/allocated_ptr.h:
 
-/usr/local/include/cppjieba/FullSegment.hpp:
+/usr/include/c++/13/bits/alloc_traits.h:
 
-/usr/include/boost/mpl/logical.hpp:
+/usr/include/c++/13/bits/algorithmfwd.h:
 
-/usr/include/boost/mpl/lambda_fwd.hpp:
-
-/usr/include/c++/13/bits/memoryfwd.h:
-
-/usr/include/boost/mpl/aux_/config/static_constant.hpp:
-
-/usr/include/boost/preprocessor/iteration/iterate.hpp:
-
-/usr/include/boost/range/detail/str_types.hpp:
+/usr/include/c++/13/atomic:
 
 /usr/include/boost/mpl/has_xxx.hpp:
 
 /usr/include/boost/function.hpp:
-
-/usr/include/boost/mpl/placeholders.hpp:
-
-/usr/include/boost/iterator/detail/config_undef.hpp:
-
-/usr/include/assert.h:
 
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
@@ -1661,15 +1632,13 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/mpl/bind_fwd.hpp:
 
-/usr/local/include/gchrpc/searcher/parser.hpp:
-
 /usr/include/boost/mpl/aux_/value_wknd.hpp:
-
-/usr/include/boost/mpl/aux_/config/use_preprocessed.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
 /usr/include/boost/algorithm/string/erase.hpp:
+
+/usr/include/boost/mpl/aux_/config/use_preprocessed.hpp:
 
 /usr/include/boost/filesystem/directory.hpp:
 
@@ -1685,10 +1654,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/preprocessor/repetition/enum_binary_params.hpp:
 
-/usr/include/c++/13/ctime:
-
-/usr/include/boost/mpl/aux_/nttp_decl.hpp:
-
 /usr/include/boost/mpl/aux_/na_fwd.hpp:
 
 /usr/include/boost/mpl/aux_/preprocessor/params.hpp:
@@ -1701,23 +1666,25 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/mpl/aux_/na_assert.hpp:
 
-/usr/local/include/gchrpc/common/logger.hpp:
-
-/usr/include/boost/mpl/aux_/include_preprocessed.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/sigthread.h:
-
-/usr/include/boost/mpl/protect.hpp:
-
-/usr/include/boost/preprocessor/facilities/identity.hpp:
-
 /usr/include/boost/mpl/aux_/config/gcc.hpp:
+
+/usr/include/c++/13/bits/memoryfwd.h:
+
+/usr/include/boost/mpl/aux_/config/static_constant.hpp:
+
+/usr/include/boost/mpl/lambda_fwd.hpp:
+
+/usr/include/boost/preprocessor/iteration/iterate.hpp:
+
+/usr/include/boost/range/detail/str_types.hpp:
 
 /usr/include/c++/13/bits/istream.tcc:
 
 /usr/include/boost/config/detail/cxx_composite.hpp:
 
-/usr/include/c++/13/bits/allocated_ptr.h:
+/usr/include/boost/mpl/aux_/include_preprocessed.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/common/message.hpp:
 
 /usr/include/boost/mpl/aux_/config/pp_counter.hpp:
 
@@ -1732,8 +1699,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/boost/range/config.hpp:
 
 /usr/include/boost/mpl/aux_/config/nttp.hpp:
-
-/usr/local/include/gchrpc/searcher/util.hpp:
 
 /usr/include/boost/mpl/aux_/config/msvc_typename.hpp:
 
@@ -1777,12 +1742,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/mpl/aux_/config/compiler.hpp:
 
-/usr/include/c++/13/bits/stl_set.h:
-
-/usr/include/boost/mpl/lambda.hpp:
-
-/usr/include/boost/type_traits/is_member_pointer.hpp:
-
 /usr/include/x86_64-linux-gnu/c++/13/bits/error_constants.h:
 
 /usr/include/c++/13/bits/predefined_ops.h:
@@ -1825,17 +1784,11 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/mpl/always.hpp:
 
-/usr/local/include/gchrpc/server/rpc_topic.hpp:
-
 /usr/include/c++/13/bits/regex_constants.h:
 
 /usr/include/boost/preprocessor/repetition/for.hpp:
 
 /usr/include/boost/type_traits/disjunction.hpp:
-
-/usr/include/boost/iterator/iterator_facade.hpp:
-
-/usr/include/boost/range/algorithm/equal.hpp:
 
 /usr/include/boost/iterator/iterator_categories.hpp:
 
@@ -1860,14 +1813,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/c++/13/string:
 
 /usr/include/boost/preprocessor/iteration/detail/bounds/upper1.hpp:
-
-/usr/include/c++/13/debug/debug.h:
-
-/usr/include/c++/13/bits/stl_list.h:
-
-/usr/include/boost/mpl/int_fwd.hpp:
-
-/usr/include/boost/preprocessor/seq/limits/size_256.hpp:
 
 /usr/include/boost/io/quoted.hpp:
 
@@ -1909,6 +1854,10 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/preprocessor/iteration/detail/iter/limits/forward1_256.hpp:
 
+/usr/include/x86_64-linux-gnu/bits/sockaddr.h:
+
+/home/bamboo/ZeroGravityArea/src/include/searcher/util.hpp:
+
 /usr/include/x86_64-linux-gnu/bits/socket.h:
 
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
@@ -1916,6 +1865,14 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/boost/system/detail/system_category_message.hpp:
 
 /usr/include/boost/function/detail/prologue.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/c++/13/bits/locale_conv.h:
+
+/usr/include/boost/function/detail/maybe_include.hpp:
+
+/usr/include/boost/mpl/not.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
@@ -1925,35 +1882,175 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/mpl/bind.hpp:
 
+/home/bamboo/ZeroGravityArea/src/include/server/rpc_registry.hpp:
+
 /usr/include/boost/preprocessor/arithmetic/mod.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/siginfo-consts.h:
 
 /usr/include/boost/function/detail/epilogue.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
+/usr/include/limits.h:
 
-/usr/include/boost/algorithm/string/trim.hpp:
+/usr/include/c++/13/cstdlib:
 
-/usr/include/c++/13/ratio:
+/usr/include/boost/mpl/aux_/config/has_apply.hpp:
 
-/usr/include/boost/type_traits/is_constructible.hpp:
+/usr/include/x86_64-linux-gnu/bits/time.h:
 
-/usr/include/boost/algorithm/string/std/string_traits.hpp:
+/home/bamboo/ZeroGravityArea/src/include/common/dispatcher.hpp:
 
-/usr/include/c++/13/tr1/exp_integral.tcc:
+/usr/include/boost/filesystem/path.hpp:
 
-/usr/include/boost/algorithm/string/detail/util.hpp:
+/usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h:
+
+/usr/include/c++/13/array:
+
+/usr/include/boost/bind/mem_fn.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/mman.h:
+
+/usr/include/boost/algorithm/string/detail/trim.hpp:
+
+/usr/include/boost/type_traits/type_identity.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
+
+/usr/include/boost/filesystem/operations.hpp:
+
+/usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp:
+
+/usr/include/boost/mpl/aux_/arity_spec.hpp:
+
+/usr/include/boost/mpl/aux_/template_arity_fwd.hpp:
+
+/usr/include/boost/mpl/aux_/has_apply.hpp:
+
+/usr/include/boost/preprocessor/arithmetic/detail/is_maximum_number.hpp:
+
+/usr/include/boost/type_index.hpp:
+
+/usr/include/boost/mpl/aux_/na_spec.hpp:
+
+/usr/include/boost/type_traits/alignment_of.hpp:
+
+/usr/include/boost/mpl/aux_/config/bcc.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/statx.h:
+
+/usr/include/boost/mpl/aux_/preprocessed/gcc/template_arity.hpp:
+
+/usr/include/boost/preprocessor/iteration/detail/iter/forward1.hpp:
+
+/usr/include/boost/iterator/detail/facade_iterator_category.hpp:
+
+/usr/include/boost/filesystem/detail/path_traits.hpp:
+
+/usr/include/boost/type_traits/is_lvalue_reference.hpp:
+
+/usr/include/c++/13/backward/binders.h:
+
+/usr/include/boost/utility/base_from_member.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
+
+/usr/include/boost/mpl/bool.hpp:
+
+/usr/include/boost/filesystem/detail/header.hpp:
+
+/usr/include/boost/mpl/aux_/static_cast.hpp:
+
+/usr/include/c++/13/cwctype:
+
+/usr/include/boost/filesystem/convenience.hpp:
+
+/usr/include/boost/mpl/aux_/na.hpp:
+
+/usr/include/boost/type_traits/conjunction.hpp:
+
+/usr/include/boost/mpl/aux_/msvc_never_true.hpp:
+
+/usr/include/boost/detail/workaround.hpp:
+
+/usr/include/boost/mpl/and.hpp:
+
+/usr/include/boost/mpl/aux_/config/overload_resolution.hpp:
+
+/usr/include/boost/algorithm/string/find_iterator.hpp:
 
 /usr/include/boost/algorithm/string/std/slist_traits.hpp:
 
 /usr/include/boost/algorithm/string/concept.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h:
+/usr/include/boost/function/detail/requires_cxx11.hpp:
 
-/usr/include/boost/mpl/aux_/preprocessed/gcc/bind_fwd.hpp:
+/usr/include/boost/config/auto_link.hpp:
 
-/usr/include/boost/algorithm/string/constants.hpp:
+/usr/include/boost/algorithm/string/find_format.hpp:
+
+/usr/include/c++/13/vector:
+
+/usr/include/boost/preprocessor/logical/compl.hpp:
+
+/usr/include/boost/algorithm/string/detail/sequence.hpp:
+
+/usr/include/c++/13/bits/stl_numeric.h:
+
+/usr/include/boost/concept/detail/backward_compatibility.hpp:
+
+/usr/include/boost/iterator/detail/config_undef.hpp:
+
+/usr/include/assert.h:
+
+/usr/include/boost/mpl/placeholders.hpp:
+
+/usr/include/c++/13/bits/stl_relops.h:
+
+/usr/include/asm-generic/sockios.h:
+
+/usr/include/unistd.h:
+
+/usr/include/boost/exception/exception.hpp:
+
+/usr/include/boost/algorithm/string/classification.hpp:
+
+/usr/include/boost/preprocessor/repetition/repeat.hpp:
+
+/usr/include/boost/core/noncopyable.hpp:
+
+/usr/include/boost/range/detail/sfinae.hpp:
+
+/usr/include/boost/mpl/aux_/nested_type_wknd.hpp:
+
+/usr/include/boost/limits.hpp:
+
+/usr/include/boost/range/detail/common.hpp:
+
+/usr/include/boost/range/mutable_iterator.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/ss_flags.h:
+
+/usr/include/boost/algorithm/string/case_conv.hpp:
+
+/usr/include/c++/13/bits/regex_scanner.tcc:
+
+/usr/include/boost/algorithm/string/finder.hpp:
+
+/usr/include/stdlib.h:
+
+/usr/include/boost/type_traits/remove_pointer.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/searcher/searcher.hpp:
+
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/include/asm-generic/socket.h:
+
+/usr/include/boost/preprocessor/facilities/empty.hpp:
+
+/usr/include/boost/core/checked_delete.hpp:
+
+/usr/include/boost/preprocessor/punctuation/comma_if.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
@@ -1963,35 +2060,13 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/c++/13/bits/random.h:
 
+/home/bamboo/ZeroGravityArea/src/include/common/net.hpp:
+
 /usr/include/boost/io_fwd.hpp:
 
 /usr/include/boost/type_traits/is_integral.hpp:
 
 /usr/include/boost/algorithm/string/sequence_traits.hpp:
-
-/usr/include/boost/algorithm/string/predicate_facade.hpp:
-
-/usr/include/boost/algorithm/string/detail/find_iterator.hpp:
-
-/usr/include/boost/system/is_error_code_enum.hpp:
-
-/usr/include/boost/iterator/reverse_iterator.hpp:
-
-/usr/include/boost/mpl/aux_/config/dtp.hpp:
-
-/usr/include/boost/preprocessor/seq/size.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/mman.h:
-
-/usr/include/boost/algorithm/string/detail/trim.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
-
-/usr/include/boost/filesystem/detail/header.hpp:
-
-/usr/include/boost/mpl/bool.hpp:
-
-/usr/include/boost/type_traits/type_identity.hpp:
 
 /usr/include/alloca.h:
 
@@ -2001,95 +2076,15 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/config/abi_suffix.hpp:
 
-/usr/include/c++/13/memory:
+/usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h:
 
-/usr/include/boost/algorithm/string/split.hpp:
+/usr/include/boost/mpl/aux_/preprocessed/gcc/bind_fwd.hpp:
 
-/usr/include/c++/13/bits/locale_classes.tcc:
+/usr/include/boost/algorithm/string/constants.hpp:
 
-/usr/include/boost/cstdint.hpp:
+/home/bamboo/ZeroGravityArea/src/include/server/rpc_server.hpp:
 
-/usr/include/c++/13/bits/stl_relops.h:
-
-/usr/include/asm-generic/sockios.h:
-
-/usr/include/boost/mpl/apply_fwd.hpp:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/c++/13/tr1/legendre_function.tcc:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/boost/mpl/aux_/msvc_never_true.hpp:
-
-/usr/include/boost/detail/workaround.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/time.h:
-
-/home/bamboo/ZeroGravityArea/src/include/common/dispatcher.hpp:
-
-/usr/include/limits.h:
-
-/usr/include/c++/13/cstdlib:
-
-/usr/include/boost/mpl/aux_/config/has_apply.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
-
-/usr/include/c++/13/deque:
-
-/usr/include/boost/any/detail/placeholder.hpp:
-
-/usr/include/wctype.h:
-
-/usr/include/boost/bind/mem_fn_cc.hpp:
-
-/usr/include/boost/algorithm/string/find_iterator.hpp:
-
-/usr/include/boost/mpl/and.hpp:
-
-/usr/include/boost/mpl/aux_/config/overload_resolution.hpp:
-
-/home/bamboo/ZeroGravityArea/src/include/client/rpc_topic.hpp:
-
-/usr/include/c++/13/bits/codecvt.h:
-
-/usr/include/boost/type_traits/is_floating_point.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/statx.h:
-
-/usr/include/boost/mpl/aux_/preprocessed/gcc/template_arity.hpp:
-
-/usr/include/boost/mpl/aux_/config/bcc.hpp:
-
-/usr/include/boost/preprocessor/iteration/detail/iter/forward1.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
-
-/usr/include/boost/assert.hpp:
-
-/usr/include/boost/mpl/aux_/static_cast.hpp:
-
-/home/bamboo/ZeroGravityArea/test/server.cc:
-
-/usr/include/boost/config/no_tr1/functional.hpp:
-
-/usr/include/boost/range/functions.hpp:
-
-/usr/include/boost/range/iterator_range.hpp:
-
-/usr/include/boost/type_traits/function_traits.hpp:
-
-/usr/include/c++/13/bits/postypes.h:
-
-/usr/include/arpa/nameser_compat.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigaction.h:
-
-/usr/include/arpa/inet.h:
-
-/usr/include/boost/smart_ptr/intrusive_ptr.hpp:
+/usr/include/boost/algorithm/string.hpp:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_inline.h:
 
@@ -2097,9 +2092,103 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/functional/hash_fwd.hpp:
 
-/usr/include/boost/algorithm/string.hpp:
-
 /usr/include/boost/preprocessor/arithmetic/detail/maximum_number.hpp:
+
+/usr/include/boost/algorithm/string/iter_find.hpp:
+
+/usr/include/c++/13/bits/locale_classes.tcc:
+
+/usr/include/boost/cstdint.hpp:
+
+/usr/include/c++/13/memory:
+
+/usr/include/boost/algorithm/string/split.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/common/fields.hpp:
+
+/usr/include/c++/13/tr1/legendre_function.tcc:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/local/include/muduo/net/Buffer.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/boost/algorithm/string/detail/find_iterator.hpp:
+
+/usr/include/boost/algorithm/string/predicate_facade.hpp:
+
+/usr/include/boost/system/is_error_code_enum.hpp:
+
+/usr/include/boost/iterator/reverse_iterator.hpp:
+
+/usr/include/boost/mpl/aux_/config/dtp.hpp:
+
+/usr/include/boost/preprocessor/seq/size.hpp:
+
+/usr/include/c++/13/ctime:
+
+/usr/include/boost/mpl/aux_/nttp_decl.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/client/rpc_topic.hpp:
+
+/usr/include/c++/13/bits/codecvt.h:
+
+/usr/include/boost/type_traits/is_floating_point.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+
+/usr/include/boost/assert.hpp:
+
+/usr/include/jsoncpp/json/json_features.h:
+
+/usr/include/boost/system/detail/mutex.hpp:
+
+/usr/include/boost/preprocessor/arithmetic/sub.hpp:
+
+/home/bamboo/ZeroGravityArea/test/server.cc:
+
+/usr/include/boost/config/no_tr1/functional.hpp:
+
+/usr/include/boost/iterator/iterator_facade.hpp:
+
+/usr/include/boost/range/algorithm/equal.hpp:
+
+/usr/include/boost/preprocessor/list/reverse.hpp:
+
+/usr/include/c++/13/tr1/exp_integral.tcc:
+
+/usr/include/boost/algorithm/string/detail/util.hpp:
+
+/usr/include/c++/13/ratio:
+
+/usr/include/boost/type_traits/is_constructible.hpp:
+
+/usr/include/boost/algorithm/string/std/string_traits.hpp:
+
+/usr/include/c++/13/bits/postypes.h:
+
+/usr/include/arpa/nameser_compat.h:
+
+/usr/include/boost/smart_ptr/intrusive_ptr.hpp:
+
+/usr/include/boost/config/helper_macros.hpp:
+
+/usr/include/boost/type_traits/remove_cv.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/common/abstract.hpp:
+
+/usr/include/c++/13/bits/new_allocator.h:
+
+/usr/include/boost/type_traits/is_abstract.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/sigaction.h:
+
+/usr/include/arpa/inet.h:
+
+/home/bamboo/ZeroGravityArea/src/include/searcher/index.hpp:
 
 /usr/include/boost/algorithm/string/detail/find_format.hpp:
 
@@ -2111,31 +2200,49 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/smart_ptr/detail/sp_nullptr_t.hpp:
 
-/usr/include/boost/range/detail/sfinae.hpp:
+/usr/include/x86_64-linux-gnu/bits/sigstack.h:
 
-/usr/include/boost/mpl/aux_/nested_type_wknd.hpp:
+/usr/include/boost/type_traits/is_convertible.hpp:
 
-/usr/include/boost/range/mutable_iterator.hpp:
+/usr/include/boost/preprocessor/list/detail/fold_right.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/ss_flags.h:
+/usr/include/c++/13/bits/locale_classes.h:
 
-/usr/include/boost/algorithm/string/case_conv.hpp:
+/usr/include/boost/mpl/aux_/preprocessed/gcc/apply_wrap.hpp:
 
-/usr/include/boost/algorithm/string/detail/sequence.hpp:
+/usr/include/boost/system/detail/cerrno.hpp:
 
-/usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp:
+/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
-/usr/include/boost/mpl/aux_/arity_spec.hpp:
+/usr/include/boost/mpl/aux_/preprocessed/gcc/full_lambda.hpp:
 
-/usr/include/x86_64-linux-gnu/sys/types.h:
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
-/usr/include/asm-generic/socket.h:
+/usr/include/boost/iterator/iterator_concepts.hpp:
 
-/usr/include/boost/preprocessor/facilities/empty.hpp:
+/usr/include/boost/preprocessor/arithmetic/limits/inc_256.hpp:
 
-/usr/include/boost/mpl/aux_/na.hpp:
+/usr/include/boost/mpl/aux_/arity.hpp:
 
-/usr/include/boost/type_traits/conjunction.hpp:
+/usr/include/asm-generic/posix_types.h:
+
+/home/bamboo/ZeroGravityArea/src/include/searcher/parser.hpp:
+
+/usr/include/c++/13/stdexcept:
+
+/usr/include/c++/13/clocale:
+
+/usr/include/boost/algorithm/string/detail/find_format_all.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
+
+/usr/include/boost/algorithm/string/trim.hpp:
+
+/usr/include/boost/mpl/apply_fwd.hpp:
+
+/usr/include/boost/config/detail/select_platform_config.hpp:
+
+/usr/include/boost/system/system_error.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
@@ -2165,101 +2272,7 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/algorithm/string/predicate.hpp:
 
-/usr/include/c++/13/bits/regex_scanner.tcc:
-
-/usr/include/boost/algorithm/string/finder.hpp:
-
-/usr/include/stdlib.h:
-
-/usr/include/boost/type_traits/remove_pointer.hpp:
-
-/usr/include/boost/algorithm/string/iter_find.hpp:
-
-/usr/include/boost/algorithm/string/std_containers_traits.hpp:
-
-/home/bamboo/ZeroGravityArea/src/include/client/rpc_registry.hpp:
-
-/usr/include/boost/type_traits/remove_cv.hpp:
-
-/usr/include/boost/config/helper_macros.hpp:
-
-/usr/include/c++/13/atomic:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
-
-/usr/include/boost/mpl/aux_/preprocessed/gcc/full_lambda.hpp:
-
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
-
-/usr/include/boost/preprocessor/arithmetic/limits/inc_256.hpp:
-
-/usr/include/boost/iterator/iterator_concepts.hpp:
-
-/usr/include/boost/mpl/aux_/arity.hpp:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/local/include/muduo/net/Buffer.h:
-
-/usr/include/asm-generic/errno-base.h:
-
-/usr/include/boost/range/detail/common.hpp:
-
-/usr/include/boost/limits.hpp:
-
-/usr/include/boost/function/detail/requires_cxx11.hpp:
-
-/usr/include/boost/config/auto_link.hpp:
-
-/usr/include/jsoncpp/json/json_features.h:
-
-/usr/include/boost/preprocessor/arithmetic/sub.hpp:
-
-/usr/include/boost/system/detail/mutex.hpp:
-
-/usr/include/boost/algorithm/string/find_format.hpp:
-
-/usr/include/c++/13/vector:
-
-/usr/include/boost/preprocessor/logical/compl.hpp:
-
-/usr/include/c++/13/stdexcept:
-
-/usr/include/c++/13/clocale:
-
-/usr/include/boost/algorithm/string/detail/find_format_all.hpp:
-
-/usr/include/unistd.h:
-
-/usr/include/boost/exception/exception.hpp:
-
-/usr/include/boost/algorithm/string/classification.hpp:
-
-/usr/include/boost/preprocessor/repetition/repeat.hpp:
-
-/usr/include/boost/core/noncopyable.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/sigstack.h:
-
-/usr/include/boost/type_traits/is_convertible.hpp:
-
-/usr/include/boost/preprocessor/list/detail/fold_right.hpp:
-
-/usr/include/c++/13/bits/locale_classes.h:
-
-/usr/include/boost/mpl/aux_/preprocessed/gcc/apply_wrap.hpp:
-
-/usr/include/boost/system/detail/cerrno.hpp:
-
-/usr/include/boost/utility/detail/result_of_variadic.hpp:
-
 /usr/include/boost/iterator/iterator_adaptor.hpp:
-
-/usr/include/c++/13/bits/shared_ptr.h:
-
-/usr/include/boost/algorithm/string/join.hpp:
-
-/usr/include/boost/detail/bitmask.hpp:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h:
 
@@ -2283,21 +2296,45 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/static_assert.hpp:
 
-/usr/include/c++/13/bits/stl_numeric.h:
+/home/bamboo/ZeroGravityArea/src/include/server/rpc_router.hpp:
 
-/usr/include/boost/concept/detail/backward_compatibility.hpp:
+/usr/include/c++/13/bits/shared_ptr.h:
+
+/usr/include/boost/detail/bitmask.hpp:
+
+/usr/include/boost/algorithm/string/join.hpp:
+
+/usr/include/boost/utility/detail/result_of_variadic.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/client/rpc_registry.hpp:
+
+/usr/include/boost/algorithm/string/std_containers_traits.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
+/usr/include/c++/13/deque:
+
+/usr/include/boost/any/detail/placeholder.hpp:
+
+/usr/include/wctype.h:
+
+/usr/include/boost/bind/mem_fn_cc.hpp:
 
 /usr/include/boost/type_traits/remove_bounds.hpp:
 
 /usr/include/boost/mpl/aux_/config/bind.hpp:
-
-/usr/include/c++/13/bits/atomic_futex.h:
 
 /usr/include/boost/io/detail/buffer_fill.hpp:
 
 /usr/include/boost/version.hpp:
 
 /usr/include/boost/algorithm/string/yes_no_type.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/common/detail.hpp:
+
+/usr/local/include/cppjieba/FullSegment.hpp:
+
+/usr/include/boost/mpl/logical.hpp:
 
 /usr/include/boost/any.hpp:
 
@@ -2339,16 +2376,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/range/iterator_range_core.hpp:
 
-/usr/include/boost/mpl/limits/arity.hpp:
-
-/usr/include/boost/mem_fn.hpp:
-
-/usr/include/boost/filesystem/path.hpp:
-
-/usr/include/boost/config/detail/select_platform_config.hpp:
-
-/usr/include/boost/system/system_error.hpp:
-
 /usr/include/boost/algorithm/string/detail/finder.hpp:
 
 /usr/include/c++/13/bits/fs_ops.h:
@@ -2356,10 +2383,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/boost/concept/detail/concept_def.hpp:
 
 /usr/include/boost/concept_check.hpp:
-
-/usr/include/boost/mpl/integral_c_tag.hpp:
-
-/usr/include/boost/preprocessor/punctuation/comma.hpp:
 
 /usr/include/boost/preprocessor/tuple/elem.hpp:
 
@@ -2425,31 +2448,25 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/config/stdlib/libstdcpp3.hpp:
 
+/usr/include/c++/13/bits/align.h:
+
+/usr/include/boost/type_traits/is_void.hpp:
+
 /usr/include/boost/mpl/aux_/adl_barrier.hpp:
 
 /usr/local/include/cppjieba/Unicode.hpp:
 
 /usr/include/boost/mpl/apply_wrap.hpp:
 
-/usr/include/boost/type_traits/is_void.hpp:
-
-/usr/include/c++/13/bits/align.h:
-
 /usr/include/boost/core/no_exceptions_support.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/server/rpc_topic.hpp:
 
 /usr/include/boost/preprocessor/list/detail/limits/fold_right_256.hpp:
 
-/usr/include/boost/mpl/aux_/na_spec.hpp:
+/usr/include/boost/mpl/aux_/config/ctps.hpp:
 
-/usr/include/boost/type_traits/alignment_of.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
-
-/usr/include/boost/filesystem/operations.hpp:
-
-/usr/include/boost/core/checked_delete.hpp:
-
-/usr/include/boost/preprocessor/punctuation/comma_if.hpp:
+/usr/include/boost/mpl/void.hpp:
 
 /usr/include/boost/core/ref.hpp:
 
@@ -2463,25 +2480,41 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/detail/indirect_traits.hpp:
 
-/usr/include/c++/13/cwctype:
+/usr/include/c++/13/debug/debug.h:
 
-/usr/include/boost/filesystem/convenience.hpp:
+/usr/include/c++/13/bits/stl_list.h:
 
-/usr/include/boost/iterator/detail/facade_iterator_category.hpp:
+/usr/include/boost/mpl/int_fwd.hpp:
 
-/usr/include/boost/filesystem/detail/path_traits.hpp:
+/usr/include/boost/preprocessor/seq/limits/size_256.hpp:
 
-/usr/local/include/gchrpc/common/detail.hpp:
+/usr/include/boost/preprocessor/punctuation/comma.hpp:
 
-/usr/include/boost/type_traits/is_lvalue_reference.hpp:
+/usr/include/boost/mpl/integral_c_tag.hpp:
 
-/usr/include/boost/mpl/aux_/template_arity_fwd.hpp:
+/usr/include/c++/13/bits/stl_set.h:
 
-/usr/include/boost/mpl/aux_/has_apply.hpp:
+/usr/include/boost/mpl/lambda.hpp:
 
-/usr/include/boost/preprocessor/arithmetic/detail/is_maximum_number.hpp:
+/usr/include/boost/type_traits/is_member_pointer.hpp:
 
-/usr/include/boost/type_index.hpp:
+/usr/include/boost/mem_fn.hpp:
+
+/usr/include/boost/mpl/limits/arity.hpp:
+
+/usr/include/boost/range/functions.hpp:
+
+/usr/include/boost/range/iterator_range.hpp:
+
+/usr/include/boost/type_traits/function_traits.hpp:
+
+/usr/include/boost/mpl/or.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/sigthread.h:
+
+/usr/include/boost/mpl/protect.hpp:
+
+/usr/include/boost/preprocessor/facilities/identity.hpp:
 
 /usr/include/boost/operators.hpp:
 
@@ -2515,8 +2548,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/preprocessor/arithmetic/inc.hpp:
 
-/usr/local/include/gchrpc/server/rpc_router.hpp:
-
 /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
 
 /usr/include/c++/13/bits/nested_exception.h:
@@ -2543,6 +2574,8 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/range/difference_type.hpp:
 
+/home/bamboo/ZeroGravityArea/src/include/common/logger.hpp:
+
 /usr/include/boost/type_traits/intrinsics.hpp:
 
 /usr/include/boost/preprocessor/comparison/not_equal.hpp:
@@ -2568,10 +2601,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/boost/smart_ptr/detail/atomic_count.hpp:
 
 /usr/include/boost/preprocessor/control/detail/while.hpp:
-
-/usr/include/c++/13/bits/stl_heap.h:
-
-/usr/include/c++/13/bits/atomic_lockfree_defines.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
 
@@ -2623,9 +2652,9 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/preprocessor/enum_params.hpp:
 
-/home/bamboo/ZeroGravityArea/src/include/client/rpc_client.hpp:
-
 /usr/include/boost/preprocessor/seq/enum.hpp:
+
+/home/bamboo/ZeroGravityArea/src/include/client/rpc_client.hpp:
 
 /usr/include/boost/system/detail/error_condition.hpp:
 
@@ -2663,8 +2692,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/preprocessor/list/limits/fold_left_256.hpp:
 
-/usr/include/boost/preprocessor/list/reverse.hpp:
-
 /usr/include/boost/any/bad_any_cast.hpp:
 
 /usr/include/boost/preprocessor/logical/and.hpp:
@@ -2688,6 +2715,12 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/boost/preprocessor/identity.hpp:
 
 /usr/include/boost/range/rend.hpp:
+
+/usr/include/c++/13/backward/auto_ptr.h:
+
+/usr/include/boost/preprocessor/array/data.hpp:
+
+/usr/include/boost/type_traits/remove_reference.hpp:
 
 /usr/include/c++/13/cerrno:
 
@@ -2775,8 +2808,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/type_traits/is_member_function_pointer.hpp:
 
-/usr/include/c++/13/bits/atomic_base.h:
-
 /usr/include/boost/preprocessor/slot/detail/shared.hpp:
 
 /usr/include/boost/range/const_iterator.hpp:
@@ -2807,6 +2838,8 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/smart_ptr/detail/atomic_count_gcc_atomic.hpp:
 
+/usr/include/c++/13/chrono:
+
 /usr/include/boost/range/has_range_iterator.hpp:
 
 /usr/include/boost/config/compiler/gcc.hpp:
@@ -2836,8 +2869,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 /usr/include/boost/smart_ptr/detail/sp_has_gcc_intrinsics.hpp:
 
 /usr/include/boost/smart_ptr/detail/sp_has_sync_intrinsics.hpp:
-
-/usr/local/include/gchrpc/common/abstract.hpp:
 
 /usr/include/boost/smart_ptr/detail/sp_noexcept.hpp:
 
@@ -2975,10 +3006,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/type_traits/integral_constant.hpp:
 
-/usr/include/c++/13/bits/new_allocator.h:
-
-/usr/include/boost/type_traits/is_abstract.hpp:
-
 /usr/include/boost/type_traits/is_arithmetic.hpp:
 
 /usr/include/boost/type_traits/is_base_and_derived.hpp:
@@ -3031,8 +3058,6 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/type_traits/negation.hpp:
 
-/usr/include/c++/13/bits/alloc_traits.h:
-
 /usr/include/boost/type_traits/remove_extent.hpp:
 
 /usr/local/include/limonp/LocalVector.hpp:
@@ -3041,30 +3066,8 @@ CMakeFiles/server.dir/test/server.cc.o: /home/bamboo/ZeroGravityArea/test/server
 
 /usr/include/boost/utility/enable_if.hpp:
 
-/usr/include/boost/preprocessor/array/data.hpp:
-
-/usr/include/boost/type_traits/remove_reference.hpp:
-
-/usr/include/c++/13/backward/auto_ptr.h:
-
 /usr/include/boost/iterator/advance.hpp:
 
 /usr/include/boost/iterator/transform_iterator.hpp:
 
 /usr/include/boost/utility/identity_type.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h:
-
-/usr/include/boost/bind/mem_fn.hpp:
-
-/usr/include/c++/13/array:
-
-/usr/include/boost/utility/base_from_member.hpp:
-
-/usr/include/c++/13/backward/binders.h:
-
-/usr/include/c++/13/bits/algorithmfwd.h:
-
-/usr/include/c++/13/bits/allocator.h:
-
-/usr/include/c++/13/bits/basic_ios.h:

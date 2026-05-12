@@ -174,9 +174,10 @@ CMakeFiles/server.dir/test/server.cc.o: \
  /usr/include/c++/13/bits/unique_ptr.h \
  /usr/include/c++/13/ext/aligned_buffer.h \
  /usr/include/c++/13/bits/fs_dir.h /usr/include/c++/13/bits/fs_ops.h \
- /usr/local/include/gchrpc/common/message.hpp \
- /usr/local/include/gchrpc/common/logger.hpp /usr/include/c++/13/iostream \
- /usr/local/include/gchrpc/common/detail.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/common/message.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/common/logger.hpp \
+ /usr/include/c++/13/iostream \
+ /home/bamboo/ZeroGravityArea/src/include/common/detail.hpp \
  /usr/include/jsoncpp/json/json.h /usr/include/jsoncpp/json/config.h \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/stl_tempbuf.h \
  /usr/include/c++/13/bits/stl_uninitialized.h \
@@ -234,18 +235,19 @@ CMakeFiles/server.dir/test/server.cc.o: \
  /usr/include/c++/13/bits/random.tcc /usr/include/c++/13/numeric \
  /usr/include/c++/13/bits/stl_numeric.h \
  /usr/include/c++/13/pstl/glue_numeric_defs.h \
- /usr/local/include/gchrpc/common/fields.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/common/fields.hpp \
  /usr/include/c++/13/unordered_map \
  /usr/include/c++/13/bits/unordered_map.h \
  /usr/include/c++/13/bits/hashtable.h \
  /usr/include/c++/13/bits/hashtable_policy.h \
  /usr/include/c++/13/bits/enable_special_members.h \
- /usr/local/include/gchrpc/common/abstract.hpp \
+ /usr/include/c++/13/utility /usr/include/c++/13/bits/stl_relops.h \
+ /home/bamboo/ZeroGravityArea/src/include/common/abstract.hpp \
  /usr/include/c++/13/functional /usr/include/c++/13/bits/std_function.h \
  /usr/include/c++/13/bits/stl_algo.h \
  /usr/include/c++/13/bits/algorithmfwd.h \
  /usr/include/c++/13/bits/stl_heap.h \
- /usr/local/include/gchrpc/common/net.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/common/net.hpp \
  /usr/local/include/muduo/net/Buffer.h \
  /usr/local/include/muduo/base/copyable.h \
  /usr/local/include/muduo/base/StringPiece.h \
@@ -290,7 +292,6 @@ CMakeFiles/server.dir/test/server.cc.o: \
  /usr/include/boost/exception/exception.hpp \
  /usr/include/boost/assert/source_location.hpp \
  /usr/include/boost/current_function.hpp /usr/include/boost/cstdint.hpp \
- /usr/include/c++/13/utility /usr/include/c++/13/bits/stl_relops.h \
  /usr/include/boost/core/demangle.hpp /usr/include/c++/13/cxxabi.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/cxxabi_tweaks.h \
  /usr/include/boost/type_traits/conditional.hpp \
@@ -348,14 +349,15 @@ CMakeFiles/server.dir/test/server.cc.o: \
  /usr/local/include/muduo/net/TcpServer.h /usr/include/c++/13/mutex \
  /usr/include/c++/13/bits/std_mutex.h \
  /usr/include/c++/13/bits/unique_lock.h \
- /usr/local/include/gchrpc/searcher/searcher.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/searcher/searcher.hpp \
  /usr/include/c++/13/unordered_set \
  /usr/include/c++/13/bits/unordered_set.h \
- /usr/local/include/gchrpc/searcher/index.hpp /usr/include/c++/13/fstream \
+ /home/bamboo/ZeroGravityArea/src/include/searcher/index.hpp \
+ /usr/include/c++/13/fstream \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
  /usr/include/c++/13/bits/fstream.tcc /usr/include/c++/13/shared_mutex \
- /usr/local/include/gchrpc/searcher/util.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/searcher/./util.hpp \
  /usr/include/boost/algorithm/string.hpp \
  /usr/include/boost/algorithm/string/std_containers_traits.hpp \
  /usr/include/boost/algorithm/string/std/string_traits.hpp \
@@ -889,8 +891,8 @@ CMakeFiles/server.dir/test/server.cc.o: \
  /usr/local/include/cppjieba/HMMModel.hpp \
  /usr/local/include/cppjieba/QuerySegment.hpp \
  /usr/local/include/cppjieba/FullSegment.hpp \
- /usr/local/include/gchrpc/searcher/parser.hpp \
- /usr/local/include/gchrpc/server/rpc_server.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/searcher/parser.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/server/rpc_server.hpp \
  /home/bamboo/ZeroGravityArea/src/include/client/rpc_client.hpp \
  /home/bamboo/ZeroGravityArea/src/include/common/dispatcher.hpp \
  /home/bamboo/ZeroGravityArea/src/include/client/requestor.hpp \
@@ -899,6 +901,6 @@ CMakeFiles/server.dir/test/server.cc.o: \
  /home/bamboo/ZeroGravityArea/src/include/client/rpc_registry.hpp \
  /home/bamboo/ZeroGravityArea/src/include/client/rpc_topic.hpp \
  /usr/include/c++/13/chrono \
- /usr/local/include/gchrpc/server/rpc_registry.hpp \
- /usr/local/include/gchrpc/server/rpc_router.hpp \
- /usr/local/include/gchrpc/server/rpc_topic.hpp
+ /home/bamboo/ZeroGravityArea/src/include/server/rpc_registry.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/server/rpc_router.hpp \
+ /home/bamboo/ZeroGravityArea/src/include/server/rpc_topic.hpp

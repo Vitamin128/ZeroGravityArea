@@ -3,6 +3,11 @@
 
 CMakeFiles/http_server.dir/test/http_server.cc.o
  /home/bamboo/ZeroGravityArea/test/http_server.cc
+ /home/bamboo/ZeroGravityArea/src/include/client/requestor.hpp
+ /home/bamboo/ZeroGravityArea/src/include/client/rpc_caller.hpp
+ /home/bamboo/ZeroGravityArea/src/include/client/rpc_client.hpp
+ /home/bamboo/ZeroGravityArea/src/include/client/rpc_registry.hpp
+ /home/bamboo/ZeroGravityArea/src/include/client/rpc_topic.hpp
  /home/bamboo/ZeroGravityArea/src/include/common/abstract.hpp
  /home/bamboo/ZeroGravityArea/src/include/common/detail.hpp
  /home/bamboo/ZeroGravityArea/src/include/common/dispatcher.hpp
@@ -515,11 +520,6 @@ CMakeFiles/http_server.dir/test/http_server.cc.o
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
  /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
- /usr/local/include/gchrpc/client/requestor.hpp
- /usr/local/include/gchrpc/client/rpc_caller.hpp
- /usr/local/include/gchrpc/client/rpc_client.hpp
- /usr/local/include/gchrpc/client/rpc_registry.hpp
- /usr/local/include/gchrpc/client/rpc_topic.hpp
  /usr/local/include/muduo/base/Atomic.h
  /usr/local/include/muduo/base/Condition.h
  /usr/local/include/muduo/base/CountDownLatch.h

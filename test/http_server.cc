@@ -1,10 +1,10 @@
 #include <httplib.h>
 
 #include <chrono>
+#include <client/rpc_client.hpp>
 #include <ctime>
 #include <filesystem>  // 新增
 #include <fstream>     // 新增
-#include <client/rpc_client.hpp>
 #include <iostream>
 #include <iterator>  // 新增
 #include <unordered_map>
@@ -12,7 +12,7 @@
 int main() {
     // 1. 初始化 RPC Client，连接本地 RPC Server (8088)
     gchrpc::client::RpcClient rpc_client(true, "127.0.0.1", 9090);
-
+    std::cout << "RPC Client initialized" << std::endl;
     // 映射文件路径：每次启动程序时扫描指定目录下的 pdf 和 html 文件
     std::unordered_map<std::string, int> file_exists_map;
     auto scan_dir = [&](const std::string &path) {
@@ -158,7 +158,7 @@ int main() {
             return;
         }
         std::string word = req.get_param_value("word");
-        std::cout << "Received search request for: " << word << std::endl;
+        std::cout << "\n[HTTP_DEBUG] ======= 收到搜索请求: [" << word << "] =======" << std::endl;
 
         // 构造 RPC 请求
         Json::Value rpc_req;
@@ -182,6 +182,7 @@ int main() {
     });
 
     svr.Get(R"(/(.*))", [&](const httplib::Request &req, httplib::Response &res) {
+        std::cout << "[HTTP_DEBUG] 收到未匹配请求: path=" << req.path << " query=" << req.target << std::endl;
         // 如果请求的不是 API (不以 /api 开头)，且不是已存在的静态文件
         if (req.path.find("/api") != 0) {
             std::ifstream file("./dist/index.html");
