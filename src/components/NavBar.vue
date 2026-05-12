@@ -63,15 +63,15 @@ const navContainer = ref(null);
 const itemRefs = reactive({});
 
 const leftLinks = [
-  { name: 'Game', path: '/search', icon: 'ion:game-controller-outline' },
-  { name: '搜索', path: '/history', icon: 'ph:magnifying-glass-bold' },
-  { name: '伙伴', path: '/about', icon: 'tabler:alien' },
+  { name: 'Game', path: '/gameing', icon: 'ion:game-controller-outline' },
+  { name: '搜索', path: '/search', icon: 'ph:magnifying-glass-bold' },
+  { name: '伙伴', path: '/aifriend', icon: 'tabler:alien' },
 ];
 
 const rightLinks = [
-  { name: '消息', path: '/search1', icon: 'tabler:message' },
-  { name: '书馆', path: '/history1', icon: 'akar-icons:book' },
-  { name: '个人主页', path: '/about1', icon: 'material-symbols:home-outline-rounded' },
+  { name: '消息', path: '/message', icon: 'tabler:message' },
+  { name: '书馆', path: '/library', icon: 'akar-icons:book' },
+  { name: '个人主页', path: '/mainpage', icon: 'material-symbols:home-outline-rounded' },
 ];
 
 const setItemRef = (el, path) => {
