@@ -6,8 +6,6 @@
 
 namespace gchrpc
 {
-    
-    typedef std::pair<std::string,int> Address;
 
 
     //用于存储Json格式的Message,也可以将保留的Json格式的对象序列化返回

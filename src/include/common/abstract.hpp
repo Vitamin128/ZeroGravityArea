@@ -1,5 +1,5 @@
 #pragma once
-#include"fields.hpp"
+#include "fields.hpp"
 #include<memory>
 #include<functional>
 namespace gchrpc{
@@ -61,6 +61,7 @@ namespace gchrpc{
         virtual void send(const BaseMessage::ptr& msg)=0;
         virtual void shutdown()=0;
         virtual bool connected()=0;
+        virtual Address peerAddress()=0;
     };
 
     using ConnectionCallback=std::function<void(const BaseConnection::ptr&)>;

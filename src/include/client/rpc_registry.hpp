@@ -75,15 +75,32 @@ namespace gchrpc
                 }
             }
 
+            void UpdateLoad(const Address &host, double load)
+            {
+                std::unique_lock<std::mutex> lock(_mutex);
+                _host_loads[host] = load;
+            }
+
             Address GetHost()
             {
                 std::unique_lock<std::mutex> lock(_mutex);
-                if (!_hosts.empty())
-                {
-                    size_t index = (_idx++) % _hosts.size();
-                    return _hosts[index];
+                if (_hosts.empty()) return Address();
+
+                // 简单的负载均衡策略：找到负载最低的节点
+                // 如果没有负载数据，则退化为普通轮询
+                Address best_host = _hosts[(_idx++) % _hosts.size()];
+                double min_load = 2.0; // 初始设为一个不可能的高负载
+
+                for (const auto& h : _hosts) {
+                    double l = 0.0;
+                    if (_host_loads.count(h)) l = _host_loads[h];
+                    
+                    if (l < min_load) {
+                        min_load = l;
+                        best_host = h;
+                    }
                 }
-                return Address();
+                return best_host;
             }
 
             bool empty()
@@ -96,6 +113,13 @@ namespace gchrpc
             std::mutex _mutex;
             size_t _idx;
             std::vector<Address> _hosts;
+
+            struct AddrHash {
+                size_t operator()(const Address& addr) const {
+                    return std::hash<std::string>{}(addr.first + std::to_string(addr.second));
+                }
+            };
+            std::unordered_map<Address, double, AddrHash> _host_loads;
         };
 
         class Discoverer
@@ -158,6 +182,17 @@ namespace gchrpc
                     MethodHosts[method] = newhosts;
                     LOG(NORMAL) << "服务发现完成, method=" << method << ", host=" << host.first << ":" << host.second << std::endl;
                     return true;
+                }
+            }
+
+            // 新增：更新指定地址的负载信息
+            void UpdateWeight(const Address& host, double load)
+            {
+                std::unique_lock<std::mutex> lock(_mutex);
+                for (auto& pair : MethodHosts)
+                {
+                    // 每一个 MethodHost 可能都包含这个 host 地址
+                    pair.second->UpdateLoad(host, load);
                 }
             }
 

@@ -89,6 +89,11 @@ namespace gchrpc
                 return _discover->ServiceDiscover(_client->connection(), method, host);
             }
 
+            void UpdateWeight(const Address& host, double load)
+            {
+                _discover->UpdateWeight(host, load);
+            }
+
             private:
             Requestor::ptr _requestor;
             Discoverer::ptr _discover;
@@ -107,7 +112,7 @@ namespace gchrpc
             _caller(std::make_shared<RpcCaller>(_requestor))
             {
                 LOG(NORMAL) << "RpcClient 初始化, enableDiscovery=" << enableDiscovery << ", addr=" << ip << ":" << port << std::endl;
-                auto rsp_cb = std::bind(&Requestor::onResponse, _requestor.get(), std::placeholders::_1, std::placeholders::_2);
+                auto rsp_cb = std::bind(&RpcClient::onRpcResponse, this, std::placeholders::_1, std::placeholders::_2);
                 _dispatcher->registerHandler<BaseMessage>(MType::RSP_RPC, rsp_cb);
                 if (enableDiscovery)
                 {
@@ -217,6 +222,22 @@ namespace gchrpc
                 LOG(NORMAL) << "移除服务客户端连接, host=" << host.first << ":" << host.second << std::endl;
                 std::unique_lock<std::mutex> lock(_mutex);
                 _rpc_clients.erase(host);
+            }
+
+            void onRpcResponse(const BaseConnection::ptr& conn, const BaseMessage::ptr& msg)
+            {
+                // 1. 拦截并提取负载信息
+                auto rsp = std::dynamic_pointer_cast<JsonResponse>(msg);
+                if (rsp && _enableDiscovery)
+                {
+                    double load = rsp->load();
+                    // 核心：调用更新权重接口
+                    _discovery_client->UpdateWeight(conn->peerAddress(), load);
+                    LOG(NORMAL) << "从响应中提取负载并更新权重, host=" << conn->peerAddress().first << ":" << conn->peerAddress().second << ", load=" << load << std::endl;
+                }
+                
+                // 2. 交还给 Requestor 处理
+                _requestor->onResponse(conn, msg);
             }
 
             private:

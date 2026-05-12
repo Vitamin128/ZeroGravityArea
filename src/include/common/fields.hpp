@@ -1,8 +1,10 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <utility>
 namespace gchrpc
 {
+    typedef std::pair<std::string, int> Address;
 
 //_body中的key值
 #define KEY_METHOD "method"

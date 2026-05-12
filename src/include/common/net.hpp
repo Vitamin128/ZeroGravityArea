@@ -162,6 +162,9 @@ public:
         // 检查连接是否进行
         return _conn->connected();
     }
+    virtual Address peerAddress() override {
+        return std::make_pair(_conn->peerAddress().toIp(), _conn->peerAddress().port());
+    }
 
 private:
     BaseProtocol::ptr _protocol;         // 连接的协议
