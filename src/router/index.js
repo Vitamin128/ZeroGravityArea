@@ -1,5 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
+// 导入所有视图组件
 import MainSearch from '../views/MainSearch.vue'
+import Gaming from '../views/Gaming.vue'
+import AIFriend from '../views/AIFriend.vue'
+import IMessage from '../views/IMessage.vue'
+import Library from '../views/Library.vue'
+import MainPage from '../views/MainPage.vue'
 
 const routes = [
   {
@@ -7,21 +14,34 @@ const routes = [
     redirect: '/search'
   },
   {
+    path: '/gameing',
+    name: 'Game',
+    component: Gaming
+  },
+  {
     path: '/search',
     name: 'Search',
     component: MainSearch
   },
   {
-    path: '/history',
-    name: 'History',
-    // 暂时重定向回搜索，直到你创建了 HistoryView
-    component: MainSearch 
+    path: '/aifriend',
+    name: 'AIFriend',
+    component: AIFriend
   },
   {
-    path: '/about',
-    name: 'About',
-    // 暂时重定向回搜索，直到你创建了 AboutView
-    component: MainSearch
+    path: '/message',
+    name: 'Message',
+    component: IMessage
+  },
+  {
+    path: '/library',
+    name: 'Library',
+    component: Library
+  },
+  {
+    path: '/mainpage',
+    name: 'MainPage',
+    component: MainPage
   }
 ]
 
