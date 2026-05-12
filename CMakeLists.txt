@@ -40,16 +40,18 @@ install(DIRECTORY src/include/
         FILES_MATCHING PATTERN "*.hpp"
 )
 
+# SOCI 路径设置
+find_library(SOCI_CORE_LIB NAMES soci_core REQUIRED)
+find_library(SOCI_MYSQL_LIB NAMES soci_mysql REQUIRED)
+
 # 1. 编译服务端
 add_executable(server test/server.cc)
-target_link_libraries(server gchrpc jsoncpp boost_system boost_filesystem cpp-httplib ssl crypto)
-# # 2. 编译客户端
-# add_executable(client test/client.cc)
-# target_link_libraries(client gchrpc jsoncpp)
-# 3. 编译 HTTP 桥接服务端
+target_link_libraries(server gchrpc jsoncpp boost_system boost_filesystem cpp-httplib ssl crypto ${SOCI_CORE_LIB} ${SOCI_MYSQL_LIB})
+
+# 2. 编译 HTTP 桥接服务端
 add_executable(http_server test/http_server.cc)
 target_link_libraries(http_server gchrpc jsoncpp cpp-httplib ssl crypto)
 
-# 4. 编译服务注册中心
+# 3. 编译服务注册中心
 add_executable(server_registry test/server_registry.cc)
 target_link_libraries(server_registry gchrpc jsoncpp)
