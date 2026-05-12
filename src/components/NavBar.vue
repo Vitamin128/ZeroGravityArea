@@ -4,45 +4,51 @@
       <!-- 动态滑块 -->
       <div class="nav-indicator" :style="indicatorStyle"></div>
 
-      <!-- 左侧链接 -->
-      <div class="nav-links">
-        <router-link 
-          v-for="item in leftLinks" 
-          :key="item.path"
-          :to="item.path" 
-          class="nav-item"
-          :ref="el => setItemRef(el, item.path)"
-        >
-          <Icon :icon="item.icon" />
-          <span>{{ item.name }}</span>
-        </router-link>
+      <!-- 1. 左侧区域 (绝对等宽) -->
+      <div class="nav-section side-left">
+        <div class="nav-links">
+          <router-link 
+            v-for="item in leftLinks" 
+            :key="item.path"
+            :to="item.path" 
+            class="nav-item"
+            :ref="el => setItemRef(el, item.path)"
+          >
+            <Icon :icon="item.icon" />
+            <span>{{ item.name }}</span>
+          </router-link>
+        </div>
       </div>
 
-      <!-- 中间 Logo -->
+      <!-- 2. 中间区域 (Logo) -->
       <div class="nav-logo">
         <Icon icon="ph:planet-bold" class="logo-icon" />
         <span>Zero Gravity Area</span>
       </div>
 
-      <!-- 右侧链接 -->
-      <div class="nav-links">
-        <router-link 
-          v-for="item in rightLinks" 
-          :key="item.path"
-          :to="item.path" 
-          class="nav-item"
-          :ref="el => setItemRef(el, item.path)"
-        >
-          <Icon :icon="item.icon" />
-          <span>{{ item.name }}</span>
-        </router-link>
+      <!-- 3. 右侧区域 (绝对等宽) -->
+      <div class="nav-section side-right">
+        <div class="nav-links">
+          <router-link 
+            v-for="item in rightLinks" 
+            :key="item.path"
+            :to="item.path" 
+            class="nav-item"
+            :ref="el => setItemRef(el, item.path)"
+          >
+            <Icon :icon="item.icon" />
+            <span>{{ item.name }}</span>
+          </router-link>
+        </div>
+        
+        <!-- 用户操作按钮 -->
+        <div class="nav-actions">
+          <button class="icon-btn">
+            <Icon icon="ph:user-circle-bold" />
+          </button>
+        </div>
       </div>
 
-      <div class="nav-actions">
-        <button class="icon-btn">
-          <Icon icon="ph:user-circle-bold" />
-        </button>
-      </div>
     </div>
   </nav>
 </template>
@@ -56,32 +62,28 @@ const route = useRoute();
 const navContainer = ref(null);
 const itemRefs = reactive({});
 
-// 数据结构，方便管理
 const leftLinks = [
-  { name: '主页', path: '/search', icon: 'ph:magnifying-glass-bold' },
+  { name: 'Game', path: '/search', icon: 'ion:game-controller-outline' },
   { name: '搜索', path: '/history', icon: 'ph:magnifying-glass-bold' },
   { name: '伙伴', path: '/about', icon: 'tabler:alien' },
 ];
 
 const rightLinks = [
-  { name: '搜索', path: '/search1', icon: 'ph:magnifying-glass-bold' },
-  { name: '历史', path: '/history1', icon: 'ph:clock-history-bold' },
-  { name: '关于', path: '/about1', icon: 'ph:info-bold' },
+  { name: '消息', path: '/search1', icon: 'tabler:message' },
+  { name: '书馆', path: '/history1', icon: 'akar-icons:book' },
+  { name: '个人主页', path: '/about1', icon: 'material-symbols:home-outline-rounded' },
 ];
 
-// 动态存储每个 nav-item 的引用
 const setItemRef = (el, path) => {
   if (el) itemRefs[path] = el.$el || el;
 };
 
-// 滑块样式状态
 const indicatorStyle = reactive({
   width: '0px',
   left: '0px',
   opacity: 0
 });
 
-// 更新滑块位置的核心函数
 const updateIndicator = () => {
   const activePath = route.path;
   const activeEl = itemRefs[activePath];
@@ -89,14 +91,12 @@ const updateIndicator = () => {
   if (activeEl && navContainer.value) {
     const containerRect = navContainer.value.getBoundingClientRect();
     const elRect = activeEl.getBoundingClientRect();
-
     indicatorStyle.width = `${elRect.width}px`;
     indicatorStyle.left = `${elRect.left - containerRect.left}px`;
     indicatorStyle.opacity = 1;
   }
 };
 
-// 监听路由变化或组件挂载，实时移动滑块
 onMounted(() => setTimeout(updateIndicator, 100));
 watch(() => route.path, () => setTimeout(updateIndicator, 50));
 </script>
@@ -116,62 +116,44 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
 
 .nav-container {
   height: 100%;
-  position: relative; /* 为滑块提供定位基准 */
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center; 
-  gap: 40px; /* 控制它们之间的等额间距 */
-  
-  /* --- 关键：通过左边距把整个居中的组合往右推 --- */
-  padding-left: 100px; /* 这个数字越大，整体就越往右偏 */
-  
-  padding-right: 40px; /* 保持原有的右边距 */
+  padding: 0 40px;
 }
 
-/* --- 动态滑块样式 --- */
-.nav-indicator {
-  position: absolute;
-  height: 45px; /* 略小于导航栏高度，更精致 */
-  background: rgba(79, 172, 254, 0.15); /* 淡蓝色发光背景 */
-  border: 1px solid rgba(79, 172, 254, 0.3);
-  border-radius: 12px;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); /* 使用贝塞尔曲线，让移动更有弹性感 */
-  z-index: -1; /* 放在文字下面 */
+/* --- 核心布局：左右对称分权 --- */
+.nav-section {
+  flex: 1; 
+  display: flex;
+  align-items: center;
+}
+
+.side-left {
+  justify-content: flex-end; 
+  padding-right: 120px; /* 调大左侧到 Logo 的距离 */
+}
+
+.side-right {
+  justify-content: flex-start; 
+  padding-left: 120px; /* 调大右侧到 Logo 的距离 */
+  gap: 30px; 
 }
 
 .nav-links {
-  white-space: nowrap; 
   display: flex;
-  gap: 30px;
-  margin: 0 80px;
+  gap: 60px; /* 调大链接与链接之间的距离 */
+  white-space: nowrap;
 }
 
-.nav-item {
-  text-decoration: none;
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.1rem;
-  padding: 8px 15px;
-  border-radius: 12px;
-  transition: color 0.3s;
-  /* 移除原来的 background 样式，改用 indicator */
-}
-
-.router-link-active {
-  color: #4facfe;
-}
-
+/* --- Logo 区域 --- */
 .nav-logo {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 1.6rem;
   font-weight: 800;
-  /* margin-left: 73px; */
-  /* padding-left: 125px; */
-  /* padding-right: 125px; */
   white-space: nowrap;
   background: linear-gradient(to right, #4facfe, #00f2fe);
   -webkit-background-clip: text;
@@ -180,8 +162,46 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
 }
 
 .logo-icon {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   -webkit-text-fill-color: initial;
+}
+
+/* --- 滑块与导航项 --- */
+.nav-indicator {
+  position: absolute;
+  height: 45px;
+  background: rgba(79, 172, 254, 0.1);
+  border: 1px solid rgba(79, 172, 254, 0.2);
+  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: -1;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  padding: 8px 15px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 更平滑的过渡 */
+}
+
+.nav-item:hover {
+  color: white;
+  transform: translateY(-3px); /* 悬浮时轻微上浮 */
+  text-shadow: 0 0 15px rgba(79, 172, 254, 0.5); /* 增加一点微光 */
+}
+
+.nav-item:active {
+  transform: translateY(-1px); /* 点击时按下的反馈 */
+}
+
+.router-link-active {
+  color: #4facfe;
+  font-weight: 600;
 }
 
 .icon-btn {
@@ -190,7 +210,16 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   color: white;
   font-size: 2rem;
   cursor: pointer;
-  /* margin-left: auto; */
-  margin-left: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item :deep(svg) {
+  font-size: 1.6rem; /* 你可以根据感觉调整这个数字，比如 1.4rem 或 1.8rem */
+  transition: transform 0.3s ease; /* 让图标的大小变化也带点平滑感 */
+}
+/* 悬停时让图标再稍微变大一点（可选，效果很赞） */
+.nav-item:hover :deep(svg) {
+  transform: scale(1.1); 
 }
 </style>
