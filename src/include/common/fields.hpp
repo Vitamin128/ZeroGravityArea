@@ -15,6 +15,7 @@ namespace gchrpc
 #define KEY_HOST_PORT "port"
 #define KEY_RCODE "rcode"
 #define KEY_RESULT "result"
+#define KEY_LOAD_VAL "load_val"
 
     //message类型分别为RPC请求和回复,TOPIC请求和回复,SERVICE请求和回复
     enum class MType
@@ -26,7 +27,8 @@ namespace gchrpc
         REQ_SERVICE,
         RSP_SERVICE,
         REQ_HEARTBEAT,
-        RSP_HEARTBEAT
+        RSP_HEARTBEAT,
+        REQ_LOAD_INFO
     };
 
     //message的回复码,用于回复消息的结果定义

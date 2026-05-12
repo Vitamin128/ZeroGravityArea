@@ -8,6 +8,7 @@
 #include "rpc_registry.hpp"
 #include "rpc_router.hpp"
 #include "rpc_topic.hpp"
+#include "searcher/util.hpp"
 
 
 namespace gchrpc {
@@ -76,6 +77,15 @@ public:
         _server->setMessageCallback(it2);
         LOG(NORMAL) << "RpcServer 初始化完成，访问地址: " << access_addr.first << ":"
                     << access_addr.second << std::endl;
+
+        // 开启定时负载广播，每 5 秒一次
+        _server->runEvery(5.0, [this]() {
+            double load = ns_util::SystemUtil::get_cpu_load();
+            auto msg = std::make_shared<LoadInfoRequest>();
+            msg->setLoad(load);
+            _server->broadcast(msg);
+            LOG(NORMAL) << "广播服务端负载信息: " << load << std::endl;
+        });
     }
     void RegistryMethod(const ServiceDescribe::ptr &service) {
         if (_enableRegistry) {

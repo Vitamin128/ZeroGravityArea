@@ -201,6 +201,17 @@ public:
         _baseloop.loop();  // 开始监听套接字
     }
 
+    virtual void broadcast(const BaseMessage::ptr &msg) override {
+        std::unique_lock<std::mutex> lock(_mutex);
+        for (auto &pair : _conns) {
+            pair.second->send(msg);
+        }
+    }
+
+    virtual void runEvery(double interval_s, std::function<void()> cb) override {
+        _baseloop.runEvery(interval_s, cb);
+    }
+
 private:
     void onConnection(const muduo::net::TcpConnectionPtr &conn) {
         if (conn->connected()) {

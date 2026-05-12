@@ -83,6 +83,8 @@ namespace gchrpc{
             _cb_message=cb;
         }
         virtual void start()=0;
+        virtual void broadcast(const BaseMessage::ptr& msg)=0;
+        virtual void runEvery(double interval_s, std::function<void()> cb)=0;
         protected:
         ConnectionCallback _cb_connection;
         CloseCallback _cb_close;

@@ -109,4 +109,18 @@ public:
         GetJieba().CutForSearch(sentence, *words);
     }
 };
+
+class SystemUtil {
+public:
+    static double get_cpu_load() {
+        std::ifstream file("/proc/loadavg");
+        if (!file.is_open()) return -1.0;
+
+        double load1, load5, load15;
+        if (file >> load1 >> load5 >> load15) {
+            return load1;  // 通常我们取最近 1 分钟的负载作为参考
+        }
+        return -1.0;
+    }
+};
 }  // namespace ns_util
