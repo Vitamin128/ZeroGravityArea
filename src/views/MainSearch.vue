@@ -38,12 +38,13 @@
 
 <script setup lang="js">
 import { ref } from 'vue';
-import ToastCard from './ToastCard.vue';
-import SearchBar from './SearchBar.vue';
-import ResultCards from './ResultCards.vue';
-import FileUpload from './FileUpload.vue';
-import UploadInterface from './UploadInterface.vue';
-import LoadingOverlay from './LoadingOverlay.vue';
+// 路径更新：从 components 移出到 views，所以需要回退一层到 components
+import ToastCard from '../components/ToastCard.vue';
+import SearchBar from '../components/SearchBar.vue';
+import ResultCards from '../components/ResultCards.vue';
+import FileUpload from '../components/FileUpload.vue';
+import UploadInterface from '../components/UploadInterface.vue';
+import LoadingOverlay from '../components/LoadingOverlay.vue';
 
 const showToast = ref(false);
 const triggerToast = () => {
@@ -90,7 +91,8 @@ const onUploadSuccess = (uploadedFiles) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  /* 移除 min-height: 100vh，交给 App.vue 控制 */
+  width: 100%;
 }
 .search-wrapper, .cards-wrapper {
   position: relative;

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import MainSearch from '../components/MainSearch.vue'
+import MainSearch from '../views/MainSearch.vue'
 
 const routes = [
   {

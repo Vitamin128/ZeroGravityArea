@@ -51,9 +51,8 @@ html {
 }
 
 .app-root {
-  /* height: 50vh; */
+  min-height: 100vh; /* 保证根容器至少占满全屏 */
   position: relative;
   z-index: 1;
-    /* background-color: rgba(255, 0, 0, 0.2); /* 加一个半透明红，你会发现红区只占上半屏 */
 }
 </style>
