@@ -4,14 +4,14 @@
 #include <ctime>
 #include <filesystem>  // 新增
 #include <fstream>     // 新增
-#include <gchrpc/client/rpc_client.hpp>
+#include <client/rpc_client.hpp>
 #include <iostream>
 #include <iterator>  // 新增
 #include <unordered_map>
 
 int main() {
     // 1. 初始化 RPC Client，连接本地 RPC Server (8088)
-    gchrpc::client::RpcClient rpc_client(false, "127.0.0.1", 8088);
+    gchrpc::client::RpcClient rpc_client(true, "127.0.0.1", 9090);
 
     // 映射文件路径：每次启动程序时扫描指定目录下的 pdf 和 html 文件
     std::unordered_map<std::string, int> file_exists_map;

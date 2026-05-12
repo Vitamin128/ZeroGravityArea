@@ -1,8 +1,8 @@
 #include <filesystem>
-#include <gchrpc/common/message.hpp>
-#include <gchrpc/common/net.hpp>
-#include <gchrpc/searcher/searcher.hpp>
-#include <gchrpc/server/rpc_server.hpp>
+#include <common/message.hpp>
+#include <common/net.hpp>
+#include <searcher/searcher.hpp>
+#include <server/rpc_server.hpp>
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -10,7 +10,8 @@ void Search(const std::string &query, std::string *json_result, ns_searcher::Sea
     engine.Search(query, json_result);
 }
 int main() {
-    gchrpc::server::RpcServer server(gchrpc::Address("127.0.0.1", 8088));
+    gchrpc::server::RpcServer server(gchrpc::Address("127.0.0.1", 8088), true,
+                                     gchrpc::Address("127.0.0.1", 9090));
     ns_searcher::Searcher search_engine;
     // 假设数据路径正确
     search_engine.BuildFullPDF("./InternalData/pdf", "./InternalData/pdf/raw.txt");

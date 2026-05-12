@@ -175,19 +175,6 @@ server/fast:
 .PHONY : server/fast
 
 #=============================================================================
-# Target rules for targets named client
-
-# Build rule for target.
-client: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 client
-.PHONY : client
-
-# fast build rule for target.
-client/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/build
-.PHONY : client/fast
-
-#=============================================================================
 # Target rules for targets named http_server
 
 # Build rule for target.
@@ -200,29 +187,18 @@ http_server/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/http_server.dir/build.make CMakeFiles/http_server.dir/build
 .PHONY : http_server/fast
 
-test/client.o: test/client.cc.o
-.PHONY : test/client.o
+#=============================================================================
+# Target rules for targets named server_registry
 
-# target to build an object file
-test/client.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/test/client.cc.o
-.PHONY : test/client.cc.o
+# Build rule for target.
+server_registry: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 server_registry
+.PHONY : server_registry
 
-test/client.i: test/client.cc.i
-.PHONY : test/client.i
-
-# target to preprocess a source file
-test/client.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/test/client.cc.i
-.PHONY : test/client.cc.i
-
-test/client.s: test/client.cc.s
-.PHONY : test/client.s
-
-# target to generate assembly for a file
-test/client.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/test/client.cc.s
-.PHONY : test/client.cc.s
+# fast build rule for target.
+server_registry/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_registry.dir/build.make CMakeFiles/server_registry.dir/build
+.PHONY : server_registry/fast
 
 test/http_server.o: test/http_server.cc.o
 .PHONY : test/http_server.o
@@ -272,6 +248,30 @@ test/server.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/test/server.cc.s
 .PHONY : test/server.cc.s
 
+test/server_registry.o: test/server_registry.cc.o
+.PHONY : test/server_registry.o
+
+# target to build an object file
+test/server_registry.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_registry.dir/build.make CMakeFiles/server_registry.dir/test/server_registry.cc.o
+.PHONY : test/server_registry.cc.o
+
+test/server_registry.i: test/server_registry.cc.i
+.PHONY : test/server_registry.i
+
+# target to preprocess a source file
+test/server_registry.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_registry.dir/build.make CMakeFiles/server_registry.dir/test/server_registry.cc.i
+.PHONY : test/server_registry.cc.i
+
+test/server_registry.s: test/server_registry.cc.s
+.PHONY : test/server_registry.s
+
+# target to generate assembly for a file
+test/server_registry.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_registry.dir/build.make CMakeFiles/server_registry.dir/test/server_registry.cc.s
+.PHONY : test/server_registry.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -284,18 +284,18 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... client"
 	@echo "... http_server"
 	@echo "... server"
-	@echo "... test/client.o"
-	@echo "... test/client.i"
-	@echo "... test/client.s"
+	@echo "... server_registry"
 	@echo "... test/http_server.o"
 	@echo "... test/http_server.i"
 	@echo "... test/http_server.s"
 	@echo "... test/server.o"
 	@echo "... test/server.i"
 	@echo "... test/server.s"
+	@echo "... test/server_registry.o"
+	@echo "... test/server_registry.i"
+	@echo "... test/server_registry.s"
 .PHONY : help
 
 

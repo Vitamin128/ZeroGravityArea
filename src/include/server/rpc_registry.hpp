@@ -1,11 +1,13 @@
-#include <set>
-#include <thread>
+#pragma once
 #include <chrono>
 #include <ctime>
+#include <set>
+#include <thread>
 
 #include "common/logger.hpp"
 #include "common/message.hpp"
 #include "common/net.hpp"
+
 
 /////
 namespace gchrpc {
@@ -239,7 +241,7 @@ public:
         std::thread([this]() {
             while (true) {
                 std::this_thread::sleep_for(std::chrono::seconds(10));
-                auto stale_conns = _providers->GetStaleProviders(30); // 30秒超时
+                auto stale_conns = _providers->GetStaleProviders(30);  // 30秒超时
                 for (auto &conn : stale_conns) {
                     LOG(NORMAL) << "检测到节点心跳超时，强制下线..." << std::endl;
                     onShutdown(conn);
@@ -273,7 +275,8 @@ public:
         auto provider = _providers->GetProvider(conn);
         if (provider) {
             provider->UpdateActiveTime();
-            // LOG(NORMAL) << "收到来自 " << provider->host.first << ":" << provider->host.second << " 的心跳" << std::endl;
+            // LOG(NORMAL) << "收到来自 " << provider->host.first << ":" << provider->host.second <<
+            // " 的心跳" << std::endl;
         }
         HeartbeatResponse::ptr rsp = MessageFactory::create<HeartbeatResponse>();
         rsp->setId(req->rid());
