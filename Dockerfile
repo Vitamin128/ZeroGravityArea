@@ -19,6 +19,10 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
     libboost-system-dev \
     libboost-filesystem-dev \
     libcpp-httplib-dev \
+    libsoci-dev \
+    libsoci-mysql4.0 \
+    libmysqlclient-dev \
+    pkg-config \
     python3 \
     python3-pip \
     && python3 -m pip install openai flask pdfminer.six --break-system-packages \
@@ -38,15 +42,15 @@ RUN chmod +x build.sh && ./build.sh
 
 # --- 新增：创建多进程启动脚本 ---
 RUN echo '#!/bin/bash\n\
-echo "--- Starting Python PDF Parser ---"\n\
-nohup python3 ./src/pdf_parser.py > ./pdf_parser.log 2>&1 &\n\
-sleep 2\n\
-echo "--- Starting RPC Server ---"\n\
-./build/server &\n\
-sleep 2\n\
-echo "--- Starting HTTP Gateway ---"\n\
-./build/http_server\n\
-' > /app/start.sh && chmod +x /app/start.sh
+    echo "--- Starting Python PDF Parser ---"\n\
+    nohup python3 ./src/pdf_parser.py > ./pdf_parser.log 2>&1 &\n\
+    sleep 2\n\
+    echo "--- Starting RPC Server ---"\n\
+    ./build/server &\n\
+    sleep 2\n\
+    echo "--- Starting HTTP Gateway ---"\n\
+    ./build/http_server\n\
+    ' > /app/start.sh && chmod +x /app/start.sh
 
 # 7. 配置端口暴露
 EXPOSE 8081 8088

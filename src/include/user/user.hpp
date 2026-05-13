@@ -1,8 +1,7 @@
-#ifndef USER_HPP
-#define USER_HPP
+#pragma once
 
-#include <cstdint>
 #include <iomanip>
+#include <iostream>
 #include <optional>
 #include <random>
 #include <sstream>
@@ -11,7 +10,7 @@
 
 // OpenSSL SHA256
 #include <openssl/sha.h>
-// #include<mysql.h>
+
 // SOCI
 #include <soci/mysql/soci-mysql.h>
 #include <soci/soci.h>
@@ -37,6 +36,8 @@ struct UserRecord {
     uint32_t login_count;
     std::string last_login_at;
     std::string created_at;
+    std::string current_token;    // 当前有效 Token
+    std::string token_expire_at;  // 过期时间
 };
 
 // ============================================================
@@ -48,9 +49,10 @@ public:
      * @brief 用户注册
      * @param username 用户名
      * @param password 明文密码
+     * @param nickname 昵称
      * @return 注册成功返回 true，失败（如用户名已存在）返回 false
      */
-    bool Register(const std::string &username, const std::string &password) {
+    bool Register(const std::string &username, const std::string &password, const std::string &nickname) {
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
 
@@ -66,14 +68,14 @@ public:
             std::string salt = GenerateSalt();
             std::string passwd_hash = ComputeHash(password, salt);
 
-            // 3. 插入数据库
-            sql << "INSERT INTO users (username, password_hash, salt) "
-                   "VALUES (:u, :h, :s)",
-                soci::use(username), soci::use(passwd_hash), soci::use(salt);
+            // 3. 插入数据库（初始 nickname 和 created_at）
+            sql << "INSERT INTO users (username, password_hash, salt, nickname, created_at) "
+                   "VALUES (:u, :h, :s, :n, NOW())",
+                soci::use(username), soci::use(passwd_hash), soci::use(salt), soci::use(nickname);
 
             return true;
         } catch (const soci::soci_error &e) {
-            // 生产环境中可以替换为日志系统
+            std::cerr << "Register Error: " << e.what() << std::endl;
             return false;
         }
     }
@@ -88,100 +90,120 @@ public:
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
 
-            // 1. 查询用户信息
+            // 1. 查询用户信息（处理 NULL 字段）
             UserRecord record;
-            soci::indicator nick_ind, avatar_ind, login_at_ind;
-
             sql << "SELECT id, username, password_hash, salt, "
                    "COALESCE(nickname,''), COALESCE(avatar_url,''), "
                    "COALESCE(login_count,0), "
                    "COALESCE(DATE_FORMAT(last_login_at,'%Y-%m-%d %H:%i:%s'),''), "
-                   "DATE_FORMAT(created_at,'%Y-%m-%d %H:%i:%s') "
+                   "COALESCE(DATE_FORMAT(created_at,'%Y-%m-%d %H:%i:%s'),''), "
+                   "COALESCE(current_token,''), "
+                   "COALESCE(DATE_FORMAT(token_expire_at,'%Y-%m-%d %H:%i:%s'),'') "
                    "FROM users WHERE username = :u LIMIT 1",
                 soci::into(record.id), soci::into(record.username),
                 soci::into(record.password_hash), soci::into(record.salt),
                 soci::into(record.nickname), soci::into(record.avatar_url),
                 soci::into(record.login_count), soci::into(record.last_login_at),
-                soci::into(record.created_at), soci::use(username);
+                soci::into(record.created_at), soci::into(record.current_token),
+                soci::into(record.token_expire_at), soci::use(username);
 
             if (!sql.got_data()) {
                 return std::nullopt;  // 用户不存在
             }
 
-            // 2. 验证密码：用数据库里的盐重新算哈希，比对结果
-            std::string computed = ComputeHash(password, record.salt);
-            if (computed != record.password_hash) {
+            // 2. 校验密码
+            std::string input_hash = ComputeHash(password, record.salt);
+            if (input_hash != record.password_hash) {
                 return std::nullopt;  // 密码错误
             }
 
-            // 3. 登录成功：更新登录时间和次数
-            sql << "UPDATE users SET login_count = login_count + 1, "
-                   "last_login_at = NOW() WHERE id = :id",
-                soci::use(record.id);
+            // 3. 登录成功：生成新 Token 并更新数据库
+            std::string new_token = GenerateToken();
+            sql << "UPDATE users SET "
+                   "login_count = login_count + 1, "
+                   "last_login_at = NOW(), "
+                   "current_token = :t, "
+                   "token_expire_at = DATE_ADD(NOW(), INTERVAL 30 DAY) "
+                   "WHERE id = :id",
+                soci::use(new_token), soci::use(record.id);
 
+            // 4. 更新本地对象状态
+            record.current_token = new_token;
+            
             return record;
         } catch (const soci::soci_error &e) {
+            std::cerr << "Login Error: " << e.what() << std::endl;
             return std::nullopt;
         }
     }
 
     /**
-     * @brief 更新用户信息（昵称、头像）
-     * @param user_id 用户 ID
-     * @param nickname 新昵称
-     * @param avatar_url 新头像 URL
-     * @return 更新成功返回 true
+     * @brief 通过 Token 验证登录（用于持久化登录）
+     * @param token 
+     * @return 
      */
-    bool UpdateProfile(uint64_t user_id, const std::string &nickname,
-                       const std::string &avatar_url) {
+    std::optional<UserRecord> VerifyToken(const std::string &token) {
+        if (token.empty()) return std::nullopt;
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
+            UserRecord record;
+            
+            sql << "SELECT id, username, nickname, avatar_url, login_count "
+                   "FROM users WHERE current_token = :t AND token_expire_at > NOW() LIMIT 1",
+                soci::into(record.id), soci::into(record.username),
+                soci::into(record.nickname), soci::into(record.avatar_url),
+                soci::into(record.login_count), soci::use(token);
 
-            sql << "UPDATE users SET nickname = :n, avatar_url = :a "
-                   "WHERE id = :id",
-                soci::use(nickname), soci::use(avatar_url), soci::use(user_id);
-
-            return true;
+            if (sql.got_data()) {
+                return record;
+            }
         } catch (const soci::soci_error &e) {
-            return false;
+            std::cerr << "VerifyToken Error: " << e.what() << std::endl;
         }
+        return std::nullopt;
     }
 
 private:
-    // ============================================================
-    // 生成随机盐值（16位十六进制字符串）
-    // ============================================================
-    std::string GenerateSalt(size_t length = 16) {
-        static const char hex_chars[] = "0123456789abcdef";
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dist(0, 15);
-
-        std::string salt;
-        salt.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            salt += hex_chars[dist(gen)];
-        }
-        return salt;
-    }
-
-    // ============================================================
-    // 计算 SHA256(password + salt)，返回 64 位十六进制字符串
-    // ============================================================
+    /**
+     * @brief 计算加盐哈希 (SHA256)
+     */
     std::string ComputeHash(const std::string &password, const std::string &salt) {
-        std::string input = password + salt;
-        unsigned char digest[SHA256_DIGEST_LENGTH];
+        std::string data = password + salt;
+        unsigned char hash[SHA256_DIGEST_LENGTH];
+        SHA256_CTX sha256;
+        SHA256_Init(&sha256);
+        SHA256_Update(&sha256, data.c_str(), data.size());
+        SHA256_Final(hash, &sha256);
 
-        SHA256(reinterpret_cast<const unsigned char *>(input.c_str()), input.size(), digest);
-
-        std::ostringstream oss;
-        for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-            oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(digest[i]);
+        std::stringstream ss;
+        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+            ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
         }
-        return oss.str();
+        return ss.str();
     }
+
+    /**
+     * @brief 生成指定长度的随机字符串 (用于 Salt 和 Token)
+     */
+    std::string GenerateRandomString(size_t len) {
+        static const char charset[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+        static std::mt19937 rg{std::random_device{}()};
+        static std::uniform_int_distribution<std::string::size_type> pick(
+            0, sizeof(charset) - 2);
+
+        std::string s;
+        s.reserve(len);
+        for (size_t i = 0; i < len; ++i) {
+            s += charset[pick(rg)];
+        }
+        return s;
+    }
+
+    std::string GenerateSalt() { return GenerateRandomString(16); }
+    std::string GenerateToken() { return GenerateRandomString(64); }
 };
 
 }  // namespace user
-
-#endif  // USER_HPP
