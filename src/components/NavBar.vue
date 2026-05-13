@@ -43,9 +43,31 @@
         
         <!-- 用户操作按钮 -->
         <div class="nav-actions">
-          <button class="icon-btn">
-            <Icon icon="ph:user-circle-bold" />
-          </button>
+          <div class="user-profile-container">
+            <button 
+              class="icon-btn"
+              @mouseenter="showTooltip = true"
+              @mouseleave="showTooltip = false"
+              @mousemove="onMouseMove"
+            >
+              <Icon icon="ph:user-circle-bold" />
+            </button>
+            
+            <Teleport to="body">
+              <Transition name="tooltip-fade">
+                <div 
+                  v-if="showTooltip" 
+                  class="glass-tooltip" 
+                  :style="{ left: mouseX + 'px', top: mouseY + 'px' }"
+                >
+                  <div class="tooltip-content">
+                    <Icon icon="ph:sign-in-bold" />
+                    <span>立即登录</span>
+                  </div>
+                </div>
+              </Transition>
+            </Teleport>
+          </div>
         </div>
       </div>
 
@@ -57,6 +79,15 @@
 import { ref, onMounted, watch, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
+
+const showTooltip = ref(false);
+const mouseX = ref(0);
+const mouseY = ref(0);
+
+const onMouseMove = (e) => {
+  mouseX.value = e.clientX + 15;
+  mouseY.value = e.clientY + 15;
+};
 
 const route = useRoute();
 const navContainer = ref(null);
@@ -155,7 +186,7 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   font-size: 1.6rem;
   font-weight: 800;
   white-space: nowrap;
-  background: linear-gradient(to right, #4facfe, #00f2fe);
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -208,10 +239,17 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   background: none;
   border: none;
   color: white;
-  font-size: 2rem;
+  font-size: 2.5rem; /* 调大图标尺寸 */
   cursor: pointer;
   display: flex;
   align-items: center;
+  transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+  transform: scale(1.1);
+  color: #4facfe;
+  filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.4));
 }
 
 .nav-item :deep(svg) {
@@ -222,4 +260,54 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
 .nav-item:hover :deep(svg) {
   transform: scale(1.1); 
 }
+
+/* --- 用户操作相关 --- */
+.user-profile-container {
+  display: flex;
+  align-items: center;
+}
+
+.tooltip-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.tooltip-content :deep(svg) {
+  font-size: 1.2rem;
+  color: #4facfe;
+}
+
+/* --- 全局提示框样式 (同步 FileUpload) --- */
 </style>
+
+<style>
+.glass-tooltip {
+  position: fixed;
+  z-index: 99999;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.tooltip-fade-enter-active,
+.tooltip-fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.tooltip-fade-enter-from,
+.tooltip-fade-leave-to {
+  opacity: 0;
+  transform: translateY(5px);
+}
+</style>
+
