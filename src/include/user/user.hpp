@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <cstdio>
 
 // OpenSSL EVP
 #include <openssl/evp.h>
@@ -18,7 +19,7 @@
 namespace user {
 
 // ============================================================
-// 数据库连接信息（对应 Docker 中的 ZeroGravityMysql 容器）
+// 数据库连接信息
 // ============================================================
 static const std::string DB_CONNECT_STR =
     "host=127.0.0.1 port=3306 user=root password=041215 dbname=AreaData";
@@ -47,32 +48,20 @@ class UserManager {
 public:
     /**
      * @brief 用户注册
-     * @param username 用户名
-     * @param password 明文密码
-     * @param nickname 昵称
-     * @return 注册成功返回 true，失败（如用户名已存在）返回 false
      */
     bool Register(const std::string &username, const std::string &password, const std::string &nickname) {
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
-
-            // 1. 检查用户名是否已存在
             int count = 0;
-            sql << "SELECT COUNT(*) FROM users WHERE username = :u", soci::into(count),
-                soci::use(username);
-            if (count > 0) {
-                return false;  // 用户名已存在
-            }
+            sql << "SELECT COUNT(*) FROM users WHERE username = :u", soci::into(count), soci::use(username);
+            if (count > 0) return false;
 
-            // 2. 生成盐并计算哈希
             std::string salt = GenerateSalt();
             std::string passwd_hash = ComputeHash(password, salt);
 
-            // 3. 插入数据库（初始 nickname 和 created_at）
             sql << "INSERT INTO users (username, password_hash, salt, nickname, created_at) "
                    "VALUES (:u, :h, :s, :n, NOW())",
                 soci::use(username), soci::use(passwd_hash), soci::use(salt), soci::use(nickname);
-
             return true;
         } catch (const soci::soci_error &e) {
             std::cerr << "Register Error: " << e.what() << std::endl;
@@ -82,15 +71,10 @@ public:
 
     /**
      * @brief 用户登录
-     * @param username 用户名
-     * @param password 明文密码
-     * @return 登录成功返回 UserRecord，失败返回 std::nullopt
      */
     std::optional<UserRecord> Login(const std::string &username, const std::string &password) {
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
-
-            // 1. 查询用户信息（处理 NULL 字段）
             UserRecord record;
             sql << "SELECT id, username, password_hash, salt, "
                    "COALESCE(nickname,''), COALESCE(avatar_url,''), "
@@ -107,29 +91,17 @@ public:
                 soci::into(record.created_at), soci::into(record.current_token),
                 soci::into(record.token_expire_at), soci::use(username);
 
-            if (!sql.got_data()) {
-                return std::nullopt;  // 用户不存在
-            }
+            if (!sql.got_data()) return std::nullopt;
 
-            // 2. 校验密码
-            std::string input_hash = ComputeHash(password, record.salt);
-            if (input_hash != record.password_hash) {
-                return std::nullopt;  // 密码错误
-            }
+            if (ComputeHash(password, record.salt) != record.password_hash) return std::nullopt;
 
-            // 3. 登录成功：生成新 Token 并更新数据库
             std::string new_token = GenerateToken();
-            sql << "UPDATE users SET "
-                   "login_count = login_count + 1, "
-                   "last_login_at = NOW(), "
-                   "current_token = :t, "
-                   "token_expire_at = DATE_ADD(NOW(), INTERVAL 30 DAY) "
+            sql << "UPDATE users SET login_count = login_count + 1, last_login_at = NOW(), "
+                   "current_token = :t, token_expire_at = DATE_ADD(NOW(), INTERVAL 30 DAY) "
                    "WHERE id = :id",
                 soci::use(new_token), soci::use(record.id);
 
-            // 4. 更新本地对象状态
             record.current_token = new_token;
-            
             return record;
         } catch (const soci::soci_error &e) {
             std::cerr << "Login Error: " << e.what() << std::endl;
@@ -138,40 +110,55 @@ public:
     }
 
     /**
-     * @brief 通过 Token 验证登录（用于持久化登录）
-     * @param token 
-     * @return 
+     * @brief 验证 Token
      */
     std::optional<UserRecord> VerifyToken(const std::string &token) {
         if (token.empty()) return std::nullopt;
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
             UserRecord record;
-            
             sql << "SELECT id, username, nickname, avatar_url, login_count "
                    "FROM users WHERE current_token = :t AND token_expire_at > NOW() LIMIT 1",
                 soci::into(record.id), soci::into(record.username),
                 soci::into(record.nickname), soci::into(record.avatar_url),
                 soci::into(record.login_count), soci::use(token);
 
-            if (sql.got_data()) {
-                return record;
-            }
+            if (sql.got_data()) return record;
         } catch (const soci::soci_error &e) {
             std::cerr << "VerifyToken Error: " << e.what() << std::endl;
         }
         return std::nullopt;
     }
 
-private:
     /**
-     * @brief 计算加盐哈希 (SHA256)
+     * @brief 上传头像到腾讯云 COS (通过调用 Python 脚本)
      */
+    std::string UploadAvatar(const std::string &local_path) {
+        // 命令：python3 src/cos_uploader.py [路径]
+        std::string cmd = "python3 src/cos_uploader.py " + local_path;
+        
+        FILE* pipe = popen(cmd.c_str(), "r");
+        if (!pipe) return "";
+
+        char buffer[256];
+        std::string result = "";
+        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            result += buffer;
+        }
+        
+        int status = pclose(pipe);
+        if (status == 0) {
+            if (!result.empty() && result.back() == '\n') result.pop_back();
+            return result;
+        }
+        return "";
+    }
+
+private:
     std::string ComputeHash(const std::string &password, const std::string &salt) {
         std::string data = password + salt;
-        unsigned char hash[64]; // EVP_MAX_MD_SIZE 
+        unsigned char hash[64]; 
         unsigned int len = 0;
-
         EVP_MD_CTX* ctx = EVP_MD_CTX_new();
         EVP_DigestInit_ex(ctx, EVP_sha256(), NULL);
         EVP_DigestUpdate(ctx, data.c_str(), data.size());
@@ -185,23 +172,13 @@ private:
         return ss.str();
     }
 
-    /**
-     * @brief 生成指定长度的随机字符串 (用于 Salt 和 Token)
-     */
     std::string GenerateRandomString(size_t len) {
-        static const char charset[] =
-            "0123456789"
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "abcdefghijklmnopqrstuvwxyz";
+        static const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         static std::mt19937 rg{std::random_device{}()};
-        static std::uniform_int_distribution<std::string::size_type> pick(
-            0, sizeof(charset) - 2);
-
+        static std::uniform_int_distribution<std::string::size_type> pick(0, sizeof(charset) - 2);
         std::string s;
         s.reserve(len);
-        for (size_t i = 0; i < len; ++i) {
-            s += charset[pick(rg)];
-        }
+        for (size_t i = 0; i < len; ++i) s += charset[pick(rg)];
         return s;
     }
 
