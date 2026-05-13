@@ -47,7 +47,7 @@
                @mouseenter="showTooltip = true" 
                @mouseleave="showTooltip = false">
             <button class="icon-btn">
-              <Icon icon="ph:user-circle-bold" />
+              <img :src="defaultAvatar" alt="User" class="user-avatar" />
             </button>
             
             <Transition name="tooltip-fade">
@@ -71,6 +71,7 @@
 import { ref, onMounted, watch, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
+import defaultAvatar from '../assets/white_user.png';
 
 const showTooltip = ref(false);
 
@@ -235,6 +236,19 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   transform: scale(1.1);
   color: #4facfe;
   filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.4));
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.icon-btn:hover .user-avatar {
+  border-color: #4facfe;
 }
 
 .nav-item :deep(svg) {
