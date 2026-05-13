@@ -44,6 +44,11 @@ install(DIRECTORY src/include/
 find_library(SOCI_CORE_LIB NAMES soci_core REQUIRED)
 find_library(SOCI_MYSQL_LIB NAMES soci_mysql REQUIRED)
 
+# MySQL 路径设置 (修复 mysql.h not found)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(MYSQL REQUIRED mysqlclient)
+include_directories(${MYSQL_INCLUDE_DIRS})
+
 # 1. 编译服务端
 add_executable(server test/server.cc)
 target_link_libraries(server gchrpc jsoncpp boost_system boost_filesystem cpp-httplib ssl crypto ${SOCI_CORE_LIB} ${SOCI_MYSQL_LIB})

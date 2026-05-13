@@ -11,7 +11,7 @@
 
 // OpenSSL SHA256
 #include <openssl/sha.h>
-
+// #include<mysql.h>
 // SOCI
 #include <soci/mysql/soci-mysql.h>
 #include <soci/soci.h>
@@ -28,13 +28,13 @@ static const std::string DB_CONNECT_STR =
 // 对应数据库 users 表的实体结构
 // ============================================================
 struct UserRecord {
-    uint64_t    id;
+    uint64_t id;
     std::string username;
     std::string password_hash;
     std::string salt;
     std::string nickname;
     std::string avatar_url;
-    uint32_t    login_count;
+    uint32_t login_count;
     std::string last_login_at;
     std::string created_at;
 };
@@ -50,20 +50,20 @@ public:
      * @param password 明文密码
      * @return 注册成功返回 true，失败（如用户名已存在）返回 false
      */
-    bool Register(const std::string& username, const std::string& password) {
+    bool Register(const std::string &username, const std::string &password) {
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
 
             // 1. 检查用户名是否已存在
             int count = 0;
-            sql << "SELECT COUNT(*) FROM users WHERE username = :u",
-                soci::into(count), soci::use(username);
+            sql << "SELECT COUNT(*) FROM users WHERE username = :u", soci::into(count),
+                soci::use(username);
             if (count > 0) {
                 return false;  // 用户名已存在
             }
 
             // 2. 生成盐并计算哈希
-            std::string salt        = GenerateSalt();
+            std::string salt = GenerateSalt();
             std::string passwd_hash = ComputeHash(password, salt);
 
             // 3. 插入数据库
@@ -72,7 +72,7 @@ public:
                 soci::use(username), soci::use(passwd_hash), soci::use(salt);
 
             return true;
-        } catch (const soci::soci_error& e) {
+        } catch (const soci::soci_error &e) {
             // 生产环境中可以替换为日志系统
             return false;
         }
@@ -84,13 +84,12 @@ public:
      * @param password 明文密码
      * @return 登录成功返回 UserRecord，失败返回 std::nullopt
      */
-    std::optional<UserRecord> Login(const std::string& username,
-                                    const std::string& password) {
+    std::optional<UserRecord> Login(const std::string &username, const std::string &password) {
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
 
             // 1. 查询用户信息
-            UserRecord    record;
+            UserRecord record;
             soci::indicator nick_ind, avatar_ind, login_at_ind;
 
             sql << "SELECT id, username, password_hash, salt, "
@@ -103,8 +102,7 @@ public:
                 soci::into(record.password_hash), soci::into(record.salt),
                 soci::into(record.nickname), soci::into(record.avatar_url),
                 soci::into(record.login_count), soci::into(record.last_login_at),
-                soci::into(record.created_at),
-                soci::use(username);
+                soci::into(record.created_at), soci::use(username);
 
             if (!sql.got_data()) {
                 return std::nullopt;  // 用户不存在
@@ -122,7 +120,7 @@ public:
                 soci::use(record.id);
 
             return record;
-        } catch (const soci::soci_error& e) {
+        } catch (const soci::soci_error &e) {
             return std::nullopt;
         }
     }
@@ -134,8 +132,8 @@ public:
      * @param avatar_url 新头像 URL
      * @return 更新成功返回 true
      */
-    bool UpdateProfile(uint64_t user_id, const std::string& nickname,
-                       const std::string& avatar_url) {
+    bool UpdateProfile(uint64_t user_id, const std::string &nickname,
+                       const std::string &avatar_url) {
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
 
@@ -144,7 +142,7 @@ public:
                 soci::use(nickname), soci::use(avatar_url), soci::use(user_id);
 
             return true;
-        } catch (const soci::soci_error& e) {
+        } catch (const soci::soci_error &e) {
             return false;
         }
     }
@@ -154,9 +152,9 @@ private:
     // 生成随机盐值（16位十六进制字符串）
     // ============================================================
     std::string GenerateSalt(size_t length = 16) {
-        static const char        hex_chars[] = "0123456789abcdef";
-        std::random_device        rd;
-        std::mt19937              gen(rd());
+        static const char hex_chars[] = "0123456789abcdef";
+        std::random_device rd;
+        std::mt19937 gen(rd());
         std::uniform_int_distribution<> dist(0, 15);
 
         std::string salt;
@@ -170,17 +168,15 @@ private:
     // ============================================================
     // 计算 SHA256(password + salt)，返回 64 位十六进制字符串
     // ============================================================
-    std::string ComputeHash(const std::string& password, const std::string& salt) {
-        std::string   input = password + salt;
+    std::string ComputeHash(const std::string &password, const std::string &salt) {
+        std::string input = password + salt;
         unsigned char digest[SHA256_DIGEST_LENGTH];
 
-        SHA256(reinterpret_cast<const unsigned char*>(input.c_str()),
-               input.size(), digest);
+        SHA256(reinterpret_cast<const unsigned char *>(input.c_str()), input.size(), digest);
 
         std::ostringstream oss;
         for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-            oss << std::hex << std::setw(2) << std::setfill('0')
-                << static_cast<int>(digest[i]);
+            oss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(digest[i]);
         }
         return oss.str();
     }
