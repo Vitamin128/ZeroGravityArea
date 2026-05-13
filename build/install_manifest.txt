@@ -11,6 +11,7 @@
 /usr/local/include/gchrpc/server/rpc_server.hpp
 /usr/local/include/gchrpc/server/rpc_topic.hpp
 /usr/local/include/gchrpc/server/rpc_registry.hpp
+/usr/local/include/gchrpc/user/user.hpp
 /usr/local/include/gchrpc/common/dispatcher.hpp
 /usr/local/include/gchrpc/common/net.hpp
 /usr/local/include/gchrpc/common/message.hpp

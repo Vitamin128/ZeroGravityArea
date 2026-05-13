@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DCPPJIEBA_DICT_PATH=\"/usr/local/share/cppjieba/dict/jieba.dict.utf8\" -DCPPJIEBA_HMM_PATH=\"/usr/local/share/cppjieba/dict/hmm_model.utf8\" -DCPPJIEBA_IDF_PATH=\"/usr/local/share/cppjieba/dict/idf.utf8\" -DCPPJIEBA_STOP_WORD_PATH=\"/usr/local/share/cppjieba/dict/stop_words.utf8\" -DCPPJIEBA_USER_DICT_PATH=\"/usr/local/share/cppjieba/dict/user.dict.utf8\"
 
-CXX_INCLUDES = -I/home/bamboo/ZeroGravityArea/src/include
+CXX_INCLUDES = -I/usr/include/mysql -I/home/bamboo/ZeroGravityArea/src/include
 
 CXX_FLAGS = -std=gnu++17
 

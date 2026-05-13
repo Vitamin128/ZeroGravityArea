@@ -92,6 +92,8 @@ server_EXTERNAL_OBJECTS =
 
 server: CMakeFiles/server.dir/test/server.cc.o
 server: CMakeFiles/server.dir/build.make
+server: /usr/lib/x86_64-linux-gnu/libsoci_core.so
+server: /usr/lib/x86_64-linux-gnu/libsoci_mysql.so
 server: /usr/local/lib/libmuduo_net.a
 server: /usr/local/lib/libmuduo_base.a
 server: CMakeFiles/server.dir/link.txt

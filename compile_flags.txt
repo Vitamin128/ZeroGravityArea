@@ -7,3 +7,5 @@
 -DCPPJIEBA_STOP_WORD_PATH="/usr/local/share/cppjieba/dict/stop_words.utf8"
 -std=c++17
 -Wall
+-I/usr/include/mysql
+-I/usr/include/soci
