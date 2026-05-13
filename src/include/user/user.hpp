@@ -8,8 +8,8 @@
 #include <stdexcept>
 #include <string>
 
-// OpenSSL SHA256
-#include <openssl/sha.h>
+// OpenSSL EVP
+#include <openssl/evp.h>
 
 // SOCI
 #include <soci/mysql/soci-mysql.h>
@@ -169,14 +169,17 @@ private:
      */
     std::string ComputeHash(const std::string &password, const std::string &salt) {
         std::string data = password + salt;
-        unsigned char hash[SHA256_DIGEST_LENGTH];
-        SHA256_CTX sha256;
-        SHA256_Init(&sha256);
-        SHA256_Update(&sha256, data.c_str(), data.size());
-        SHA256_Final(hash, &sha256);
+        unsigned char hash[64]; // EVP_MAX_MD_SIZE 
+        unsigned int len = 0;
+
+        EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+        EVP_DigestInit_ex(ctx, EVP_sha256(), NULL);
+        EVP_DigestUpdate(ctx, data.c_str(), data.size());
+        EVP_DigestFinal_ex(ctx, hash, &len);
+        EVP_MD_CTX_free(ctx);
 
         std::stringstream ss;
-        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        for (unsigned int i = 0; i < len; i++) {
             ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
         }
         return ss.str();
