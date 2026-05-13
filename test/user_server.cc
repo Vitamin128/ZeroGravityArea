@@ -49,6 +49,7 @@ int main() {
                 result["token"] = res->current_token;
                 result["nickname"] = res->nickname;
                 result["avatar_url"] = res->avatar_url;
+                result["user_id"] = (Json::Value::UInt64)res->id;
             } else {
                 result["status"] = "fail";
             }
@@ -56,35 +57,34 @@ int main() {
         server.RegistryMethod(factory.build());
     }
 
-    // 3. 上传头像接口: UploadAvatar
+    // 3. 更新资料接口: UpdateUserProfile
     {
         ServiceDescribeFactory factory;
-        factory.SetMethodName("UploadAvatar");
-        factory.SetParamsDesc("user_id", VType::STRING);
-        factory.SetParamsDesc("image_data", VType::STRING); // 二进制数据以字符串形式传输
-        factory.SetReturnVtype(VType::STRING);
+        factory.SetMethodName("UpdateUserProfile");
+        factory.SetParamsDesc("user_id", VType::INTEGRAL);
+        factory.SetParamsDesc("nickname", VType::STRING);
+        factory.SetParamsDesc("image_data", VType::STRING); 
+        factory.SetReturnVtype(VType::BOOL);
         factory.SetServiceDescribe([&](const Json::Value& params, Json::Value& result) {
-            std::string user_id = params["user_id"].asString();
+            uint64_t user_id = params["user_id"].asUInt64();
+            std::string nickname = params["nickname"].asString();
             std::string image_data = params["image_data"].asString();
 
-            // A. 本地落盘
-            std::string temp_path = "./temp_avatar_" + user_id + "_" + std::to_string(time(NULL)) + ".jpg";
-            std::ofstream outfile(temp_path, std::ios::binary);
-            if (!outfile) {
-                result = "";
-                return;
+            std::string temp_path = "";
+            if (!image_data.empty()) {
+                temp_path = "./temp_profile_" + std::to_string(user_id) + "_" + std::to_string(time(NULL)) + ".jpg";
+                std::ofstream outfile(temp_path, std::ios::binary);
+                if (outfile) {
+                    outfile.write(image_data.data(), image_data.size());
+                    outfile.close();
+                }
             }
-            outfile.write(image_data.data(), image_data.size());
-            outfile.close();
-
-            // B. 调用 COS 上传 (会自动删除本地文件)
-            std::string cloud_url = user_manager.UploadAvatar(temp_path);
-            result = cloud_url;
+            result = user_manager.UpdateProfile(user_id, nickname, temp_path);
         });
         server.RegistryMethod(factory.build());
     }
 
-    std::cout << "User Server started on 8088 using ServiceDescribeFactory..." << std::endl;
+    std::cout << "User Server (Production Ready) started on 8088..." << std::endl;
     server.Start();
     
     return 0;

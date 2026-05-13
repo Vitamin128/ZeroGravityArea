@@ -131,21 +131,43 @@ public:
     }
 
     /**
-     * @brief 上传头像到腾讯云 COS (通过调用 Python 脚本)
+     * @brief 更新用户信息（昵称和头像）
+     */
+    bool UpdateProfile(uint64_t user_id, const std::string& new_nickname, const std::string& local_avatar_path) {
+        std::string final_avatar_url = "";
+        if (!local_avatar_path.empty()) {
+            final_avatar_url = UploadAvatar(local_avatar_path);
+            std::remove(local_avatar_path.c_str()); // 删除临时文件
+        }
+
+        try {
+            soci::session sql(soci::mysql, DB_CONNECT_STR);
+            if (!final_avatar_url.empty()) {
+                sql << "UPDATE users SET nickname = :n, avatar_url = :a WHERE id = :id",
+                    soci::use(new_nickname), soci::use(final_avatar_url), soci::use(user_id);
+            } else {
+                sql << "UPDATE users SET nickname = :n WHERE id = :id",
+                    soci::use(new_nickname), soci::use(user_id);
+            }
+            return true;
+        } catch (const soci::soci_error &e) {
+            std::cerr << "UpdateProfile Error: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    /**
+     * @brief 上传图片到腾讯云辅助方法
      */
     std::string UploadAvatar(const std::string &local_path) {
-        // 命令：python3 src/cos_uploader.py [路径]
         std::string cmd = "python3 src/cos_uploader.py " + local_path;
-        
         FILE* pipe = popen(cmd.c_str(), "r");
         if (!pipe) return "";
-
         char buffer[256];
         std::string result = "";
         while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
             result += buffer;
         }
-        
         int status = pclose(pipe);
         if (status == 0) {
             if (!result.empty() && result.back() == '\n') result.pop_back();
