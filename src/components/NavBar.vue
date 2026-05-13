@@ -43,30 +43,22 @@
         
         <!-- 用户操作按钮 -->
         <div class="nav-actions">
-          <div class="user-profile-container">
-            <button 
-              class="icon-btn"
-              @mouseenter="showTooltip = true"
-              @mouseleave="showTooltip = false"
-              @mousemove="onMouseMove"
-            >
+          <div class="user-profile-container" 
+               @mouseenter="showTooltip = true" 
+               @mouseleave="showTooltip = false">
+            <button class="icon-btn">
               <Icon icon="ph:user-circle-bold" />
             </button>
             
-            <Teleport to="body">
-              <Transition name="tooltip-fade">
-                <div 
-                  v-if="showTooltip" 
-                  class="glass-tooltip" 
-                  :style="{ left: mouseX + 'px', top: mouseY + 'px' }"
-                >
-                  <div class="tooltip-content">
-                    <Icon icon="ph:sign-in-bold" />
-                    <span>立即登录</span>
-                  </div>
+            <Transition name="tooltip-fade">
+              <div v-if="showTooltip" class="glass-tooltip-fixed">
+                <div class="tooltip-arrow"></div>
+                <div class="tooltip-content">
+                  <Icon icon="ph:sign-in-bold" />
+                  <span>立即登录</span>
                 </div>
-              </Transition>
-            </Teleport>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>
@@ -81,13 +73,6 @@ import { useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
 
 const showTooltip = ref(false);
-const mouseX = ref(0);
-const mouseY = ref(0);
-
-const onMouseMove = (e) => {
-  mouseX.value = e.clientX + 15;
-  mouseY.value = e.clientY + 15;
-};
 
 const route = useRoute();
 const navContainer = ref(null);
@@ -263,8 +248,42 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
 
 /* --- 用户操作相关 --- */
 .user-profile-container {
+  position: relative;
   display: flex;
   align-items: center;
+}
+
+.glass-tooltip-fixed {
+  position: absolute;
+  top: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.tooltip-arrow {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: -1;
+  clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
 }
 
 .tooltip-content {
@@ -279,26 +298,6 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
   color: #4facfe;
 }
 
-/* --- 全局提示框样式 (同步 FileUpload) --- */
-</style>
-
-<style>
-.glass-tooltip {
-  position: fixed;
-  z-index: 99999;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  pointer-events: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
 .tooltip-fade-enter-active,
 .tooltip-fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -307,7 +306,7 @@ watch(() => route.path, () => setTimeout(updateIndicator, 50));
 .tooltip-fade-enter-from,
 .tooltip-fade-leave-to {
   opacity: 0;
-  transform: translateY(5px);
+  transform: translate(-50%, 5px); /* 保持水平居中的同时向下位移 */
 }
 </style>
 
