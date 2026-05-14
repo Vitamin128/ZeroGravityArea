@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <optional>
@@ -7,7 +8,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <cstdio>
 
 // OpenSSL EVP
 #include <openssl/evp.h>
@@ -49,11 +49,13 @@ public:
     /**
      * @brief 用户注册
      */
-    bool Register(const std::string &username, const std::string &password, const std::string &nickname) {
+    bool Register(const std::string &username, const std::string &password,
+                  const std::string &nickname) {
         try {
             soci::session sql(soci::mysql, DB_CONNECT_STR);
             int count = 0;
-            sql << "SELECT COUNT(*) FROM users WHERE username = :u", soci::into(count), soci::use(username);
+            sql << "SELECT COUNT(*) FROM users WHERE username = :u", soci::into(count),
+                soci::use(username);
             if (count > 0) return false;
 
             std::string salt = GenerateSalt();
@@ -119,9 +121,8 @@ public:
             UserRecord record;
             sql << "SELECT id, username, nickname, avatar_url, login_count "
                    "FROM users WHERE current_token = :t AND token_expire_at > NOW() LIMIT 1",
-                soci::into(record.id), soci::into(record.username),
-                soci::into(record.nickname), soci::into(record.avatar_url),
-                soci::into(record.login_count), soci::use(token);
+                soci::into(record.id), soci::into(record.username), soci::into(record.nickname),
+                soci::into(record.avatar_url), soci::into(record.login_count), soci::use(token);
 
             if (sql.got_data()) return record;
         } catch (const soci::soci_error &e) {
@@ -133,11 +134,12 @@ public:
     /**
      * @brief 更新用户信息（昵称和头像）
      */
-    bool UpdateProfile(uint64_t user_id, const std::string& new_nickname, const std::string& local_avatar_path) {
+    bool UpdateProfile(uint64_t user_id, const std::string &new_nickname,
+                       const std::string &local_avatar_path) {
         std::string final_avatar_url = "";
         if (!local_avatar_path.empty()) {
             final_avatar_url = UploadAvatar(local_avatar_path);
-            std::remove(local_avatar_path.c_str()); // 删除临时文件
+            std::remove(local_avatar_path.c_str());  // 删除临时文件
         }
 
         try {
@@ -146,8 +148,8 @@ public:
                 sql << "UPDATE users SET nickname = :n, avatar_url = :a WHERE id = :id",
                     soci::use(new_nickname), soci::use(final_avatar_url), soci::use(user_id);
             } else {
-                sql << "UPDATE users SET nickname = :n WHERE id = :id",
-                    soci::use(new_nickname), soci::use(user_id);
+                sql << "UPDATE users SET nickname = :n WHERE id = :id", soci::use(new_nickname),
+                    soci::use(user_id);
             }
             return true;
         } catch (const soci::soci_error &e) {
@@ -156,12 +158,13 @@ public:
         }
     }
 
+private:
     /**
      * @brief 上传图片到腾讯云辅助方法
      */
     std::string UploadAvatar(const std::string &local_path) {
         std::string cmd = "python3 src/cos_uploader.py " + local_path;
-        FILE* pipe = popen(cmd.c_str(), "r");
+        FILE *pipe = popen(cmd.c_str(), "r");
         if (!pipe) return "";
         char buffer[256];
         std::string result = "";
@@ -176,12 +179,11 @@ public:
         return "";
     }
 
-private:
     std::string ComputeHash(const std::string &password, const std::string &salt) {
         std::string data = password + salt;
-        unsigned char hash[64]; 
+        unsigned char hash[64];
         unsigned int len = 0;
-        EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+        EVP_MD_CTX *ctx = EVP_MD_CTX_new();
         EVP_DigestInit_ex(ctx, EVP_sha256(), NULL);
         EVP_DigestUpdate(ctx, data.c_str(), data.size());
         EVP_DigestFinal_ex(ctx, hash, &len);
@@ -195,7 +197,8 @@ private:
     }
 
     std::string GenerateRandomString(size_t len) {
-        static const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        static const char charset[] =
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         static std::mt19937 rg{std::random_device{}()};
         static std::uniform_int_distribution<std::string::size_type> pick(0, sizeof(charset) - 2);
         std::string s;
@@ -204,8 +207,12 @@ private:
         return s;
     }
 
-    std::string GenerateSalt() { return GenerateRandomString(16); }
-    std::string GenerateToken() { return GenerateRandomString(64); }
+    std::string GenerateSalt() {
+        return GenerateRandomString(16);
+    }
+    std::string GenerateToken() {
+        return GenerateRandomString(64);
+    }
 };
 
 }  // namespace user
