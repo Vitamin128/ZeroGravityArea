@@ -46,7 +46,7 @@
           <div class="user-profile-container" 
                @mouseenter="showTooltip = true" 
                @mouseleave="showTooltip = false">
-            <button class="icon-btn">
+            <button class="icon-btn" @click="showAuthModal = true">
               <img :src="defaultAvatar" alt="User" class="user-avatar" />
             </button>
             
@@ -64,6 +64,9 @@
       </div>
 
     </div>
+    
+    <!-- 登录/注册/找回密码弹窗 -->
+    <AuthModal v-if="showAuthModal" @close="showAuthModal = false" />
   </nav>
 </template>
 
@@ -72,8 +75,10 @@ import { ref, onMounted, watch, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import defaultAvatar from '../assets/white_user.png';
+import AuthModal from './AuthModal.vue';
 
 const showTooltip = ref(false);
+const showAuthModal = ref(false);
 
 const route = useRoute();
 const navContainer = ref(null);
