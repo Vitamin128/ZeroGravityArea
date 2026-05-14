@@ -66,7 +66,9 @@
     </div>
     
     <!-- 登录/注册/找回密码弹窗 -->
-    <AuthModal v-if="showAuthModal" @close="showAuthModal = false" />
+    <Teleport to="body">
+      <AuthModal v-if="showAuthModal" @close="showAuthModal = false" />
+    </Teleport>
   </nav>
 </template>
 

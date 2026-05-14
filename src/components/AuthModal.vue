@@ -19,7 +19,12 @@
           
           <div class="input-group">
             <Icon icon="ph:lock-key-bold" class="input-icon" />
-            <input type="password" placeholder="密码" />
+            <input :type="showPassword ? 'text' : 'password'" placeholder="密码" />
+            <Icon 
+              :icon="showPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
+              class="password-toggle" 
+              @click="showPassword = !showPassword" 
+            />
           </div>
           
           <div class="actions-row">
@@ -55,12 +60,22 @@
           
           <div class="input-group">
             <Icon icon="ph:lock-key-bold" class="input-icon" />
-            <input type="password" placeholder="密码" />
+            <input :type="showPassword ? 'text' : 'password'" placeholder="密码" />
+            <Icon 
+              :icon="showPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
+              class="password-toggle" 
+              @click="showPassword = !showPassword" 
+            />
           </div>
 
           <div class="input-group">
             <Icon icon="ph:lock-key-bold" class="input-icon" />
-            <input type="password" placeholder="确认密码" />
+            <input :type="showConfirmPassword ? 'text' : 'password'" placeholder="确认密码" />
+            <Icon 
+              :icon="showConfirmPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
+              class="password-toggle" 
+              @click="showConfirmPassword = !showConfirmPassword" 
+            />
           </div>
           
           <button class="submit-btn">注 册</button>
@@ -97,9 +112,13 @@ import { Icon } from '@iconify/vue';
 
 const emit = defineEmits(['close']);
 const currentView = ref('login'); // 'login', 'register', 'forgot'
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
 
 const switchView = (view) => {
   currentView.value = view;
+  showPassword.value = false;
+  showConfirmPassword.value = false;
 };
 </script>
 
@@ -110,8 +129,8 @@ const switchView = (view) => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+  /* 移除黑色背景和模糊遮罩，保持周围透明 */
+  background: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -121,15 +140,22 @@ const switchView = (view) => {
 .auth-card-wrapper {
   position: relative;
   width: 400px;
-  background: rgba(30, 30, 30, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* 极低的颜色不透明度 */
+  background: rgba(255, 255, 255, 0.05);
+  /* 通过极强的模糊效果（如 40px）来实现视觉上的“看不透（不透明）” */
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  /* 强化边缘的高光，让玻璃感更真实 */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.25); /* 顶部高光更亮 */
   border-radius: 24px;
-  padding: 40px 30px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  padding: 50px 40px;
+  /* 加入内阴影（模拟玻璃厚度）和外阴影 */
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
   color: white;
   overflow: hidden;
   transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  animation: fadeIn 0.8s ease-out;
 }
 
 .close-btn {
@@ -156,19 +182,20 @@ const switchView = (view) => {
 }
 
 h2 {
-  margin: 0 0 5px 0;
+  margin: 0 0 12px 0;
   font-size: 1.8rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: white;
+  letter-spacing: 1px;
+  text-align: center;
 }
 
 .subtitle {
-  margin: 0 0 30px 0;
-  font-size: 0.9rem;
+  margin: 0 0 32px 0;
+  font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  line-height: 1.6;
 }
 
 .input-group {
@@ -183,6 +210,23 @@ h2 {
   transform: translateY(-50%);
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.password-toggle:hover {
+  color: white;
 }
 
 input {
@@ -190,7 +234,7 @@ input {
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 12px 15px 12px 45px;
+  padding: 12px 45px 12px 45px;
   color: white;
   font-size: 1rem;
   outline: none;
@@ -202,6 +246,21 @@ input:focus {
   border-color: #4facfe;
   background: rgba(0, 0, 0, 0.4);
   box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+}
+
+/* 解决浏览器自动填充导致输入框变白的问题 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  /* 通过超长过渡时间“冻结”背景色，保留原本的透明毛玻璃背景 */
+  transition: background-color 5000s ease-in-out 0s;
+  /* 确保自动填充后的文字颜色依然是白色 */
+  -webkit-text-fill-color: white !important;
+  /* 修复自动填充时光标变黑的问题 */
+  caret-color: white !important;
+  /* 保持与原输入框一致的字体 */
+  font-family: inherit !important;
 }
 
 .actions-row {
@@ -224,7 +283,7 @@ input:focus {
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  background: linear-gradient(to right, #4facfe, #00f2fe);
   color: white;
   border: none;
   border-radius: 12px;
@@ -234,11 +293,12 @@ input:focus {
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
 }
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
 }
 
 .submit-btn:active {
@@ -320,5 +380,10 @@ input:focus {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateX(-20px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
