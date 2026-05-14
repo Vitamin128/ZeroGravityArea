@@ -1,4 +1,17 @@
 <template>
+  <!-- Toast 弹窗通知 -->
+  <Transition name="toast">
+    <div v-if="feedbackMsg" :class="['auth-toast', feedbackType]">
+      <div class="auth-toast-content">
+        <Icon 
+          :icon="feedbackType === 'success' ? 'ph:check-circle-bold' : 'ph:warning-bold'" 
+          width="24" height="24" class="auth-toast-icon" 
+        />
+        <p>{{ feedbackMsg }}</p>
+      </div>
+    </div>
+  </Transition>
+
   <div class="auth-modal-overlay" @click.self="$emit('close')">
     <div class="auth-card-wrapper">
       <!-- 关闭按钮 -->
@@ -13,13 +26,13 @@
           <p class="subtitle">登录您的 Zero Gravity Area 账号</p>
           
           <div class="input-group">
-            <Icon icon="ph:user-bold" class="input-icon" />
-            <input type="text" placeholder="用户名 / 邮箱" />
+            <Icon icon="ph:envelope-simple-bold" class="input-icon" />
+            <input type="email" v-model="loginForm.email" placeholder="邮箱地址" />
           </div>
           
           <div class="input-group">
             <Icon icon="ph:lock-key-bold" class="input-icon" />
-            <input :type="showPassword ? 'text' : 'password'" placeholder="密码" />
+            <input :type="showPassword ? 'text' : 'password'" v-model="loginForm.password" placeholder="密码" />
             <Icon 
               :icon="showPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
               class="password-toggle" 
@@ -29,14 +42,17 @@
           
           <div class="actions-row">
             <label class="checkbox-container">
-              <input type="checkbox" />
+              <input type="checkbox" v-model="loginForm.remember" />
               <span class="checkmark"></span>
               记住我
             </label>
             <a href="#" class="text-link" @click.prevent="switchView('forgot')">忘记密码？</a>
           </div>
           
-          <button class="submit-btn">登 录</button>
+          <button class="submit-btn" @click="handleLogin" :disabled="isLoading">
+            <Icon v-if="isLoading" icon="svg-spinners:ring-resize" />
+            <span v-else>登 录</span>
+          </button>
           
           <p class="switch-hint">
             还没有账号？ <a href="#" class="text-link accent" @click.prevent="switchView('register')">立即注册</a>
@@ -50,17 +66,25 @@
           
           <div class="input-group">
             <Icon icon="ph:user-bold" class="input-icon" />
-            <input type="text" placeholder="用户名" />
+            <input type="text" v-model="registerForm.nickname" placeholder="昵称" />
           </div>
           
           <div class="input-group">
             <Icon icon="ph:envelope-simple-bold" class="input-icon" />
-            <input type="email" placeholder="邮箱地址" />
+            <input type="email" v-model="registerForm.email" placeholder="邮箱地址" />
+          </div>
+
+          <div class="input-group code-group">
+            <Icon icon="ph:shield-check-bold" class="input-icon" />
+            <input type="text" v-model="registerForm.code" placeholder="验证码" />
+            <button class="send-code-btn" @click="sendCode('register')" :disabled="registerCooldown > 0">
+              {{ registerCooldown > 0 ? `${registerCooldown}s` : '发送验证码' }}
+            </button>
           </div>
           
           <div class="input-group">
             <Icon icon="ph:lock-key-bold" class="input-icon" />
-            <input :type="showPassword ? 'text' : 'password'" placeholder="密码" />
+            <input :type="showPassword ? 'text' : 'password'" v-model="registerForm.password" placeholder="密码" />
             <Icon 
               :icon="showPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
               class="password-toggle" 
@@ -70,7 +94,7 @@
 
           <div class="input-group">
             <Icon icon="ph:lock-key-bold" class="input-icon" />
-            <input :type="showConfirmPassword ? 'text' : 'password'" placeholder="确认密码" />
+            <input :type="showConfirmPassword ? 'text' : 'password'" v-model="registerForm.confirmPassword" placeholder="确认密码" />
             <Icon 
               :icon="showConfirmPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
               class="password-toggle" 
@@ -78,7 +102,10 @@
             />
           </div>
           
-          <button class="submit-btn">注 册</button>
+          <button class="submit-btn" @click="handleRegister" :disabled="isLoading">
+            <Icon v-if="isLoading" icon="svg-spinners:ring-resize" />
+            <span v-else>注 册</span>
+          </button>
           
           <p class="switch-hint">
             已有账号？ <a href="#" class="text-link accent" @click.prevent="switchView('login')">返回登录</a>
@@ -92,10 +119,31 @@
           
           <div class="input-group">
             <Icon icon="ph:envelope-simple-bold" class="input-icon" />
-            <input type="email" placeholder="注册邮箱地址" />
+            <input type="email" v-model="forgotForm.email" placeholder="注册邮箱地址" />
+          </div>
+
+          <div class="input-group code-group">
+            <Icon icon="ph:shield-check-bold" class="input-icon" />
+            <input type="text" v-model="forgotForm.code" placeholder="验证码" />
+            <button class="send-code-btn" @click="sendCode('forgot')" :disabled="forgotCooldown > 0">
+              {{ forgotCooldown > 0 ? `${forgotCooldown}s` : '发送验证码' }}
+            </button>
+          </div>
+
+          <div class="input-group">
+            <Icon icon="ph:lock-key-bold" class="input-icon" />
+            <input :type="showPassword ? 'text' : 'password'" v-model="forgotForm.newPassword" placeholder="新密码" />
+            <Icon 
+              :icon="showPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
+              class="password-toggle" 
+              @click="showPassword = !showPassword" 
+            />
           </div>
           
-          <button class="submit-btn">发送重置链接</button>
+          <button class="submit-btn" @click="handleResetPassword" :disabled="isLoading">
+            <Icon v-if="isLoading" icon="svg-spinners:ring-resize" />
+            <span v-else>重置密码</span>
+          </button>
           
           <p class="switch-hint">
             记起密码了？ <a href="#" class="text-link accent" @click.prevent="switchView('login')">返回登录</a>
@@ -107,18 +155,219 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
 
+const API_BASE = 'http://192.168.52.131:8082';
+
 const emit = defineEmits(['close']);
-const currentView = ref('login'); // 'login', 'register', 'forgot'
+const currentView = ref('login');
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+const isLoading = ref(false);
+const feedbackMsg = ref('');
+const feedbackType = ref('error'); // 'error' | 'success'
+
+const loginForm = reactive({ email: '', password: '', remember: false });
+const registerForm = reactive({ nickname: '', email: '', code: '', password: '', confirmPassword: '' });
+const forgotForm = reactive({ email: '', code: '', newPassword: '' });
+
+const registerCooldown = ref(0);
+const forgotCooldown = ref(0);
+let registerTimer = null;
+let forgotTimer = null;
+
+const showFeedback = (msg, type = 'error') => {
+  feedbackMsg.value = msg;
+  feedbackType.value = type;
+  setTimeout(() => { feedbackMsg.value = ''; }, 3000);
+};
 
 const switchView = (view) => {
   currentView.value = view;
   showPassword.value = false;
   showConfirmPassword.value = false;
+  feedbackMsg.value = '';
+};
+
+onMounted(async () => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/verify_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    const data = await res.json();
+
+    if (res.ok && data.code === 0) {
+      const userInfo = data.data;
+      if (userInfo) {
+        if (userInfo.nickname) localStorage.setItem('nickname', userInfo.nickname);
+        if (userInfo.avatar_url) localStorage.setItem('avatar_url', userInfo.avatar_url);
+        if (userInfo.user_id) localStorage.setItem('user_id', userInfo.user_id);
+        if (userInfo.email) localStorage.setItem('user_email', userInfo.email);
+      }
+      showFeedback('已自动登录', 'success');
+      setTimeout(() => emit('close'), 800);
+    } else {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('nickname');
+      localStorage.removeItem('avatar_url');
+      localStorage.removeItem('user_email');
+    }
+  } catch (err) {
+    console.error('Token 校验失败:', err);
+  }
+});
+
+const sendCode = async (scene) => {
+  const email = scene === 'register' ? registerForm.email : forgotForm.email;
+  if (!email) {
+    showFeedback('请先输入邮箱地址');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/send_code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        type: scene === 'register' ? 0 : 1,
+      }),
+    });
+    const data = await res.json();
+
+    if (res.ok && data.code === 0) {
+      showFeedback('验证码已发送，请查看邮箱', 'success');
+      if (scene === 'register') {
+        registerCooldown.value = 60;
+        registerTimer = setInterval(() => {
+          registerCooldown.value--;
+          if (registerCooldown.value <= 0) clearInterval(registerTimer);
+        }, 1000);
+      } else {
+        forgotCooldown.value = 60;
+        forgotTimer = setInterval(() => {
+          forgotCooldown.value--;
+          if (forgotCooldown.value <= 0) clearInterval(forgotTimer);
+        }, 1000);
+      }
+    } else {
+      showFeedback(data.msg || '发送失败，请稍后重试');
+    }
+  } catch (err) {
+    showFeedback('网络错误，请检查连接');
+  }
+};
+
+const handleLogin = async () => {
+  if (!loginForm.email || !loginForm.password) {
+    showFeedback('请填写邮箱和密码');
+    return;
+  }
+  isLoading.value = true;
+  try {
+    const res = await fetch(`${API_BASE}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: loginForm.email,
+        password: loginForm.password,
+      }),
+    });
+    const data = await res.json();
+
+    if (res.ok && data.code === 0) {
+      showFeedback('登录成功！', 'success');
+      const userInfo = data.data;
+      if (userInfo) {
+        if (userInfo.token) localStorage.setItem('auth_token', userInfo.token);
+        if (userInfo.user_id) localStorage.setItem('user_id', userInfo.user_id);
+        if (userInfo.nickname) localStorage.setItem('nickname', userInfo.nickname);
+        if (userInfo.avatar_url) localStorage.setItem('avatar_url', userInfo.avatar_url);
+        if (userInfo.email) localStorage.setItem('user_email', userInfo.email);
+      }
+      setTimeout(() => emit('close'), 800);
+    } else {
+      showFeedback(data.msg || '登录失败，请检查账号密码');
+    }
+  } catch (err) {
+    showFeedback('网络错误，请检查连接');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const handleRegister = async () => {
+  if (!registerForm.nickname || !registerForm.email || !registerForm.password || !registerForm.code) {
+    showFeedback('请填写所有必填项');
+    return;
+  }
+  if (registerForm.password !== registerForm.confirmPassword) {
+    showFeedback('两次密码输入不一致');
+    return;
+  }
+  isLoading.value = true;
+  try {
+    const res = await fetch(`${API_BASE}/api/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nickname: registerForm.nickname,
+        email: registerForm.email,
+        password: registerForm.password,
+        code: registerForm.code,
+      }),
+    });
+    const data = await res.json();
+
+    if (res.ok && data.code === 0) {
+      showFeedback('注册成功！请登录', 'success');
+      setTimeout(() => switchView('login'), 1200);
+    } else {
+      showFeedback(data.msg || '注册失败，请稍后重试');
+    }
+  } catch (err) {
+    showFeedback('网络错误，请检查连接');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const handleResetPassword = async () => {
+  if (!forgotForm.email || !forgotForm.code || !forgotForm.newPassword) {
+    showFeedback('请填写所有必填项');
+    return;
+  }
+  isLoading.value = true;
+  try {
+    const res = await fetch(`${API_BASE}/api/reset_password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: forgotForm.email,
+        code: forgotForm.code,
+        new_password: forgotForm.newPassword,
+      }),
+    });
+    const data = await res.json();
+
+    if (res.ok && data.code === 0) {
+      showFeedback('密码重置成功！请登录', 'success');
+      setTimeout(() => switchView('login'), 1200);
+    } else {
+      showFeedback(data.msg || '重置失败，请检查验证码');
+    }
+  } catch (err) {
+    showFeedback('网络错误，请检查连接');
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
@@ -142,7 +391,7 @@ const switchView = (view) => {
   width: 400px;
   /* 极低的颜色不透明度 */
   background: rgba(255, 255, 255, 0.05);
-  /* 通过极强的模糊效果（如 40px）来实现视觉上的“看不透（不透明）” */
+  /* 通过极强的模糊效果（如 40px）来实现视觉上的"看不透（不透明）" */
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   /* 强化边缘的高光，让玻璃感更真实 */
@@ -174,6 +423,72 @@ const switchView = (view) => {
 .close-btn:hover {
   color: white;
   transform: rotate(90deg);
+}
+
+/* --- Toast 弹窗通知（与 ToastCard.vue 风格一致） --- */
+.auth-toast {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  border-radius: 12px;
+  /* min-width: 280px; */
+}
+
+.auth-toast.error {
+  background: rgba(255, 69, 58, 0.1);
+  border: 1px solid rgba(255, 69, 58, 0.4);
+}
+
+.auth-toast.success {
+  background: rgba(0, 242, 254, 0.1);
+  border: 1px solid rgba(0, 242, 254, 0.4);
+}
+
+.auth-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-weight: 400;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+
+.auth-toast.error .auth-toast-icon {
+  color: rgba(255, 69, 58, 0.9);
+}
+
+.auth-toast.success .auth-toast-icon {
+  color: #00f2fe;
+}
+
+.auth-toast-content p {
+  margin: 0;
+}
+
+/* Toast 动画 */
+.toast-enter-active {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translate(-50%, 20px);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -40px);
 }
 
 .auth-view {
@@ -253,7 +568,7 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
 input:-webkit-autofill:active {
-  /* 通过超长过渡时间“冻结”背景色，保留原本的透明毛玻璃背景 */
+  /* 通过超长过渡时间"冻结"背景色，保留原本的透明毛玻璃背景 */
   transition: background-color 5000s ease-in-out 0s;
   /* 确保自动填充后的文字颜色依然是白色 */
   -webkit-text-fill-color: white !important;
@@ -261,6 +576,38 @@ input:-webkit-autofill:active {
   caret-color: white !important;
   /* 保持与原输入框一致的字体 */
   font-family: inherit !important;
+}
+
+/* --- 验证码输入组 --- */
+.code-group input {
+  padding-right: 120px;
+}
+
+.send-code-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px 14px;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.send-code-btn:hover:not(:disabled) {
+  box-shadow: 0 2px 10px rgba(79, 172, 254, 0.4);
+}
+
+.send-code-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
 }
 
 .actions-row {
@@ -294,15 +641,23 @@ input:-webkit-autofill:active {
   transition: all 0.3s ease;
   margin-bottom: 20px;
   box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
 }
 
-.submit-btn:active {
+.submit-btn:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .switch-hint {
