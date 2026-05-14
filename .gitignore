@@ -15,6 +15,7 @@ text/
 *.apk
 *.pdf
 *.txt
+!CMakeLists.txt
 
 demo
 parser3
