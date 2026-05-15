@@ -1,7 +1,7 @@
 <template>
   <div class="app-root">
     <!-- 全局星空背景 -->
-    <vue-particles id="tsparticles" :options="particlesOptions" />
+    <!-- <vue-particles id="tsparticles" :options="particlesOptions" /> -->
     
     <!-- 全局顶部导航栏 -->
     <NavBar />
