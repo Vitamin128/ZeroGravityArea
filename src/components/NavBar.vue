@@ -46,16 +46,22 @@
           <div class="user-profile-container" 
                @mouseenter="showTooltip = true" 
                @mouseleave="showTooltip = false">
-            <button class="icon-btn" @click="showAuthModal = true">
-              <img :src="defaultAvatar" alt="User" class="user-avatar" />
+            <button class="icon-btn" @click="openAuthModal">
+              <img :src="userAvatar || defaultAvatar" alt="User" class="user-avatar" />
             </button>
             
             <Transition name="tooltip-fade">
               <div v-if="showTooltip" class="glass-tooltip-fixed">
                 <div class="tooltip-arrow"></div>
                 <div class="tooltip-content">
-                  <Icon icon="ph:sign-in-bold" />
-                  <span>立即登录</span>
+                  <template v-if="isLoggedIn">
+                    <Icon icon="ph:gear-six-bold" />
+                    <span>更改设置</span>
+                  </template>
+                  <template v-else>
+                    <Icon icon="ph:sign-in-bold" />
+                    <span>立即登录</span>
+                  </template>
                 </div>
               </div>
             </Transition>
@@ -65,9 +71,9 @@
 
     </div>
     
-    <!-- 登录/注册/找回密码弹窗 -->
+    <!-- 登录/注册/找回密码/设置弹窗 -->
     <Teleport to="body">
-      <AuthModal v-if="showAuthModal" @close="showAuthModal = false" />
+      <AuthModal v-if="showAuthModal" :initialView="initialAuthView" @close="handleAuthClose" />
     </Teleport>
   </nav>
 </template>
@@ -81,6 +87,25 @@ import AuthModal from './auth/AuthModal.vue';
 
 const showTooltip = ref(false);
 const showAuthModal = ref(false);
+const isLoggedIn = ref(false);
+const initialAuthView = ref('login');
+const userAvatar = ref(localStorage.getItem('avatar_url') || '');
+
+const checkLoginStatus = () => {
+  const token = localStorage.getItem('auth_token');
+  isLoggedIn.value = !!token;
+  userAvatar.value = localStorage.getItem('avatar_url') || '';
+};
+
+const openAuthModal = () => {
+  initialAuthView.value = isLoggedIn.value ? 'settings' : 'login';
+  showAuthModal.value = true;
+};
+
+const handleAuthClose = () => {
+  showAuthModal.value = false;
+  checkLoginStatus();
+};
 
 const route = useRoute();
 const navContainer = ref(null);
@@ -121,7 +146,10 @@ const updateIndicator = () => {
   }
 };
 
-onMounted(() => setTimeout(updateIndicator, 100));
+onMounted(() => {
+  setTimeout(updateIndicator, 100);
+  checkLoginStatus();
+});
 watch(() => route.path, () => setTimeout(updateIndicator, 50));
 </script>
 

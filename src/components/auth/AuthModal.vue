@@ -13,7 +13,7 @@
   </Transition>
 
   <div class="auth-modal-overlay" @click.self="$emit('close')">
-    <div class="auth-card-wrapper">
+    <div :class="['auth-card-wrapper', { 'is-settings': currentView === 'settings' }]">
       <!-- 关闭按钮 -->
       <button class="close-btn" @click="$emit('close')">
         <Icon icon="ph:x-bold" />
@@ -39,16 +39,26 @@ import LoginForm from './LoginForm.vue';
 import RegisterForm from './RegisterForm.vue';
 import ForgotForm from './ForgotForm.vue';
 
+const props = defineProps({
+  initialView: {
+    type: String,
+    default: 'login'
+  }
+});
+
 const emit = defineEmits(['close']);
-const currentView = ref('login');
+const currentView = ref(props.initialView);
 const feedbackMsg = ref('');
 const feedbackType = ref('error'); // 'error' | 'success'
+
+import SettingsForm from './SettingsForm.vue';
 
 const currentViewComponent = computed(() => {
   const map = {
     login: LoginForm,
     register: RegisterForm,
-    forgot: ForgotForm
+    forgot: ForgotForm,
+    settings: SettingsForm
   };
   return map[currentView.value];
 });
@@ -88,8 +98,12 @@ onMounted(async () => {
       if (userInfo.user_id) localStorage.setItem('user_id', userInfo.user_id);
       if (userInfo.email) localStorage.setItem('user_email', userInfo.email);
     }
-    showFeedback('已自动登录', 'success');
-    setTimeout(() => emit('close'), 800);
+    
+    // 只有在非设置界面（即在尝试登录时）才执行自动进入和提示
+    if (currentView.value !== 'settings') {
+      showFeedback('已自动登录', 'success');
+      setTimeout(() => emit('close'), 800);
+    }
   } catch (err) {
     console.error('Token 校验失败:', err);
     localStorage.removeItem('auth_token');
@@ -113,6 +127,14 @@ onMounted(async () => {
 .auth-card-wrapper {
   position: relative;
   width: 400px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-card-wrapper.is-settings {
+  width: 400px; /* 设置页更宽 */
+}
+
+.auth-card-wrapper {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
