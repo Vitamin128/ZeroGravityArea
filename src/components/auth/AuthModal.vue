@@ -93,13 +93,12 @@ onMounted(async () => {
   } catch (err) {
     console.error('Token 校验失败:', err);
     localStorage.removeItem('auth_token');
-    // ... 清理其他缓存
   }
 });
 </script>
 
-<style>
-/* 全局认证相关样式（不使用 scoped 以便作用于子组件） */
+<style scoped>
+/* 只保留外壳和 Toast 样式 */
 .auth-modal-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -148,48 +147,6 @@ onMounted(async () => {
   transform: rotate(90deg);
 }
 
-/* 子组件共享样式 */
-.auth-view { display: flex; flex-direction: column; }
-.auth-view h2 { margin: 0 0 12px 0; font-size: 1.8rem; text-align: center; }
-.auth-view .subtitle { margin: 0 0 32px 0; font-size: 1.1rem; color: rgba(255, 255, 255, 0.6); text-align: center; }
-
-.input-group { position: relative; margin-bottom: 20px; }
-.input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4); pointer-events: none; }
-.password-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4); cursor: pointer; z-index: 2; }
-
-input {
-  width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 12px 45px;
-  color: white;
-  outline: none;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-input:focus { border-color: #4facfe; background: rgba(0, 0, 0, 0.4); }
-
-.code-group input { padding-right: 120px; }
-.send-code-btn {
-  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-  padding: 6px 14px; background: linear-gradient(to right, #4facfe, #00f2fe);
-  color: white; border: none; border-radius: 8px; font-size: 0.8rem; cursor: pointer;
-}
-
-.submit-btn {
-  width: 100%;
-  background: linear-gradient(to right, #4facfe, #00f2fe);
-  color: white; border: none; border-radius: 12px; padding: 14px;
-  font-size: 1.1rem; font-weight: 600; cursor: pointer;
-  margin-bottom: 20px;
-  display: flex; justify-content: center; align-items: center;
-}
-
-.actions-row { display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 0.9rem; }
-.text-link { color: rgba(255, 255, 255, 0.6); text-decoration: none; }
-.text-link.accent { color: #4facfe; }
-
 /* Toast 样式 */
 .auth-toast {
   position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
@@ -199,7 +156,7 @@ input:focus { border-color: #4facfe; background: rgba(0, 0, 0, 0.4); }
 .auth-toast.success { background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.4); }
 .auth-toast-content { display: flex; align-items: center; gap: 12px; color: white; font-size: 1.3rem; }
 
-/* 动画 */
+/* 切换动画 */
 .fade-slide-enter-active, .fade-slide-leave-active { transition: all 0.3s ease; }
 .fade-slide-enter-from { opacity: 0; transform: translateX(20px); }
 .fade-slide-leave-to { opacity: 0; transform: translateX(-20px); }

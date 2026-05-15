@@ -19,11 +19,7 @@
     </div>
     
     <div class="actions-row">
-      <label class="checkbox-container">
-        <input type="checkbox" v-model="form.remember" />
-        <span class="checkmark"></span>
-        记住我
-      </label>
+      <div class="spacer"></div>
       <a href="#" class="text-link" @click.prevent="$emit('switch', 'forgot')">忘记密码？</a>
     </div>
     
@@ -49,8 +45,7 @@ const showPassword = ref(false);
 
 const form = reactive({
   email: '',
-  password: '',
-  remember: false
+  password: ''
 });
 
 const handleLogin = async () => {
@@ -83,3 +78,55 @@ const handleLogin = async () => {
   }
 };
 </script>
+
+<style scoped>
+.auth-view { display: flex; flex-direction: column; }
+.auth-view h2 { margin: 0 0 12px 0; font-size: 1.8rem; text-align: center; color: white; }
+.auth-view .subtitle { margin: 0 0 32px 0; font-size: 1.1rem; color: rgba(255, 255, 255, 0.6); text-align: center; }
+
+.input-group { position: relative; margin-bottom: 20px; }
+.input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4); pointer-events: none; }
+.password-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4); cursor: pointer; z-index: 2; }
+
+input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 45px;
+  color: white;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+input:focus { border-color: #4facfe; background: rgba(0, 0, 0, 0.4); }
+
+/* 解决浏览器自动填充导致输入框变白的问题 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: white !important;
+  caret-color: white !important;
+}
+
+.submit-btn {
+  width: 100%;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  color: white; border: none; border-radius: 12px; padding: 14px;
+  font-size: 1.1rem; font-weight: 600; cursor: pointer;
+  margin-bottom: 20px;
+  display: flex; justify-content: center; align-items: center;
+  transition: all 0.3s ease;
+}
+.submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4); }
+.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.actions-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 0.9rem; }
+.spacer { flex: 1; }
+.text-link { color: rgba(255, 255, 255, 0.6); text-decoration: none; transition: color 0.3s ease; }
+.text-link:hover, .text-link.accent { color: #4facfe; }
+
+.switch-hint { text-align: center; font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); }
+</style>
