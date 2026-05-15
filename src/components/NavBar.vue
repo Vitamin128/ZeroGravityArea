@@ -77,7 +77,7 @@ import { ref, onMounted, watch, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import defaultAvatar from '../assets/white_user.png';
-import AuthModal from './AuthModal.vue';
+import AuthModal from './auth/AuthModal.vue';
 
 const showTooltip = ref(false);
 const showAuthModal = ref(false);

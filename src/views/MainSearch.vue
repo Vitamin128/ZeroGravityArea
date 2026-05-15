@@ -39,12 +39,12 @@
 <script setup lang="js">
 import { ref } from 'vue';
 // 路径更新：从 components 移出到 views，所以需要回退一层到 components
-import ToastCard from '../components/ToastCard.vue';
-import SearchBar from '../components/SearchBar.vue';
-import ResultCards from '../components/ResultCards.vue';
-import FileUpload from '../components/FileUpload.vue';
-import UploadInterface from '../components/UploadInterface.vue';
-import LoadingOverlay from '../components/LoadingOverlay.vue';
+import ToastCard from '../components/search/ToastCard.vue';
+import SearchBar from '../components/search/SearchBar.vue';
+import ResultCards from '../components/search/ResultCards.vue';
+import FileUpload from '../components/search/FileUpload.vue';
+import UploadInterface from '../components/search/UploadInterface.vue';
+import LoadingOverlay from '../components/search/LoadingOverlay.vue';
 
 const showToast = ref(false);
 const triggerToast = () => {
