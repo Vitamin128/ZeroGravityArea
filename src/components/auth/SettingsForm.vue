@@ -8,7 +8,7 @@
       <!-- 左侧：头像 -->
       <div class="avatar-section">
         <div class="avatar-preview-wrapper">
-          <img :src="avatarUrl || defaultAvatar" alt="Avatar" class="large-avatar" />
+          <img :src="avatarUrl || defaultAvatar" @error="(e) => e.target.src = defaultAvatar" alt="Avatar" class="large-avatar" />
           <div class="avatar-edit-overlay" @click="triggerAvatarUpload">
             <Icon icon="ph:camera-bold" />
           </div>
@@ -56,37 +56,80 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
 import defaultAvatar from '@/assets/white_user.png';
+import request from '@/utils/request'; // 确保导入了封装好的 axios 实例
 
 const emit = defineEmits(['close', 'success', 'error']);
 const isLoading = ref(false);
 
+// 响应式数据
 const nickname = ref(localStorage.getItem('nickname') || '');
 const userEmail = ref(localStorage.getItem('user_email') || '未绑定邮箱');
 const avatarUrl = ref(localStorage.getItem('avatar_url') || '');
+
+// 文件上传相关
 const fileInput = ref(null);
+const selectedFile = ref(null);
 
 const triggerAvatarUpload = () => fileInput.value.click();
 
-const onFileChange = async (e) => {
+// 当用户选择文件时：生成预览图并保存文件对象
+const onFileChange = (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  emit('success', '头像上传功能待接入后端');
+
+  // 1. 保存文件对象，稍后提交
+  selectedFile.value = file;
+
+  // 2. 生成本地预览图
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    avatarUrl.value = event.target.result;
+  };
+  reader.readAsDataURL(file);
 };
 
+// 提交修改到后端
 const handleSave = async () => {
   if (!nickname.value.trim()) {
     emit('error', '昵称不能为空');
     return;
   }
+
   isLoading.value = true;
   try {
-    localStorage.setItem('nickname', nickname.value);
-    emit('success', '修改保存成功！');
+    // 构造 FormData，匹配后端 httplib 的 req.get_file_value("xxx")
+    const formData = new FormData();
+    formData.append('user_id', localStorage.getItem('user_id') || '');
+    formData.append('nickname', nickname.value);
+    
+    // 如果用户选了新头像，则添加 avatar 字段
+    if (selectedFile.value) {
+      formData.append('avatar', selectedFile.value);
+    }
+
+    // 发送 POST 请求到 http://ip:8082/api/update_profile
+    const res = await request.post('/api/update_profile', formData);
+
+    // 根据后端逻辑，code 为 0 表示成功
+    if (res.code === 0) {
+      // 更新本地持久化数据
+      localStorage.setItem('nickname', nickname.value);
+      if (res.data && res.data.avatar_url) {
+        localStorage.setItem('avatar_url', res.data.avatar_url);
+      }
+      emit('success', '资料更新成功！');
+      
+      // 重置文件选择状态
+      selectedFile.value = null;
+    } else {
+      emit('error', res.msg || '更新失败');
+    }
   } catch (err) {
-    emit('error', err.message || '保存失败');
+    console.error('Update Profile Error:', err);
+    emit('error', '服务器请求失败，请检查网络或后端状态');
   } finally {
     isLoading.value = false;
   }
@@ -274,14 +317,17 @@ input:-webkit-autofill:active {
 
 /* 保存修改按钮 —— 主色渐变（与 submit-btn 一致） */
 .save-btn {
-  background: linear-gradient(to right, #4facfe, #00f2fe);
-  color: white;
-  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  background: rgba(79, 172, 254, 0.15);
+  border: 1px solid rgba(79, 172, 254, 0.3);
+  color: #4facfe;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .save-btn:hover:not(:disabled) {
+  background: rgba(79, 172, 254, 0.25);
+  border-color: rgba(79, 172, 254, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+  box-shadow: 0 6px 15px rgba(79, 172, 254, 0.2);
 }
 
 .save-btn:disabled {

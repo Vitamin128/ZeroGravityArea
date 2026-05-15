@@ -47,7 +47,7 @@
                @mouseenter="showTooltip = true" 
                @mouseleave="showTooltip = false">
             <button class="icon-btn" @click="openAuthModal">
-              <img :src="userAvatar || defaultAvatar" alt="User" class="user-avatar" />
+              <img :src="userAvatar || defaultAvatar" @error="(e) => e.target.src = defaultAvatar" alt="User" class="user-avatar" />
             </button>
             
             <Transition name="tooltip-fade">

@@ -76,7 +76,7 @@ const switchView = (view) => {
 
 const onAuthSuccess = (msg) => {
   showFeedback(msg, 'success');
-  if (currentView.value === 'login') {
+  if (currentView.value === 'login' || currentView.value === 'settings') {
     setTimeout(() => emit('close'), 800);
   }
 };
