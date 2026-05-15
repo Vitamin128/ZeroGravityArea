@@ -40,8 +40,7 @@
 <script setup>
 import { ref, reactive, onUnmounted } from 'vue';
 import { Icon } from '@iconify/vue';
-import { sendCode } from '@/api/auth';
-import request from '@/utils/request';
+import { sendCode, resetPassword } from '@/api/auth';
 
 const emit = defineEmits(['switch', 'success', 'error']);
 const isLoading = ref(false);
@@ -80,7 +79,7 @@ const handleResetPassword = async () => {
   }
   isLoading.value = true;
   try {
-    await request.post('/api/reset_password', {
+    await resetPassword({
       email: form.email,
       code: form.code,
       new_password: form.newPassword,

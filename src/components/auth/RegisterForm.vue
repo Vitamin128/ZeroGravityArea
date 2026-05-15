@@ -55,8 +55,7 @@
 <script setup>
 import { ref, reactive, onUnmounted } from 'vue';
 import { Icon } from '@iconify/vue';
-import { sendCode } from '@/api/auth';
-import request from '@/utils/request';
+import { sendCode, register } from '@/api/auth';
 
 const emit = defineEmits(['switch', 'success', 'error']);
 const isLoading = ref(false);
@@ -80,7 +79,7 @@ const handleSendCode = async () => {
   }
   try {
     await sendCode(form.email, 0); // 0 为注册场景
-    emit('success', '验证码已发送，请查看邮箱', 'success');
+    emit('success', '验证码已发送，请查看邮箱');
     cooldown.value = 60;
     timer = setInterval(() => {
       cooldown.value--;
@@ -102,8 +101,7 @@ const handleRegister = async () => {
   }
   isLoading.value = true;
   try {
-    // 这里可以直接用 request 或者在 api/auth.js 里增加 register 函数
-    await request.post('/api/register', {
+    await register({
       nickname: form.nickname,
       email: form.email,
       password: form.password,
