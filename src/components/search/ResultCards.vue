@@ -107,7 +107,7 @@ const downloadItem = (item) => {
   // 1. 使用正确的字段名 doc_id
   const docId = item.doc_id; 
   
-  if (!docId) {
+  if (docId === undefined || docId === null || docId === '') {
     console.error('错误：当前卡片数据中没有 doc_id', item);
     return;
   }
