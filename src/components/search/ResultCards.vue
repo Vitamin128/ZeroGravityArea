@@ -14,7 +14,7 @@
           <p class="card-content">{{ item.content }}</p>
         </div>
         <button class="download-btn" @click.stop="downloadItem(item)">
-          <Icon icon="ph:download-simple-bold" width="20" height="20" />
+          <Icon icon="ph:download-simple" width="20" height="20" />
           <span>下载</span>
         </button>
       </div>
@@ -128,8 +128,7 @@ const downloadItem = (item) => {
 </script>
 
 <style scoped>
-/* P5 风格卡片核心逻辑 */
-
+/* 卡片容器 */
 .card-entrance {
   animation: fadeInUp 0.6s ease-out both;
   width: 30%;
@@ -145,7 +144,7 @@ const downloadItem = (item) => {
   margin: 0 auto;
 }
 
-/* 卡片：玻璃拟态样式 */
+/* 卡片样式 */
 .result-card {
   display: flex;
   justify-content: space-between;
@@ -153,58 +152,66 @@ const downloadItem = (item) => {
   gap: 2px;
   height: 130px;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.05);
-  /* backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px); */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
   padding: 24px 20px 15px 20px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .card-body {
-  flex: 9;          /* 占据 90% 的空间 */
+  flex: 9;
   text-align: left;
-  min-width: 0;     /* 关键：允许内容缩小，防止挤开按钮 */
-  height: 100%;     /* 撑满可用高度，使其可以滚动 */
-  overflow-y: auto; /* 超过内容出现滚动条 */
-  padding-bottom: 24px; /* 在内部滚动区底部加点留白，以免滚到底时文字贴边 */
-  
-  /* 隐藏滚动条 */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #D4C4B0 #F7F4ED;
 }
+
 .card-body::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Opera */
+  width: 6px;
+}
+
+.card-body::-webkit-scrollbar-track {
+  background: #F7F4ED;
+}
+
+.card-body::-webkit-scrollbar-thumb {
+  background: #D4C4B0;
+  border-radius: 3px;
+}
+
+.card-body::-webkit-scrollbar-thumb:hover {
+  background: #8B6F47;
 }
 
 .download-btn {
-  flex: 1;          /* 占据 10% 的空间 */
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 9px;
+  background: #8B6F47;
+  border: none;
+  border-radius: 4px;
   color: #ffffff;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  font-family: inherit;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   white-space: nowrap;
   min-width: fit-content;
 }
 
 .download-btn:hover {
-  background: linear-gradient(135deg, #00aeec 0%, #00f2fe 100%);
-  border-color: transparent;
-  color: #0f3460;
+  background: #6B5437;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 174, 236, 0.4);
+  box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
 }
 
 .download-btn :deep(svg) {
@@ -214,78 +221,26 @@ const downloadItem = (item) => {
 }
 
 .result-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  
-  /* 2. 背景透明度对齐搜索框 */
-  background: rgba(255, 255, 255, 0.1);
-  
-  /* 3. 边框颜色对齐搜索框（使用半透明白） */
-  border-color: rgba(255, 255, 255, 0.3);
-  
-  /* 4. 阴影强度对齐搜索框 */
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* 卡片头部 */
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.card-index {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #0f3460;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  padding: 4px 10px;
-  border-radius: 8px;
-  letter-spacing: 1px;
-  flex-shrink: 0;
+  transform: translateY(-2px);
+  border-color: #8B6F47;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
-  color: #ffffff;
+  color: #2C2C2C;
   letter-spacing: -0.3px;
+  font-family: 'Inter', sans-serif;
 }
 
-/* 卡片正文 */
 .card-content {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.55);
+  color: #6B6B6B;
   margin: 0 0 16px 0;
-  /* 移除了 line-clamp 限制，文本可以自由无限向下换行 */
-}
-
-/* 卡片底部 */
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.card-path {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.3);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 70%;
-  font-family: 'Courier New', monospace;
-}
-
-.card-weight {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: rgba(79, 172, 254, 0.7);
-  flex-shrink: 0;
+  font-family: 'Lora', serif;
 }
 
 /* 入场动画 */
@@ -299,6 +254,8 @@ const downloadItem = (item) => {
     transform: translateY(0);
   }
 }
+
+/* 分页器 */
 .pagination-wrapper {
   width: 100%;
   display: flex;
@@ -310,53 +267,54 @@ const downloadItem = (item) => {
   padding-right: 8%;
   animation: fadeIn 0.8s ease-out;
 }
+
 .page-numbers {
   display: flex;
   gap: 8px;
 }
-/* 按钮通用基础样式：玻璃拟态 */
+
 .page-btn, .page-num {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  color: #2C2C2C;
   padding: 6px 6px;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
-  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
 }
+
 .page-num {
   padding: 6px 6px;
   min-width: 30px;
 }
-/* 悬停效果 */
+
 .page-btn:hover:not(:disabled), .page-num:hover:not(.dot) {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  background: #F7F4ED;
+  border-color: #8B6F47;
 }
-/* 激活状态：B 站蓝渐变 */
+
 .page-num.active {
-  background: linear-gradient(135deg, #00aeec 0%, #00f2fe 100%);
+  background: #8B6F47;
   border: none;
-  color: #0f3460;
-  font-weight: 700;
-  box-shadow: 0 4px 15px rgba(0, 174, 236, 0.4);
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(139, 111, 71, 0.3);
 }
-/* 禁用状态 */
+
 .page-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
-/* 省略号样式 */
+
 .page-num.dot {
   background: transparent;
   border: none;
   cursor: default;
+  color: #6B6B6B;
 }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -2,8 +2,8 @@
   <Transition name="toast">
     <div class="toast-card" v-if="show">
       <div class="toast-content">
-        <Icon icon="ph:warning-bold" width="36" height="36" class="toast-icon" />
-        <p style="color: white; font-weight: 500; font-size: 1.7rem;">{{ message }}</p>
+        <Icon icon="ph:warning" width="24" height="24" class="toast-icon" />
+        <p>{{ message }}</p>
       </div>
     </div>
   </Transition>
@@ -21,19 +21,16 @@ defineProps({
 <style scoped>
 .toast-card {
   position: fixed;
-  top: 40%; /* 出现在屏幕上方偏中位置 */
+  top: 40%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
-  
-  /* 玻璃拟态风格 */
-  background: rgba(255, 69, 58, 0.1); /* 淡淡的警告红 */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 69, 58, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  padding: 16px;
-  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-left: 3px solid #D32F2F;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 16px 20px;
+  border-radius: 4px;
   min-width: 280px;
 }
 
@@ -41,31 +38,37 @@ defineProps({
   display: flex;
   align-items: center;
   gap: 12px;
-  color: white;
+  color: #2C2C2C;
   font-weight: 500;
-  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+}
+
+.toast-content p {
+  margin: 0;
 }
 
 .toast-icon {
-  font-size: 1.2rem;
+  color: #D32F2F;
+  flex-shrink: 0;
 }
 
-/* 动画：滑入并迅速滑出 */
+/* 动画 */
 .toast-enter-active {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s ease;
 }
 
 .toast-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+  transition: all 0.2s ease;
 }
 
 .toast-enter-from {
   opacity: 0;
-  transform: translate(-50%, 20px); /* 从下方滑入 */
+  transform: translate(-50%, 20px);
 }
 
 .toast-leave-to {
   opacity: 0;
-  transform: translate(-50%, -40px); /* 向上迅速消失 */
+  transform: translate(-50%, -20px);
 }
 </style>

@@ -1,77 +1,60 @@
 <template>
-  <nav class="navbar">
-    <div class="nav-container" ref="navContainer">
-      <!-- 动态滑块 -->
-      <div class="nav-indicator" :style="indicatorStyle"></div>
+  <nav class="navbar" :class="{ 'sidebar-open': isOpen }">
+    <!-- 顶部细条 -->
+    <div class="top-bar">
+      <!-- Logo -->
+      <router-link to="/" class="logo">
+        <Icon icon="ph:planet" class="logo-icon" />
+        <span class="logo-text">Zero Gravity</span>
+      </router-link>
 
-      <!-- 1. 左侧区域 (绝对等宽) -->
-      <div class="nav-section side-left">
-        <div class="nav-links">
-          <router-link 
-            v-for="item in leftLinks" 
-            :key="item.path"
-            :to="item.path" 
-            class="nav-item"
-            :ref="el => setItemRef(el, item.path)"
-          >
-            <Icon :icon="item.icon" />
-            <span>{{ item.name }}</span>
-          </router-link>
-        </div>
-      </div>
+      <!-- 汉堡菜单按钮 -->
+      <button class="hamburger" @click="toggleSidebar" :class="{ active: isOpen }">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
 
-      <!-- 2. 中间区域 (Logo) -->
-      <div class="nav-logo">
-        <Icon icon="ph:planet-bold" class="logo-icon" />
-        <span>Zero Gravity Area</span>
-      </div>
-
-      <!-- 3. 右侧区域 (绝对等宽) -->
-      <div class="nav-section side-right">
-        <div class="nav-links">
-          <router-link 
-            v-for="item in rightLinks" 
-            :key="item.path"
-            :to="item.path" 
-            class="nav-item"
-            :ref="el => setItemRef(el, item.path)"
-          >
-            <Icon :icon="item.icon" />
-            <span>{{ item.name }}</span>
-          </router-link>
-        </div>
-        
-        <!-- 用户操作按钮 -->
-        <div class="nav-actions">
-          <div class="user-profile-container" 
-               @mouseenter="showTooltip = true" 
-               @mouseleave="showTooltip = false">
-            <button class="icon-btn" @click="openAuthModal">
-              <img :src="userAvatar || defaultAvatar" @error="(e) => e.target.src = defaultAvatar" alt="User" class="user-avatar" />
+    <!-- 侧边栏 -->
+    <transition name="sidebar">
+      <div v-if="isOpen" class="sidebar-overlay" @click="closeSidebar">
+        <div class="sidebar" @click.stop>
+          <!-- 侧边栏头部 -->
+          <div class="sidebar-header">
+            <h2>导航</h2>
+            <button class="close-btn" @click="closeSidebar">
+              <Icon icon="ph:x" />
             </button>
-            
-            <Transition name="tooltip-fade">
-              <div v-if="showTooltip" class="glass-tooltip-fixed">
-                <div class="tooltip-arrow"></div>
-                <div class="tooltip-content">
-                  <template v-if="isLoggedIn">
-                    <Icon icon="ph:gear-six-bold" />
-                    <span>更改设置</span>
-                  </template>
-                  <template v-else>
-                    <Icon icon="ph:sign-in-bold" />
-                    <span>立即登录</span>
-                  </template>
-                </div>
-              </div>
-            </Transition>
+          </div>
+
+          <!-- 导航链接 -->
+          <nav class="nav-links">
+            <router-link
+              v-for="item in navLinks"
+              :key="item.path"
+              :to="item.path"
+              class="nav-item"
+              @click="closeSidebar"
+            >
+              <Icon :icon="item.icon" class="nav-icon" />
+              <span>{{ item.name }}</span>
+            </router-link>
+          </nav>
+
+          <!-- 底部用户区域 -->
+          <div class="sidebar-footer">
+            <div class="divider"></div>
+            <button class="user-btn" @click="openAuthModal">
+              <img :src="userAvatar || defaultAvatar" @error="(e) => e.target.src = defaultAvatar" alt="User" class="user-avatar" />
+              <span>{{ isLoggedIn ? '设置' : '登录' }}</span>
+            </button>
           </div>
         </div>
       </div>
+    </transition>
 
-    </div>
-    
-    <!-- 登录/注册/找回密码/设置弹窗 -->
+    <!-- 登录/注册/设置弹窗 -->
     <Teleport to="body">
       <AuthModal v-if="showAuthModal" :initialView="initialAuthView" @close="handleAuthClose" />
     </Teleport>
@@ -79,17 +62,37 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted, watch, reactive } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import defaultAvatar from '../assets/white_user.png';
 import AuthModal from './auth/AuthModal.vue';
 
-const showTooltip = ref(false);
+const isOpen = ref(false);
 const showAuthModal = ref(false);
 const isLoggedIn = ref(false);
 const initialAuthView = ref('login');
 const userAvatar = ref(localStorage.getItem('avatar_url') || '');
+const route = useRoute();
+
+const navLinks = [
+  { name: 'Game', path: '/gameing', icon: 'ion:game-controller-outline' },
+  { name: '搜索', path: '/search', icon: 'ph:magnifying-glass' },
+  { name: '伙伴', path: '/aifriend', icon: 'tabler:alien' },
+  { name: '消息', path: '/message', icon: 'tabler:message' },
+  { name: '视频', path: '/video', icon: 'mingcute:video-line' },
+  { name: '个人主页', path: '/mainpage', icon: 'material-symbols:home-outline-rounded' },
+];
+
+const toggleSidebar = () => {
+  isOpen.value = !isOpen.value;
+  document.body.classList.toggle('sidebar-open', isOpen.value);
+};
+
+const closeSidebar = () => {
+  isOpen.value = false;
+  document.body.classList.remove('sidebar-open');
+};
 
 const checkLoginStatus = () => {
   const token = localStorage.getItem('auth_token');
@@ -100,6 +103,7 @@ const checkLoginStatus = () => {
 const openAuthModal = () => {
   initialAuthView.value = isLoggedIn.value ? 'settings' : 'login';
   showAuthModal.value = true;
+  closeSidebar();
 };
 
 const handleAuthClose = () => {
@@ -107,255 +111,269 @@ const handleAuthClose = () => {
   checkLoginStatus();
 };
 
-const route = useRoute();
-const navContainer = ref(null);
-const itemRefs = reactive({});
-
-const leftLinks = [
-  { name: 'Game', path: '/gameing', icon: 'ion:game-controller-outline' },
-  { name: '搜索', path: '/search', icon: 'ph:magnifying-glass-bold' },
-  { name: '伙伴', path: '/aifriend', icon: 'tabler:alien' },
-];
-
-const rightLinks = [
-  { name: '消息', path: '/message', icon: 'tabler:message' },
-  { name: '视频', path: '/video', icon: 'mingcute:video-line' },
-  { name: '个人主页', path: '/mainpage', icon: 'material-symbols:home-outline-rounded' },
-];
-
-const setItemRef = (el, path) => {
-  if (el) itemRefs[path] = el.$el || el;
-};
-
-const indicatorStyle = reactive({
-  width: '0px',
-  left: '0px',
-  opacity: 0
+// 路由变化时关闭侧边栏
+watch(() => route.path, () => {
+  closeSidebar();
 });
 
-const updateIndicator = () => {
-  const activePath = route.path;
-  const activeEl = itemRefs[activePath];
-
-  if (activeEl && navContainer.value) {
-    const containerRect = navContainer.value.getBoundingClientRect();
-    const elRect = activeEl.getBoundingClientRect();
-    indicatorStyle.width = `${elRect.width}px`;
-    indicatorStyle.left = `${elRect.left - containerRect.left}px`;
-    indicatorStyle.opacity = 1;
-  }
-};
-
-onMounted(() => {
-  setTimeout(updateIndicator, 100);
-  checkLoginStatus();
-});
-watch(() => route.path, () => setTimeout(updateIndicator, 50));
+checkLoginStatus();
 </script>
 
 <style scoped>
-.navbar {
+/* 顶部细条 */
+.top-bar {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 70px;
+  height: 60px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E8E3DA;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.nav-container {
-  height: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: 0 40px;
-}
-
-/* --- 核心布局：左右对称分权 --- */
-.nav-section {
-  flex: 1; 
-  display: flex;
-  align-items: center;
-}
-
-.side-left {
-  justify-content: flex-end; 
-  padding-right: 120px; /* 调大左侧到 Logo 的距离 */
-}
-
-.side-right {
-  justify-content: flex-start; 
-  padding-left: 120px; /* 调大右侧到 Logo 的距离 */
-  gap: 30px; 
-}
-
-.nav-links {
-  display: flex;
-  gap: 60px; /* 调大链接与链接之间的距离 */
-  white-space: nowrap;
-}
-
-/* --- Logo 区域 --- */
-.nav-logo {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 1.6rem;
-  font-weight: 800;
-  white-space: nowrap;
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.logo-icon {
-  font-size: 2.8rem;
-  -webkit-text-fill-color: initial;
-}
-
-/* --- 滑块与导航项 --- */
-.nav-indicator {
-  position: absolute;
-  height: 45px;
-  background: rgba(79, 172, 254, 0.1);
-  border: 1px solid rgba(79, 172, 254, 0.2);
-  border-radius: 12px;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  z-index: -1;
-}
-
-.nav-item {
-  text-decoration: none;
-  color: rgba(255, 255, 255, 0.6);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.1rem;
-  padding: 8px 15px;
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 更平滑的过渡 */
-}
-
-.nav-item:hover {
-  color: white;
-  transform: translateY(-3px); /* 悬浮时轻微上浮 */
-  text-shadow: 0 0 15px rgba(79, 172, 254, 0.5); /* 增加一点微光 */
-}
-
-.nav-item:active {
-  transform: translateY(-1px); /* 点击时按下的反馈 */
-}
-
-.router-link-active {
-  color: #4facfe;
-  font-weight: 600;
-}
-
-.icon-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 2.5rem; /* 调大图标尺寸 */
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.icon-btn:hover {
-  transform: scale(1.1);
-  color: #4facfe;
-  filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.4));
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-}
-
-.icon-btn:hover .user-avatar {
-  border-color: #4facfe;
-}
-
-.nav-item :deep(svg) {
-  font-size: 1.6rem; /* 你可以根据感觉调整这个数字，比如 1.4rem 或 1.8rem */
-  transition: transform 0.3s ease; /* 让图标的大小变化也带点平滑感 */
-}
-/* 悬停时让图标再稍微变大一点（可选，效果很赞） */
-.nav-item:hover :deep(svg) {
-  transform: scale(1.1); 
-}
-
-/* --- 用户操作相关 --- */
-.user-profile-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.glass-tooltip-fixed {
-  position: absolute;
-  top: 130%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.9rem;
-  white-space: nowrap;
-  pointer-events: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
-.tooltip-arrow {
-  position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 1px solid rgba(255, 255, 255, 0.15);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  z-index: -1;
-  clip-path: polygon(0% 0%, 100% 0%, 0% 100%);
-}
-
-.tooltip-content {
+/* Logo */
+.logo {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
+  color: #2C2C2C;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.logo:hover {
+  color: #8B6F47;
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+  color: #8B6F47;
+}
+
+.logo-text {
+  letter-spacing: 0.5px;
+}
+
+/* 汉堡菜单按钮 */
+.hamburger {
+  width: 32px;
+  height: 24px;
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0;
+  position: relative;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #2C2C2C;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger:hover span {
+  background: #8B6F47;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: translateY(11px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: translateY(-11px) rotate(-45deg);
+}
+
+/* 侧边栏遮罩 */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  display: flex;
+}
+
+/* 侧边栏 */
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  background: #FFFFFF;
+  border-right: 1px solid #E8E3DA;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 侧边栏头部 */
+.sidebar-header {
+  padding: 30px 24px 20px;
+  border-bottom: 1px solid #E8E3DA;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h2 {
+  font-size: 1.3rem;
+  color: #2C2C2C;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #6B6B6B;
+  font-size: 1.3rem;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+.close-btn:hover {
+  color: #2C2C2C;
+  background: #F7F4ED;
+}
+
+/* 导航链接 */
+.nav-links {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  color: #6B6B6B;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 60%;
+  background: #8B6F47;
+  border-radius: 0 2px 2px 0;
+  transition: width 0.2s ease;
+}
+
+.nav-item:hover {
+  color: #2C2C2C;
+  background: #F7F4ED;
+}
+
+.nav-item:hover::before {
+  width: 3px;
+}
+
+.router-link-active {
+  color: #8B6F47;
+  background: #F7F4ED;
   font-weight: 500;
 }
 
-.tooltip-content :deep(svg) {
-  font-size: 1.2rem;
-  color: #4facfe;
+.router-link-active::before {
+  width: 3px;
 }
 
-.tooltip-fade-enter-active,
-.tooltip-fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.nav-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
 }
 
-.tooltip-fade-enter-from,
-.tooltip-fade-leave-to {
+/* 侧边栏底部 */
+.sidebar-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #E8E3DA;
+}
+
+.divider {
+  height: 1px;
+  background: #E8E3DA;
+  margin-bottom: 16px;
+}
+
+.user-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: none;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
+  color: #2C2C2C;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.user-btn:hover {
+  background: #F7F4ED;
+  border-color: #8B6F47;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #E8E3DA;
+}
+
+/* 侧边栏动画 */
+.sidebar-enter-active,
+.sidebar-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-enter-active .sidebar,
+.sidebar-leave-active .sidebar {
+  transition: transform 0.3s ease;
+}
+
+.sidebar-enter-from,
+.sidebar-leave-to {
   opacity: 0;
-  transform: translate(-50%, 5px); /* 保持水平居中的同时向下位移 */
+}
+
+.sidebar-enter-from .sidebar {
+  transform: translateX(-100%);
+}
+
+.sidebar-leave-to .sidebar {
+  transform: translateX(-100%);
 }
 </style>
-

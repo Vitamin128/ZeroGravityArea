@@ -10,7 +10,7 @@
     >
       <slot>
         <!-- 默认上传图标 -->
-        <Icon icon="ph:upload-simple-bold" width="20" height="20" />
+        <Icon icon="ph:upload-simple" width="20" height="20" />
       </slot>
     </button>
 
@@ -68,7 +68,6 @@ const updatePosition = (e) => {
 
 <style scoped>
 .upload-btn-wrapper {
-  /* 由父组件决定定位方式，保持组件的通用性 */
   display: inline-block;
 }
 
@@ -78,20 +77,18 @@ const updatePosition = (e) => {
   justify-content: center;
   width: 44px;
   height: 44px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: #4facfe;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
+  color: #8B6F47;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .upload-label:hover {
-  background: rgba(79, 172, 254, 0.15);
-  border-color: #4facfe;
-  box-shadow: 0 0 15px rgba(79, 172, 254, 0.3);
-  transform: scale(1.05);
+  background: #F7F4ED;
+  border-color: #8B6F47;
+  box-shadow: 0 2px 8px rgba(139, 111, 71, 0.2);
 }
 
 .upload-label:active {
@@ -100,24 +97,19 @@ const updatePosition = (e) => {
 </style>
 
 <style>
-/* 提示框全局样式（因为被 Teleport 到了 body，所以放在非 scoped style 里） */
+/* 提示框全局样式 */
 .glass-tooltip {
   position: fixed;
   z-index: 99999;
   padding: 10px 16px;
-  
-  /* 极致的毛玻璃太空风格 */
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  pointer-events: none; /* 确保它不会遮挡鼠标对其他元素的点击 */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  background: #2C2C2C;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* 提示框淡入淡出动画 */

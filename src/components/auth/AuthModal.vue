@@ -2,27 +2,25 @@
   <!-- Toast 弹窗通知 -->
   <Transition name="toast">
     <div v-if="feedbackMsg" :class="['auth-toast', feedbackType]">
-      <div class="auth-toast-content">
-        <Icon 
-          :icon="feedbackType === 'success' ? 'ph:check-circle-bold' : 'ph:warning-bold'" 
-          width="24" height="24" class="auth-toast-icon" 
-        />
-        <p>{{ feedbackMsg }}</p>
-      </div>
+      <Icon
+        :icon="feedbackType === 'success' ? 'ph:check-circle' : 'ph:warning-circle'"
+        width="20" height="20" class="toast-icon"
+      />
+      <p>{{ feedbackMsg }}</p>
     </div>
   </Transition>
 
   <div class="auth-modal-overlay" @click.self="$emit('close')">
-    <div :class="['auth-card-wrapper', { 'is-settings': currentView === 'settings' }]">
+    <div class="auth-card">
       <!-- 关闭按钮 -->
       <button class="close-btn" @click="$emit('close')">
-        <Icon icon="ph:x-bold" />
+        <Icon icon="ph:x" />
       </button>
 
-      <transition name="fade-slide" mode="out-in">
-        <component 
-          :is="currentViewComponent" 
-          @switch="switchView" 
+      <transition name="fade" mode="out-in">
+        <component
+          :is="currentViewComponent"
+          @switch="switchView"
           @success="onAuthSuccess"
           @error="onAuthError"
         />
@@ -38,6 +36,7 @@ import { verifyToken } from '@/api/auth';
 import LoginForm from './LoginForm.vue';
 import RegisterForm from './RegisterForm.vue';
 import ForgotForm from './ForgotForm.vue';
+import SettingsForm from './SettingsForm.vue';
 
 const props = defineProps({
   initialView: {
@@ -50,8 +49,6 @@ const emit = defineEmits(['close']);
 const currentView = ref(props.initialView);
 const feedbackMsg = ref('');
 const feedbackType = ref('error'); // 'error' | 'success'
-
-import SettingsForm from './SettingsForm.vue';
 
 const currentViewComponent = computed(() => {
   const map = {
@@ -98,8 +95,7 @@ onMounted(async () => {
       if (userInfo.user_id) localStorage.setItem('user_id', userInfo.user_id);
       if (userInfo.email) localStorage.setItem('user_email', userInfo.email);
     }
-    
-    // 只有在非设置界面（即在尝试登录时）才执行自动进入和提示
+
     if (currentView.value !== 'settings') {
       showFeedback('已自动登录', 'success');
       setTimeout(() => emit('close'), 800);
@@ -112,79 +108,137 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* 只保留外壳和 Toast 样式 */
+/* 模态框遮罩 */
 .auth-modal-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: transparent;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2000;
+  animation: overlayFadeIn 0.3s ease;
 }
 
-.auth-card-wrapper {
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 认证卡片 */
+.auth-card {
   position: relative;
-  width: 400px;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 420px;
+  max-width: 90vw;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
+  padding: 48px 40px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  animation: cardSlideIn 0.4s ease;
 }
 
-.auth-card-wrapper.is-settings {
-  width: 400px; /* 设置页更宽 */
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.auth-card-wrapper {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 24px;
-  padding: 50px 40px;
-  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  color: white;
-  overflow: hidden;
-  animation: authFadeIn 0.8s ease-out;
-}
-
-@keyframes authFadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* 关闭按钮 */
 .close-btn {
   position: absolute;
-  top: 20px; right: 20px;
-  background: none; border: none;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #6B6B6B;
+  font-size: 1.3rem;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: all 0.2s ease;
   z-index: 10;
 }
 
 .close-btn:hover {
-  color: white;
-  transform: rotate(90deg);
+  color: #2C2C2C;
+  background: #F7F4ED;
 }
 
-/* Toast 样式 */
+/* Toast 通知 */
 .auth-toast {
-  position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
-  z-index: 10000; backdrop-filter: blur(12px); padding: 16px; border-radius: 12px;
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
 }
-.auth-toast.error { background: rgba(255, 69, 58, 0.1); border: 1px solid rgba(255, 69, 58, 0.4); }
-.auth-toast.success { background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.4); }
-.auth-toast-content { display: flex; align-items: center; gap: 12px; color: white; font-size: 1.3rem; }
+
+.auth-toast.error {
+  border-left: 3px solid #D32F2F;
+  color: #D32F2F;
+}
+
+.auth-toast.success {
+  border-left: 3px solid #8B6F47;
+  color: #8B6F47;
+}
+
+.auth-toast p {
+  margin: 0;
+  color: #2C2C2C;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+}
 
 /* 切换动画 */
-.fade-slide-enter-active, .fade-slide-leave-active { transition: all 0.3s ease; }
-.fade-slide-enter-from { opacity: 0; transform: translateX(20px); }
-.fade-slide-leave-to { opacity: 0; transform: translateX(-20px); }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
 
-.toast-enter-active { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.toast-leave-active { transition: all 0.3s ease; }
-.toast-enter-from { opacity: 0; transform: translate(-50%, 20px); }
-.toast-leave-to { opacity: 0; transform: translate(-50%, -40px); }
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Toast 动画 */
+.toast-enter-active {
+  transition: all 0.3s ease;
+}
+
+.toast-leave-active {
+  transition: all 0.2s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translate(-50%, -10px);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -10px);
+}
 </style>

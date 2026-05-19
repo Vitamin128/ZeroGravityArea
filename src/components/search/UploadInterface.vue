@@ -6,7 +6,7 @@
         <div class="modal-header">
           <h2 class="modal-title">附件</h2>
           <button class="close-btn" @click="close" title="关闭">
-            <Icon icon="ph:x-bold" width="18" height="18" />
+            <Icon icon="ph:x" width="18" height="18" />
           </button>
         </div>
         <div class="header-divider"></div>
@@ -173,20 +173,20 @@ const formatFileSize = (bytes) => {
 const getFileIcon = (filename) => {
   const ext = filename.split('.').pop().toLowerCase();
   const iconMap = {
-    pdf: 'ph:file-pdf-bold',
-    txt: 'ph:file-text-bold',
-    csv: 'ph:file-csv-bold',
-    md: 'ph:file-text-bold',
-    doc: 'ph:file-doc-bold',
-    docx: 'ph:file-doc-bold',
-    xls: 'ph:file-xls-bold',
-    xlsx: 'ph:file-xls-bold',
-    ppt: 'ph:file-ppt-bold',
-    pptx: 'ph:file-ppt-bold',
-    mobi: 'ph:book-bold',
-    epub: 'ph:book-bold'
+    pdf: 'ph:file-pdf',
+    txt: 'ph:file-text',
+    csv: 'ph:file-csv',
+    md: 'ph:file-text',
+    doc: 'ph:file-doc',
+    docx: 'ph:file-doc',
+    xls: 'ph:file-xls',
+    xlsx: 'ph:file-xls',
+    ppt: 'ph:file-ppt',
+    pptx: 'ph:file-ppt',
+    mobi: 'ph:book',
+    epub: 'ph:book'
   };
-  return iconMap[ext] || 'ph:file-bold';
+  return iconMap[ext] || 'ph:file';
 };
 
 // ===== 真实后端上传 =====
@@ -215,7 +215,7 @@ const handleConfirm = async () => {
     if (response.ok) {
       const result = await response.json();
       console.log('✅ 后端返回数据:', result);
-      
+
       if (result.status === 'success' || result.status === 'partial_success') {
         console.log('✅ 上传成功:', result.message);
         emit('upload-success', [...files.value]);
@@ -236,6 +236,368 @@ const handleConfirm = async () => {
   }
 };
 </script>
+
+<style scoped>
+/* ========== 模态框遮罩层 ========== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ========== 模态框容器 ========== */
+.modal-container {
+  width: 780px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+/* ========== 头部区域 ========== */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2C2C2C;
+  letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #6B6B6B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #F7F4ED;
+  color: #2C2C2C;
+}
+
+/* 极细的浅色分割线 */
+.header-divider {
+  height: 1px;
+  background: #E8E3DA;
+  margin: 0 24px;
+}
+
+/* ========== 核心上传区 ========== */
+.upload-zone {
+  position: relative;
+  margin: 15px 18px;
+  height: 400px;
+  background: #FFFEF9;
+  border: 2px dashed #E8E3DA;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 22px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.upload-zone:hover:not(.drag-active) {
+  background: #F7F4ED;
+  border-color: #8B6F47;
+}
+
+/* 当文件列表为空时，内容强制居中 */
+.upload-zone.is-empty {
+  justify-content: center;
+}
+
+/* 自定义上传区域滚动条 */
+.upload-zone::-webkit-scrollbar {
+  width: 6px;
+}
+
+.upload-zone::-webkit-scrollbar-track {
+  background: #F7F4ED;
+}
+
+.upload-zone::-webkit-scrollbar-thumb {
+  background: #D4C4B0;
+  border-radius: 3px;
+}
+
+.upload-zone::-webkit-scrollbar-thumb:hover {
+  background: #8B6F47;
+}
+
+/* 拖拽激活时边框高亮 */
+.upload-zone.drag-active {
+  border-color: #8B6F47;
+  background: #F7F4ED;
+  cursor: default;
+}
+
+/* ----- 状态 1：默认入口态 ----- */
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.upload-icon {
+  color: #8B6F47;
+}
+
+.upload-hint {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #6B6B6B;
+  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ----- 状态 2：拖拽悬停态 —— 遮罩 ----- */
+.drag-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 111, 71, 0.1);
+  border-radius: 4px;
+}
+
+.drag-overlay-content {
+  text-align: center;
+  z-index: 11;
+}
+
+.drag-hint-title {
+  margin: 0 0 12px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2C2C2C;
+  font-family: 'Inter', sans-serif;
+}
+
+.drag-hint-limits {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drag-hint-limits span {
+  font-size: 0.9rem;
+  color: #6B6B6B;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ----- 状态 3：文件列表态 ----- */
+.file-list {
+  width: 100%;
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 单条文件项 */
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 15px;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.file-item:hover {
+  transform: translateY(-2px);
+  border-color: #8B6F47;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.file-type-icon {
+  color: #8B6F47;
+  flex-shrink: 0;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 0.95rem;
+  color: #2C2C2C;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.file-size {
+  font-size: 0.85rem;
+  color: #6B6B6B;
+  font-family: 'Inter', sans-serif;
+}
+
+/* 删除按钮：默认隐藏，悬停时显示 */
+.file-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #6B6B6B;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.file-item:hover .file-delete-btn {
+  opacity: 1;
+}
+
+.file-delete-btn:hover {
+  background: rgba(211, 47, 47, 0.1);
+  color: #D32F2F;
+}
+
+/* ========== 底部操作区 ========== */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+}
+
+.confirm-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 32px;
+  background: #8B6F47;
+  border: none;
+  border-radius: 4px;
+  color: #FFFFFF;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: #6B5437;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+}
+
+.confirm-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 加载旋转动画 */
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========== 模态框出入动画 ========== */
+.modal-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-active .modal-container {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-leave-active .modal-container {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.modal-enter-from {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-container {
+  transform: scale(0.95) translateY(20px);
+  opacity: 0;
+}
+
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-leave-to .modal-container {
+  transform: scale(0.98) translateY(10px);
+  opacity: 0;
+}
+
+/* 拖拽遮罩淡入淡出 */
+.blur-fade-enter-active {
+  transition: opacity 0.25s ease;
+}
+
+.blur-fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.blur-fade-enter-from,
+.blur-fade-leave-to {
+  opacity: 0;
+}
+</style>
 
 <style scoped>
 /* ========== 模态框遮罩层 ========== */

@@ -1,33 +1,33 @@
 <template>
   <div class="auth-view">
     <h2>欢迎回来</h2>
-    <p class="subtitle">登录您的 Zero Gravity Area 账号</p>
-    
+    <p class="subtitle">登录您的账号</p>
+
     <div class="input-group">
-      <Icon icon="ph:envelope-simple-bold" class="input-icon" />
+      <Icon icon="ph:envelope-simple" class="input-icon" />
       <input type="email" v-model="form.email" placeholder="邮箱地址" @keyup.enter="handleLogin" />
     </div>
-    
+
     <div class="input-group">
-      <Icon icon="ph:lock-key-bold" class="input-icon" />
+      <Icon icon="ph:lock-key" class="input-icon" />
       <input :type="showPassword ? 'text' : 'password'" v-model="form.password" placeholder="密码" @keyup.enter="handleLogin" />
-      <Icon 
-        :icon="showPassword ? 'ph:eye-bold' : 'ph:eye-slash-bold'" 
-        class="password-toggle" 
-        @click="showPassword = !showPassword" 
+      <Icon
+        :icon="showPassword ? 'ph:eye' : 'ph:eye-slash'"
+        class="password-toggle"
+        @click="showPassword = !showPassword"
       />
     </div>
-    
+
     <div class="actions-row">
       <div class="spacer"></div>
       <a href="#" class="text-link" @click.prevent="$emit('switch', 'forgot')">忘记密码？</a>
     </div>
-    
+
     <button class="submit-btn" @click="handleLogin" :disabled="isLoading">
       <Icon v-if="isLoading" icon="svg-spinners:ring-resize" />
-      <span v-else>登 录</span>
+      <span v-else>登录</span>
     </button>
-    
+
     <p class="switch-hint">
       还没有账号？ <a href="#" class="text-link accent" @click.prevent="$emit('switch', 'register')">立即注册</a>
     </p>
@@ -59,8 +59,7 @@ const handleLogin = async () => {
       email: form.email,
       password: form.password,
     });
-    
-    // 登录成功处理
+
     const userInfo = data.data;
     if (userInfo) {
       if (userInfo.token) localStorage.setItem('auth_token', userInfo.token);
@@ -69,7 +68,7 @@ const handleLogin = async () => {
       if (userInfo.avatar_url) localStorage.setItem('avatar_url', userInfo.avatar_url);
       if (userInfo.email) localStorage.setItem('user_email', userInfo.email);
     }
-    
+
     emit('success', '登录成功！');
   } catch (err) {
     emit('error', err.message || '登录失败，请检查账号密码');
@@ -80,53 +79,151 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.auth-view { display: flex; flex-direction: column; }
-.auth-view h2 { margin: 0 0 12px 0; font-size: 1.8rem; text-align: center; color: white; }
-.auth-view .subtitle { margin: 0 0 32px 0; font-size: 1.1rem; color: rgba(255, 255, 255, 0.6); text-align: center; }
+.auth-view {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+}
 
-.input-group { position: relative; margin-bottom: 20px; }
-.input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4); pointer-events: none; }
-.password-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.4); cursor: pointer; z-index: 2; }
+.auth-view h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.6rem;
+  text-align: center;
+  color: #2C2C2C;
+  font-weight: 600;
+}
+
+.auth-view .subtitle {
+  margin: 0 0 32px 0;
+  font-size: 0.95rem;
+  color: #6B6B6B;
+  text-align: center;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6B6B6B;
+  pointer-events: none;
+  font-size: 1.1rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6B6B6B;
+  cursor: pointer;
+  z-index: 2;
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: #2C2C2C;
+}
 
 input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 12px 45px;
-  color: white;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
+  padding: 12px 42px;
+  color: #2C2C2C;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   box-sizing: border-box;
+  font-family: 'Lora', serif;
+  font-size: 0.95rem;
 }
-input:focus { border-color: #4facfe; background: rgba(0, 0, 0, 0.4); }
 
-/* 解决浏览器自动填充导致输入框变白的问题 */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active {
-  transition: background-color 5000s ease-in-out 0s;
-  -webkit-text-fill-color: white !important;
-  caret-color: white !important;
+input:focus {
+  border-color: #8B6F47;
+}
+
+input::placeholder {
+  color: #B8B8B8;
+}
+
+.actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 0.85rem;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.text-link {
+  color: #6B6B6B;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.text-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #8B6F47;
+  transition: width 0.2s ease;
+}
+
+.text-link:hover::after,
+.text-link.accent::after {
+  width: 100%;
+}
+
+.text-link:hover,
+.text-link.accent {
+  color: #8B6F47;
 }
 
 .submit-btn {
   width: 100%;
-  background: linear-gradient(to right, #4facfe, #00f2fe);
-  color: white; border: none; border-radius: 12px; padding: 14px;
-  font-size: 1.1rem; font-weight: 600; cursor: pointer;
+  background: #8B6F47;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
   margin-bottom: 20px;
-  display: flex; justify-content: center; align-items: center;
-  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
 }
-.submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4); }
-.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-.actions-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 0.9rem; }
-.spacer { flex: 1; }
-.text-link { color: rgba(255, 255, 255, 0.6); text-decoration: none; transition: color 0.3s ease; }
-.text-link:hover, .text-link.accent { color: #4facfe; }
+.submit-btn:hover:not(:disabled) {
+  background: #6B5437;
+}
 
-.switch-hint { text-align: center; font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); }
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.switch-hint {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6B6B6B;
+  margin: 0;
+}
 </style>

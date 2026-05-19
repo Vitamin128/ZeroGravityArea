@@ -8,7 +8,7 @@
       @keyup.enter="callCppBackend" 
     />
     <button @click="callCppBackend" class="search-btn">
-      <Icon icon="ph:magnifying-glass-bold" width="18" height="18" />
+      <Icon icon="ph:magnifying-glass" width="18" height="18" />
     </button>
   </div>
 </template>
@@ -41,24 +41,20 @@ const callCppBackend = async () => {
 </script>
 
 <style scoped>
-/* 搜索框专属样式（玻璃拟态） */
+/* 搜索框样式 */
 .search-box {
   display: flex;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
+  background: #FFFFFF;
+  border: 1px solid #E8E3DA;
+  border-radius: 4px;
   padding: 6px 8px;
-  box-shadow: 0 11px 26px rgba(0, 0, 0, 0.2);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
 }
 
 .search-box:focus-within {
-  transform: translateY(-5px) scale(1.02);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+  border-color: #8B6F47;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 input {
@@ -67,31 +63,31 @@ input {
   border: none;
   outline: none;
   padding: 9px 18px;
-  font-size: 1.2rem;
-  color: white;
+  font-size: 1rem;
+  color: #2C2C2C;
   width: 100%;
+  font-family: 'Lora', serif;
 }
 
 input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: #B8B8B8;
 }
 
 .search-btn {
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  background: #8B6F47;
   border: none;
-  border-radius: 50%;
+  border-radius: 4px;
   width: 36px;
   height: 36px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.3s ease;
+  transition: all 0.2s ease;
+  color: white;
 }
 
 .search-btn:hover {
-  transform: rotate(15deg) scale(1.1);
+  background: #6B5437;
 }
-
-
 </style>

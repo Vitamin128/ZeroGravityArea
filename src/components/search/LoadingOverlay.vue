@@ -53,7 +53,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 样式保持你之前的修改 */
 .loading-inline {
   display: flex;
   flex-direction: column;
@@ -65,20 +64,19 @@ onUnmounted(() => {
 .spinner {
   width: 38px;
   height: 38px;
-  border: 3px solid rgba(79, 172, 254, 0.15);
-  border-top-color: #4facfe;
+  border: 3px solid #E8E3DA;
+  border-top-color: #8B6F47;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
 .loading-text {
   margin-top: 16px;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 1.5rem;
-  letter-spacing: 2px;
-  /* 固定宽度防止文字跳动 */
-  /* min-width: 120px; */
+  color: #6B6B6B;
+  font-size: 1rem;
+  letter-spacing: 1px;
   text-align: left;
+  font-family: 'Inter', sans-serif;
 }
 
 @keyframes spin {
