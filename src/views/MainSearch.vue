@@ -104,6 +104,7 @@ const onUploadSuccess = (uploadedFiles) => {
   padding: 15px;
   margin-top: 50px;
   margin-bottom: 22px;
+  margin-left: -80px; /* 补偿 App.vue .main-content 的侧边栏偏移 */
 }
 .cards-wrapper {
   width: 100%;

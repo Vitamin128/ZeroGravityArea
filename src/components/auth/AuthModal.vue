@@ -131,7 +131,7 @@ onMounted(async () => {
 /* 认证卡片 */
 .auth-card {
   position: relative;
-  width: 420px;
+  width: 500px;
   max-width: 90vw;
   background: #FFFFFF;
   border: 1px solid #E8E3DA;
