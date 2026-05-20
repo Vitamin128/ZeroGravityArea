@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div class="search-box" :class="{ 'is-focused': isFocused }">
-      <Icon icon="ph:magnifying-glass" width="20" height="20" class="prefix-icon" />
+      <!-- <Icon icon="ph:magnifying-glass" width="20" height="20" class="prefix-icon" /> -->
 
       <input
         v-model="searchQuery"
@@ -21,7 +21,7 @@
         <Icon icon="ph:x" width="16" height="16" />
       </button>
 
-      <span v-if="!searchQuery.trim()" class="shortcut-hint">Enter</span>
+      <!-- <span v-if="!searchQuery.trim()" class="shortcut-hint">Enter</span> -->
 
       <button
         @click="callCppBackend"
@@ -41,7 +41,7 @@
           width="18"
           height="18"
         />
-        <span>搜索</span>
+        <!-- <span>搜索</span> -->
       </button>
     </div>
   </div>
@@ -102,7 +102,7 @@ const callCppBackend = async () => {
   background: #FFFFFF;
   border: 2px solid #E8E3DA;
   border-radius: 12px;
-  padding: 12px 20px;
+  padding: 6px 6px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
@@ -170,7 +170,7 @@ input::placeholder {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 24px;
+  padding: 10px 10px;
   background: transparent;
   border: 2px solid #8B6F47;
   border-radius: 8px;

@@ -100,9 +100,9 @@ const onUploadSuccess = (uploadedFiles) => {
 }
 .search-wrapper {
   text-align: center;
-  width: 30%;
-  padding: 15px;
-  margin-top: 50px;
+  width: 40%;
+  padding: 5px;
+  margin-top: 20px;
   margin-bottom: 22px;
   margin-left: -80px; /* 补偿 App.vue .main-content 的侧边栏偏移 */
 }
