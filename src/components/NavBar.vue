@@ -4,8 +4,9 @@
     <div class="top-bar">
       <!-- Logo -->
       <router-link to="/" class="logo">
-        <Icon icon="ph:planet" class="logo-icon" />
-        <span class="logo-text">Zero Gravity</span>
+        <!-- <Icon icon="ph:planet" class="logo-icon" /> -->
+        <WoodIcon height="1em" class="logo-icon"/>
+        <span class="logo-text">Wooden Table</span>
       </router-link>
 
       <!-- 汉堡菜单按钮 -->
@@ -67,6 +68,7 @@ import { useRoute } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import defaultAvatar from '../assets/white_user.png';
 import AuthModal from './auth/AuthModal.vue';
+import WoodIcon from '@iconify-vue/fluent-emoji-high-contrast/wood';
 
 const isOpen = ref(false);
 const showAuthModal = ref(false);
