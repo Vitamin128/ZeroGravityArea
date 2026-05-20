@@ -1,60 +1,121 @@
-<!-- src/components/SearchBar.vue -->
 <template>
-  <div class="search-box">
-    <input 
-      v-model="searchQuery" 
-      type="text" 
-      placeholder="探索星辰大海..." 
-      @keyup.enter="callCppBackend" 
-    />
-    <button @click="callCppBackend" class="search-btn">
-      <Icon icon="ph:magnifying-glass" width="18" height="18" />
-    </button>
+  <div class="search-container">
+    <div class="search-box" :class="{ 'is-focused': isFocused }">
+      <Icon icon="ph:magnifying-glass" width="20" height="20" class="prefix-icon" />
+
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="输入关键词搜索文档内容..."
+        @keyup.enter="callCppBackend"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
+      />
+
+      <button
+        v-if="searchQuery.trim()"
+        @click="clearSearch"
+        class="clear-btn"
+        title="清空"
+      >
+        <Icon icon="ph:x" width="16" height="16" />
+      </button>
+
+      <span v-if="!searchQuery.trim()" class="shortcut-hint">Enter</span>
+
+      <button
+        @click="callCppBackend"
+        class="search-btn"
+        :disabled="isLoading"
+      >
+        <Icon
+          v-if="isLoading"
+          icon="ph:spinner"
+          width="18"
+          height="18"
+          class="spin-icon"
+        />
+        <Icon
+          v-else
+          icon="ph:magnifying-glass"
+          width="18"
+          height="18"
+        />
+        <span>搜索</span>
+      </button>
+    </div>
   </div>
 </template>
+
 <script setup lang="js">
 import { ref, defineEmits } from 'vue';
 import { Icon } from '@iconify/vue';
-const emit = defineEmits(['update-results', 'search-start', 'empty-query']); // 新增 empty-query 事件
+
+const emit = defineEmits(['update-results', 'search-start', 'empty-query']);
+
 const searchQuery = ref('');
+const isFocused = ref(false);
+const isLoading = ref(false);
+
+const clearSearch = () => {
+  searchQuery.value = '';
+};
+
 const callCppBackend = async () => {
   if (!searchQuery.value.trim()) {
-    // 如果为空，发射空查询事件
     emit('empty-query');
     return;
   }
-  // 1. 发射“开始搜索”信号，让父组件显示加载动画
+
+  isLoading.value = true;
   emit('search-start');
+
   try {
     const url = `http://192.168.52.131:8081/search?word=${encodeURIComponent(searchQuery.value)}`;
     const response = await fetch(url);
     const data = await response.json();
-    
-    // 2. 发射结果信号（父组件收到结果后会自动关闭加载）
-    emit('update-results', data); 
-    
+    emit('update-results', data);
   } catch (err) {
     console.error("RPC 调用失败:", err);
-    emit('update-results', []); // 失败也传个空数组，触发关闭加载
+    emit('update-results', []);
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
 
 <style scoped>
-/* 搜索框样式 */
-.search-box {
+.search-container {
   display: flex;
-  background: #FFFFFF;
-  border: 1px solid #E8E3DA;
-  border-radius: 4px;
-  padding: 6px 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 40px 20px;
 }
 
-.search-box:focus-within {
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 720px;
+  background: #FFFFFF;
+  border: 2px solid #E8E3DA;
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.search-box.is-focused {
   border-color: #8B6F47;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 20px rgba(139, 111, 71, 0.2);
+  transform: translateY(-2px);
+}
+
+.prefix-icon {
+  color: #8B6F47;
+  flex-shrink: 0;
 }
 
 input {
@@ -62,32 +123,93 @@ input {
   background: transparent;
   border: none;
   outline: none;
-  padding: 9px 18px;
-  font-size: 1rem;
+  padding: 8px 12px;
+  font-size: 1.05rem;
   color: #2C2C2C;
-  width: 100%;
   font-family: 'Lora', serif;
+  min-width: 0;
 }
 
 input::placeholder {
   color: #B8B8B8;
 }
 
-.search-btn {
-  background: #8B6F47;
-  border: none;
-  border-radius: 4px;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
+.clear-btn {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: #6B6B6B;
+  cursor: pointer;
   transition: all 0.2s ease;
-  color: white;
+  flex-shrink: 0;
 }
 
-.search-btn:hover {
-  background: #6B5437;
+.clear-btn:hover {
+  background: #F7F4ED;
+  color: #2C2C2C;
+}
+
+.shortcut-hint {
+  padding: 4px 10px;
+  background: #F7F4ED;
+  border: 1px solid #E8E3DA;
+  border-radius: 6px;
+  color: #6B6B6B;
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.search-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: transparent;
+  border: 2px solid #8B6F47;
+  border-radius: 8px;
+  color: #8B6F47;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.search-btn:hover:not(:disabled) {
+  background: #8B6F47;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+}
+
+.search-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
