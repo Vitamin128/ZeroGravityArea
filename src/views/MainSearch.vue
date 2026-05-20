@@ -14,7 +14,7 @@
         
         <!-- 文件上传按钮 (已组件化) -->
         <div class="upload-pos-wrapper">
-          <FileUpload @upload="openUploadModal" />
+          <FileUpload @upload="openUploadModal" />//
         </div>
       </div>
     </div>
