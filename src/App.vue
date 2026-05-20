@@ -27,6 +27,45 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #FFFEF9;
+  background-image:
+    /* 上层：规则网格线 */
+    /* 垂直网格线 */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 50px,
+      rgba(212, 196, 176, 0.4) 50px,
+      rgba(212, 196, 176, 0.4) calc(50px + 1.5px)
+    ),
+    /* 水平网格线 */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(212, 196, 176, 0.4) 50px,
+      rgba(212, 196, 176, 0.4) calc(50px + 1.5px)
+    ),
+    /* 底层：横向木纹纹理 */
+    /* 主木纹（较宽的条纹） */
+    repeating-linear-gradient(
+      0deg,
+      rgba(212, 196, 176, 0.15) 0px,
+      rgba(212, 196, 176, 0.15) 3px,
+      transparent 3px,
+      transparent 8px,
+      rgba(212, 196, 176, 0.1) 8px,
+      rgba(212, 196, 176, 0.1) 12px,
+      transparent 12px,
+      transparent 25px
+    ),
+    /* 细木纹（更细腻的纹理） */
+    repeating-linear-gradient(
+      0deg,
+      rgba(212, 196, 176, 0.08) 0px,
+      rgba(212, 196, 176, 0.08) 1px,
+      transparent 1px,
+      transparent 4px
+    );
   font-family: 'Lora', 'Crimson Text', 'Georgia', serif;
   color: #2C2C2C;
   overflow-x: hidden;
