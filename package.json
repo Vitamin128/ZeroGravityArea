@@ -9,7 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.5.32"
+    "@iconify-vue/fluent-emoji-high-contrast": "^1.0.3",
+    "@iconify/vue": "^5.0.1",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/preset-stars": "^3.2.0",
+    "@tsparticles/slim": "^3.9.1",
+    "@tsparticles/vue3": "^3.0.1",
+    "axios": "^1.16.1",
+    "three": "^0.184.0",
+    "vanta": "^0.5.24",
+    "vue": "^3.5.32",
+    "vue-loading-overlay": "6.0",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.6",

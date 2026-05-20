@@ -1,117 +1,147 @@
 <template>
-  <div class="app-container">
-    <div class="search-wrapper">
-      <h1 class="title">Zero Gravity Search</h1>
-      <div class="search-box">
-        <input 
-          v-model="searchQuery" 
-          type="text" 
-          placeholder="搜索你想要的..." 
-          @keyup.enter="handleSearch"
-          id="search-input"
-        />
-        <button @click="handleSearch" class="search-btn" id="search-button">
-          <span class="icon">🔍</span>
-        </button>
-      </div>
-    </div>
+  <div class="app-root">
+    <!-- 全局顶部导航栏 -->
+    <NavBar />
+
+    <!-- 路由出口 -->
+    <main class="main-content">
+      <router-view />
+    </main>
   </div>
 </template>
 <script setup lang="js">
-import { ref } from 'vue';
-const searchQuery = ref('');
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(searchQuery.value)}`, '_blank');
-  } else {
-    alert('请输入搜索内容');
-  }
-};
+import NavBar from './components/NavBar.vue';
 </script>
-<style scoped>
-/* 使用用户提供的清新渐变色 */
-.app-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+
+<style>
+/* 全局样式重置 */
+* {
   margin: 0;
-  background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-  color: #2c3e50; /* 切换为深色文字以适配浅色背景 */
+  padding: 0;
+  box-sizing: border-box;
 }
-.search-wrapper {
-  text-align: center;
-  width: 100%;
-  max-width: 600px;
-  padding: 20px;
+
+/* 全局样式 */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #FFFEF9;
+  background-image:
+    /* 上层：规则网格线 */
+    /* 垂直网格线 */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 50px,
+      rgba(212, 196, 176, 0.4) 50px,
+      rgba(212, 196, 176, 0.4) calc(50px + 1.5px)
+    ),
+    /* 水平网格线 */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(212, 196, 176, 0.4) 50px,
+      rgba(212, 196, 176, 0.4) calc(50px + 1.5px)
+    ),
+    /* 底层：横向木纹纹理 */
+    /* 主木纹（较宽的条纹） */
+    repeating-linear-gradient(
+      0deg,
+      rgba(212, 196, 176, 0.15) 0px,
+      rgba(212, 196, 176, 0.15) 3px,
+      transparent 3px,
+      transparent 8px,
+      rgba(212, 196, 176, 0.1) 8px,
+      rgba(212, 196, 176, 0.1) 12px,
+      transparent 12px,
+      transparent 25px
+    ),
+    /* 细木纹（更细腻的纹理） */
+    repeating-linear-gradient(
+      0deg,
+      rgba(212, 196, 176, 0.08) 0px,
+      rgba(212, 196, 176, 0.08) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  font-family: 'Lora', 'Crimson Text', 'Georgia', serif;
+  color: #2C2C2C;
+  overflow-x: hidden;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.title {
-  font-size: 2.8rem;
-  font-weight: 800;
-  margin-bottom: 2rem;
-  letter-spacing: -1.5px;
-  /* 标题颜色调整为深色渐变，增加层次感 */
-  background: linear-gradient(to right, #243949 0%, #517fa4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fadeInDown 0.8s ease-out;
+
+html {
+  font-size: 16px;
 }
-/* 亮色玻璃拟态效果 */
-.search-box {
+
+/* 标题使用无衬线字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.app-root {
+  min-height: 100vh;
   display: flex;
-  background: rgba(255, 255, 255, 0.4); /* 增加白色透明度 */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50px;
-  padding: 8px 10px;
-  /* 阴影改为柔和的深色，突出浮空感 */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.search-box:focus-within {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-}
-input {
+
+/* 主内容区域：为侧边栏留出空间 */
+.main-content {
   flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 12px 25px;
-  font-size: 1.1rem;
-  color: #2c3e50; /* 输入文字颜色 */
-  width: 100%;
+  margin-left: 80px; /* 侧边栏宽度 */
+  padding: 40px 60px;
+  transition: margin-left 0.3s ease;
 }
-input::placeholder {
-  color: rgba(44, 62, 80, 0.5);
+
+/* 当侧边栏展开时 */
+.sidebar-open .main-content {
+  margin-left: 280px;
 }
-/* 按钮颜色也同步调整为更协调的深蓝色系 */
-.search-btn {
-  background: linear-gradient(135deg, #2c3e50 0%, #4b6cb7 100%);
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
+
+/* 链接样式 */
+a {
+  color: #8B6F47;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: #6B5437;
+}
+
+/* 按钮基础样式 */
+button {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.2);
+  transition: all 0.2s ease;
 }
-.search-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
+
+/* 输入框基础样式 */
+input, textarea {
+  font-family: 'Lora', 'Crimson Text', 'Georgia', serif;
 }
-.icon {
-  font-size: 1.2rem;
-  filter: brightness(0) invert(1); /* 将黑色搜索图标变为白色 */
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+
+::-webkit-scrollbar-track {
+  background: #F7F4ED;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D4C4B0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8B6F47;
 }
 </style>
